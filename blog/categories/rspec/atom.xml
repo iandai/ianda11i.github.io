@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Rspec | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/rspec/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-02-01T01:21:35+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Rspec Test Principle - Test Only Your Own Code]]></title>
+    <link href="http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/"/>
+    <updated>2014-02-27T20:47:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code</id>
+    <content type="html"><![CDATA[<p>测试的时候，这一点常常被忘记，那就是———只测试自己的代码。</p>
+
+<pre><code class="ruby">
+describe S3Bucket do
+
+  before(:each) do
+    config_file = YAML.load_file('.....')
+    @config = {
+      "access_key_id" =&gt; config_file["s3"]["access_key_id"], 
+      "secret_access_key" =&gt; config_file["s3"]["secret_access_key"],
+      "bucket_name" =&gt; config_file["s3"]["bucket_name"],
+    }
+  end
+
+  it "initialize s3 bucket" do
+    s3b = S3Bucket.new(@config)
+    expect(s3b).to be_an_instance_of(S3Bucket)
+  end
+
+  it "initialize s3 bucket with wrong access_key_id" do
+    @config["access_key_id"] = @config["access_key_id"] + "1"
+    expect { S3Bucket.new(@config) }.to raise_error(ArgumentError, "AWS Access Key Id does not exist in our records.")
+  end
+
+  it "upload file to s3" do
+    s3b = S3Bucket.new(@config)
+    public_url = s3b.upload("#{File.dirname(__FILE__)}/s3.yml")
+    expect(public_url).to be_an_instance_of(URI::HTTPS)
+  end
+
+end
+</code></pre>
+
+<p>上面这段代码，测试上传文件到Amazon S3的代码。这段代码的问题是，它依赖于S3的服务是可行的，而且它其实更多的是在测试S3 SDK。
+比如它测试了access key id出错的时候，会抛出ArgumentError。但是抛出ArgumentError的是S3的SDK，而不是S3Bucket类中的代码，所以这个测试其实是不必要的。</p>
+
+<p>在测试这类测试的时候，可以使用rspec-mocks来进行测试。</p>
+
+<pre><code class="ruby">describe S3Bucket do
+
+  before(:each) do
+    @file_path = "#{File.dirname(__FILE__)}/../../../test.txt"
+    config_file = YAML.load_file('.....')
+    @config = {
+      "access_key_id" =&gt; config_file["s3"]["access_key_id"], 
+      "secret_access_key" =&gt; config_file["s3"]["secret_access_key"],
+      "bucket_name" =&gt; config_file["s3"]["bucket_name"],
+    }
+
+    # AWS::S3 class should response to :new method
+    s3 = an_instance_of(AWS::S3)
+    AWS::S3.stub(:new).with(:access_key_id =&gt; @config["access_key_id"], :secret_access_key =&gt; @config["secret_access_key"]).and_return(s3)
+
+    # build bucket object
+    bucket = an_instance_of(AWS::S3::Bucket)
+    s3.stub_chain(:buckets, :[]).and_return(bucket)
+
+    # build s3 object with method upload and delete
+    s3_obj = an_instance_of(AWS::S3::S3Object)
+    bucket.stub_chain(:objects, :[]).and_return(s3_obj)
+    s3_obj.stub(:write).with(:file =&gt; @file_path)   
+    @test_url = URI::HTTPS.build({:host =&gt; 'www.example.com', :path =&gt; '/foo/bar'})
+    s3_obj.stub(:public_url).and_return(@test_url)
+  end
+
+  it "initialize s3 bucket with " do
+    s3b = S3Bucket.new(@config)
+    expect(s3b).to be_an_instance_of(S3Bucket)
+  end
+
+  it "upload file to s3" do
+    s3b = S3Bucket.new(@config)
+    public_url = s3b.upload(@file_path)
+    expect(public_url).to eq(@test_url)
+  end
+
+end
+</code></pre>
+
+<p>上面的代码，对访问S3的代码mock，从而不需要进行网络访问便测试了S3Bucket类中的代码。</p>
+
+<h6>参考</h6>
+
+<p><a href="https://github.com/rspec/rspec-expectations">Rspec Expectations</a></br>
+<a href="http://betterspecs.org/">BetterSpec</a></br></p>
+]]></content>
+  </entry>
+  
+</feed>

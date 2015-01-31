@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-02-01T01:21:35+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Rspec Test Principle - Test Only Your Own Code]]></title>
+    <link href="http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/"/>
+    <updated>2014-02-27T20:47:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code</id>
+    <content type="html"><![CDATA[<p>测试的时候，这一点常常被忘记，那就是———只测试自己的代码。</p>
+
+<pre><code class="ruby">
+describe S3Bucket do
+
+  before(:each) do
+    config_file = YAML.load_file('.....')
+    @config = {
+      "access_key_id" =&gt; config_file["s3"]["access_key_id"], 
+      "secret_access_key" =&gt; config_file["s3"]["secret_access_key"],
+      "bucket_name" =&gt; config_file["s3"]["bucket_name"],
+    }
+  end
+
+  it "initialize s3 bucket" do
+    s3b = S3Bucket.new(@config)
+    expect(s3b).to be_an_instance_of(S3Bucket)
+  end
+
+  it "initialize s3 bucket with wrong access_key_id" do
+    @config["access_key_id"] = @config["access_key_id"] + "1"
+    expect { S3Bucket.new(@config) }.to raise_error(ArgumentError, "AWS Access Key Id does not exist in our records.")
+  end
+
+  it "upload file to s3" do
+    s3b = S3Bucket.new(@config)
+    public_url = s3b.upload("#{File.dirname(__FILE__)}/s3.yml")
+    expect(public_url).to be_an_instance_of(URI::HTTPS)
+  end
+
+end
+</code></pre>
+
+<p>上面这段代码，测试上传文件到Amazon S3的代码。这段代码的问题是，它依赖于S3的服务是可行的，而且它其实更多的是在测试S3 SDK。
+比如它测试了access key id出错的时候，会抛出ArgumentError。但是抛出ArgumentError的是S3的SDK，而不是S3Bucket类中的代码，所以这个测试其实是不必要的。</p>
+
+<p>在测试这类测试的时候，可以使用rspec-mocks来进行测试。</p>
+
+<pre><code class="ruby">describe S3Bucket do
+
+  before(:each) do
+    @file_path = "#{File.dirname(__FILE__)}/../../../test.txt"
+    config_file = YAML.load_file('.....')
+    @config = {
+      "access_key_id" =&gt; config_file["s3"]["access_key_id"], 
+      "secret_access_key" =&gt; config_file["s3"]["secret_access_key"],
+      "bucket_name" =&gt; config_file["s3"]["bucket_name"],
+    }
+
+    # AWS::S3 class should response to :new method
+    s3 = an_instance_of(AWS::S3)
+    AWS::S3.stub(:new).with(:access_key_id =&gt; @config["access_key_id"], :secret_access_key =&gt; @config["secret_access_key"]).and_return(s3)
+
+    # build bucket object
+    bucket = an_instance_of(AWS::S3::Bucket)
+    s3.stub_chain(:buckets, :[]).and_return(bucket)
+
+    # build s3 object with method upload and delete
+    s3_obj = an_instance_of(AWS::S3::S3Object)
+    bucket.stub_chain(:objects, :[]).and_return(s3_obj)
+    s3_obj.stub(:write).with(:file =&gt; @file_path)   
+    @test_url = URI::HTTPS.build({:host =&gt; 'www.example.com', :path =&gt; '/foo/bar'})
+    s3_obj.stub(:public_url).and_return(@test_url)
+  end
+
+  it "initialize s3 bucket with " do
+    s3b = S3Bucket.new(@config)
+    expect(s3b).to be_an_instance_of(S3Bucket)
+  end
+
+  it "upload file to s3" do
+    s3b = S3Bucket.new(@config)
+    public_url = s3b.upload(@file_path)
+    expect(public_url).to eq(@test_url)
+  end
+
+end
+</code></pre>
+
+<p>上面的代码，对访问S3的代码mock，从而不需要进行网络访问便测试了S3Bucket类中的代码。</p>
+
+<h6>参考</h6>
+
+<p><a href="https://github.com/rspec/rspec-expectations">Rspec Expectations</a></br>
+<a href="http://betterspecs.org/">BetterSpec</a></br></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Run Ruby CGI Scripts With Apache]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/"/>
+    <updated>2013-11-15T19:34:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache</id>
+    <content type="html"><![CDATA[<h2>CGI Scripts on server</h2>
+
+<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
+
+<pre><code> #!/bin/env ruby
+ print "Content-type: text/html\r\n\r\n"
+ print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"
+</code></pre>
+
+<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
+
+<p>CGI 设置的要点：<br/>
+The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
+The MIME media type must be the first output of your CGI script.<br/>
+A blank line follows the MIME media type.<br/>
+The CGI script must have the correct permissions.</p>
+
+<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
+<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
+
+<h2>Config apache to support running CGI</h2>
+
+<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
+
+<h2>Send parameters with get and post in ruby on client</h2>
+
+<pre><code class="ruby">require 'net/http'
+
+host = "…."       #*******.ap-northeast-1.compute.amazonaws.com
+port = 80
+
+Net::HTTP.version_1_2
+Net::HTTP.start(host, port) do |http|
+  response = http.get("/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI")
+  puts "Get request's parameters: #{response.body} "
+end
+</code></pre>
+
+<pre><code class="ruby">net = Net::HTTP.new(host, port)
+params = {:name =&gt; 'doris', :email =&gt; 'doris@foo.com'}
+
+ # Create HTTP request
+req = Net::HTTP::Post.new( '/cgi-bin/ruby.cgi', {} )
+req.set_form_data params
+
+ # Send request
+response = net.start do |http|
+  http.read_timeout = 5600
+  http.request req
+end
+
+puts "Post request's parameters: #{response.body} "
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby File Flock]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/15/ruby-file-flock/"/>
+    <updated>2013-11-15T19:25:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/15/ruby-file-flock</id>
+    <content type="html"><![CDATA[<ul>
+<li>在多线程的环境中，flock可lock文件独占使用。</li>
+</ul>
+
+
+<p>运行前文件1.txt:
+<code>
+a
+b
+</code></p>
+
+<pre><code class="ruby">File.open("1.txt", 'r+') do |fp|
+    fp.flock(File::LOCK_EX)
+
+    file_str = fp.read
+    arr = file_str.split("\n") if file_str    
+    arr[0] = "b"
+    puts arr.inspect
+    file_str = arr.join("\n")
+    fp.rewind
+    fp.write(file_str)
+    fp.flush
+
+    fp.flock(File::LOCK_UN)
+end
+</code></pre>
+
+<p>运行后文件1.txt
+<code>
+b
+b
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby Signal]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/07/ruby-signal/"/>
+    <updated>2013-11-07T18:40:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/07/ruby-signal</id>
+    <content type="html"><![CDATA[<h2>简单处理signal的例子</h2>
+
+<ul>
+<li><p>signal_test.rb文件
+<code>ruby
+while true
+trap("INT") {
+  puts "Quitting on INT signal."
+  exit
+}
+trap("QUIT") {
+  puts "Quitting on QUIT signal."
+  exit
+}
+trap("TERM") {
+  puts "U teminated me!"
+  exit
+}
+end
+</code></p></li>
+<li><p>运行一下命令
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Press ctrl + c
+</span><span class='line'>mac$ ruby signal_test.rb
+</span><span class='line'>^CQuitting on INT signal.&lt;/p&gt;&lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;Press ctrl + \
+</span><span class='line'>mac$ ruby signal_test.rb
+</span><span class='line'>^\Quitting on QUIT signal.&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;kill -TERM pid
+</span><span class='line'>mac$ ruby signal_test.rb
+</span><span class='line'>U teminated me!</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>Trap SIGCHLD信号的例子</h2>
+
+<ul>
+<li><p>sub.rb文件
+<code>ruby
+while true
+ sleep 3
+end
+</code></p></li>
+<li><p>signal_test.rb文件
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Signal</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ss">:CHLD</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nb">print</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">Child</span> <span class="n">process</span> <span class="n">is</span> <span class="n">teminated</span><span class="o">.</span><span class="p">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="sr">/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;IO.popen(&amp;ldquo;ruby sub.rb&amp;rdquo;) do |pipe|</span>
+</span><span class='line'><span class="sr">  print &amp;ldquo;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="sr">, popen return child process pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sr">\n&amp;rdquo;</span>
+</span><span class='line'><span class="sr">  Process.kill &amp;lsquo;TERM&amp;rsquo;, pipe.pid</span>
+</span><span class='line'><span class="sr">end</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<ul>
+<li>运行一下命令
+<code>
+parent pid: 3275, popen return child process pid: 3276
+Child process is teminated.
+</code></li>
+</ul>
+
+
+<h2>常用Signal的区别</h2>
+
+<p>SIGTERM和SIGKILL主要的目的就是用来结束一个进程。<br/>
+SIGTERM默认会结束一个进程，SIGKILL总是会结束一个进程。<br/>
+SIGTERM可以被进程trap，并进行相应处理；SIGKILL无法被trap或者忽略。</p>
+
+<p>SIGINT和SIGQUIT用来处理来自terminal的requests。<br/>
+特殊的terminal输入字符可以用来产生这些signal。SIGINT的默认处理和SIGTERM的默认处理相同。<br/>
+SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加的处理，比如生成core dump。这两个信号都可以被trap或者忽略。</p>
+
+<p>SIGHUP是用来处理terminal connection lost的问题，而不是结束一个进程。但是，SIGHUP的默认行为也SIGTERM一样，也是结束进程。</p>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/4042201/how-does-sigint-relate-to-the-other-termination-signals">How does termination signals related to each other</a><br/>
+<a href="http://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html">Signal header file with detailed description</a><br/>
+<a href="http://en.wikipedia.org/wiki/Signal_(computing">List of Unix signal</a>#List_of_signals)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby Popen Subprocess]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/07/ruby-popen-subprocess/"/>
+    <updated>2013-11-07T16:17:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/07/ruby-popen-subprocess</id>
+    <content type="html"><![CDATA[<p>Ruby有多种方法可以创建subprocess。当需要和subprocess的IO进行交互的时候，Ruby的popen方法是最合适的。</p>
+
+<ul>
+<li><p>sub.rb文件
+<code>ruby
+trap("INT") do
+  STDERR.puts "sub pid #{$$} Control-C"
+  exit 2
+end
+puts "#{$$}"
+STDOUT.flush
+sleep 10
+</code></p></li>
+<li><p>popen_sub.rb文件
+<code>ruby
+IO.popen("ruby sub.rb") do |pipe|
+puts "parent pid: #{$$}, popen return (child) pid: #{pipe.pid}"
+line = pipe.gets      # pid from child
+puts "child says it's pid is: "+line
+Process.kill 'INT', pipe.pid
+childs_last_word = pipe.gets
+if childs_last_word
+  puts "child's last word: " + childs_last_word
+end
+end
+puts "child's exit code: #{$?.exitstatus}"
+</code></p></li>
+<li><p>运行一下命令
+<code>
+[mac]$  ruby popen_sub.rb
+parent pid: 3046, popen return (child) pid: 3047
+child says it's pid is: 3047
+sub pid 3047 Control-C
+child's exit code: 2
+</code></p></li>
+</ul>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://blog.robseaman.com/2008/12/12/sending-ctrl-c-to-a-subprocess-with-ruby">sending ctrl c to a subprocess with ruby</a></p>
+]]></content>
+  </entry>
+  
+</feed>

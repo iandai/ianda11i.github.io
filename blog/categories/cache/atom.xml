@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Cache | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/cache/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-02-01T01:21:35+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Cache Expiration]]></title>
+    <link href="http://iandai.github.io/blog/2014/07/08/cache-expiration/"/>
+    <updated>2014-07-08T18:46:10+09:00</updated>
+    <id>http://iandai.github.io/blog/2014/07/08/cache-expiration</id>
+    <content type="html"><![CDATA[<h2>Cache过期</h2>
+
+<ul>
+<li><p>Key Based Cache Expiration<br/>
+  优点：
+      降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。
+  缺点：
+      适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法）
+      每次查询，都需要首先查询update_at字段。</p></li>
+<li><p>ORM模型回调接口删除cache（after_save, before_destroy, etc)<br/>
+  优点：
+      快。
+  缺点：
+      增加一定的代码复杂度。
+      若不是ORM模型的代码，需要手动添加回调接口。</p></li>
+<li><p>在代码中增加删除cache的代码<br/>
+  优点：
+      无。
+  缺点：
+      增加代码复杂度。      <br/>
+      如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
+</ul>
+
+
+<h2>参考文献</h2>
+
+<p><a href="http://octopress.org/docs/">octopress docs</a><br/>
+<a href="http://stackoverflow.com/editing-help">stackoverflow markdown help</a></p>
+]]></content>
+  </entry>
+  
+</feed>

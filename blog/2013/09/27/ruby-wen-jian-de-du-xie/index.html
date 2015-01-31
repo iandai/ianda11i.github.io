@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ruby文件的读写 - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="Basic 文件的关闭 当使用File.open打开文件的时候，block结束的时候，文件会自动关闭. File.open and File.new的关系 File.new后面不能加block。With no associated block, File.open is a synonym for &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2013/09/27/ruby-wen-jian-de-du-xie/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ruby文件的读写</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-09-27T23:40:00+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>11:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Basic</h2>
+
+<ol>
+<li>文件的关闭
+
+<ul>
+<li>当使用File.open打开文件的时候，block结束的时候，文件会自动关闭.</li>
+</ul>
+</li>
+<li>File.open and File.new的关系
+
+<ul>
+<li>File.new后面不能加block。With no associated block, File.open is a synonym for ::new.</li>
+</ul>
+</li>
+<li>Kernel.open和File.open的区别
+
+<ul>
+<li>Kernel.open除了打开文件之外，还可能打开其他内容，比如url。Kernel.open looks at the string to decide what to do with it.</li>
+</ul>
+</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;.irbrc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; File</span>
+</span><span class='line'><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;http://google.com/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; StringIO</span>
+</span><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;http://google.com/&quot;</span><span class="p">)</span> <span class="c1"># =&gt; Errno::ENOENT: No such file or directory - http://google.com/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>读文件</h2>
+
+<ul>
+<li>File的方式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>      <span class="c1">#=&gt; 最常用方式</span>
+</span><span class='line'> <span class="c1">#  IO class&#39;s instance method each_line equals to each.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file1</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+</span><span class='line'> <span class="c1"># File.new不能添加block。With no associated block, File.open is a synonym for ::new.    </span>
+</span><span class='line'><span class="n">file1</span><span class="o">.</span><span class="n">each_line</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">line</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">file1</span><span class="o">.</span><span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file2</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">while</span> <span class="n">line</span> <span class="o">=</span> <span class="n">file2</span><span class="o">.</span><span class="n">gets</span>    <span class="c1"># gets input from file, which means read from file</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">line</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">file2</span><span class="o">.</span><span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>IO的方式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># File.read reads a file completely and returns it as a string.</span>
+</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>
+</span><span class='line'> <span class="c1"># Reads the entire file specified by name as individual lines, and returns those lines in an array.</span>
+</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>写文件</h2>
+
+<p>1 常用方式 (preferred approach)</p>
+
+<pre><code>File.open("output.txt", "a+") { |file| file.puts "Hello World!"}   # 自动换行
+File.open("output.txt", "a+") { |file| writes "Hello World!\n"}   # 不会自动换行
+File.open("output.txt", "a+") { |file| file &lt;&lt; "Hello, world.\n"}   # 不会自动换行 
+</code></pre>
+
+<p>2 简单方式，一行写文件
+    File.write(&lsquo;output.txt&rsquo;, &lsquo;content&rsquo;)# 会将原来的内容删除，然后写入
+    IO.write(&ldquo;output.txt&rdquo;, new_line) # 会将原来的内容删除，然后写入</p>
+
+<p>3 Kernel.open方式</p>
+
+<pre><code>open('myfile.out', 'w') { |f|  f.puts "Hello, world."}
+</code></pre>
+
+<p>4 不使用block方式，需要使用ensure来关闭文件</p>
+
+<pre><code>begin 
+ file = File.open("/tmp/some_file", "w") 
+ file.write("your text") 
+rescue IOError =&gt; e #some error occur, dir not writable etc. 
+ensure 
+ file.close unless file == nil
+end
+</code></pre>
+
+<h2>将文件清空</h2>
+
+<pre><code> File.truncate("out.txt", 0)   #=&gt; 0
+ File.size("out")              #=&gt; 0
+</code></pre>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/1727217/file-open-open-and-io-foreach-in-ruby-what-is-the-difference">The difference of File.open ,open and IO.foreach in Ruby</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-09-27T23:40:00+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>11:40 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2013/09/27/ruby-wen-jian-de-du-xie/" data-via="" data-counturl="http://iandai.github.io/blog/2013/09/27/ruby-wen-jian-de-du-xie/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/11/07/ruby-popen-subprocess/" title="Next Post: Ruby popen subprocess">Ruby popen subprocess &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

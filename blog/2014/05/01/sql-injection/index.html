@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>SQL Injection - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="SQL 注入方法 SQL 扫描工具 sqlmap https://github.com/sqlmapproject/sqlmap/wiki/Screenshots
+SQL injection方法
+1 ‘ or 1 = 1 —
+2 select * from xxx where a = ‘123; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2014/05/01/sql-injection/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">SQL Injection</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-05-01T18:41:00+09:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>6:41 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>SQL 注入方法</h2>
+
+<ul>
+<li><p>SQL 扫描工具<br/>
+  sqlmap  <a href="https://github.com/sqlmapproject/sqlmap/wiki/Screenshots">https://github.com/sqlmapproject/sqlmap/wiki/Screenshots</a></p></li>
+<li><p>SQL injection方法<br/>
+1 ‘ or 1 = 1 —<br/>
+2 select * from xxx where a = ‘123;  输入非法内容，看是否有sql error返回。</p></li>
+<li><p>利用漏洞<br/>
+ereg()有bug，无法检测到\0之后的内容，有可能将注入的内容隐藏在\0的后面。</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s2">&quot;123</span><span class="se">\0\0</span><span class="s2">abc&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;source=[</span><span class="si">$a</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/123/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/abc/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">/// ereg cannot detect &quot;abc&quot; after &quot;\0&quot;, so you must not use raw source string!</span>
+</span><span class='line'><span class="c1">/// and you should not use ereg(). instead of it, use preg_match().</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>SQL注入的对策</h2>
+
+<ul>
+<li><p>输入<br/>
+1 不要信任用户的输入，包括cookie。对用户的输入进行校验。如果是数字，就转化为数字，而不是字符类型的数字。<br/>
+2 不要使用动态拼装sql，可以使用参数化的sql或者直接使用存储过程进行数据查询存取。</p></li>
+<li><p>权限<br/>
+1 不要使用有超级用户或其它有权创建新用户的数据库帐号来连接数据库，攻击者可以在数据库中新建一个超级用户。为每个应用使用单独的权限有限的数据库连接。<br/>
+2 删除不再需要的存储过程，例如：master..Xp_cmdshell, xp_startmail, xp_sendmail, sp_makewebtask.</p></li>
+<li><p>其他<br/>
+1 不要把机密信息直接存放，加密或者hash掉密码和敏感的信息。<br/>
+2 应用的异常信息应该给出尽可能少的提示，最好使用自定义的错误信息对原始错误信息进行包装。</p></li>
+</ul>
+
+
+<h3>参考链接</h3>
+
+<p><a href="http://www.php.net/manual/zh/security.database.sql-injection.php">PHP官方手册对策</a><br/>
+<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet">OWASP的SQL注入防止CheatSheet</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-05-01T18:41:00+09:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>6:41 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/sql/'>sql</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2014/05/01/sql-injection/" data-via="" data-counturl="http://iandai.github.io/blog/2014/05/01/sql-injection/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/08/css-notes/" title="Previous Post: CSS NOTES">&laquo; CSS NOTES</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/07/08/cache-expiration/" title="Next Post: Cache Expiration">Cache Expiration &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

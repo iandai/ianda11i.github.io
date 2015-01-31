@@ -1,0 +1,725 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="Ways to use crontab crobtab -e 当前用户环境下运行的cron
+sudo vi /etc/crontab 在系统环境下运行的cron，所有用户都可以使用
+/etc/cron.d/ 将文件放在该目录下，系统则会自动运行 Example: backup mysql &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/posts/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/08/crontab-1-basic-usage/">Crontab(1):Basic Usage</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-08T19:04:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:04 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Ways to use crontab</h2>
+
+<ul>
+<li>crobtab -e  当前用户环境下运行的cron</li>
+<li>sudo vi /etc/crontab    在系统环境下运行的cron，所有用户都可以使用</li>
+<li>/etc/cron.d/  将文件放在该目录下，系统则会自动运行</li>
+</ul>
+
+
+<h2>Example: backup mysql every day</h2>
+
+<ul>
+<li><p>step1</p>
+
+<p>创建保存备份文件的路径/mysqldata </br>
+<code>
+  mkdir /var/www/mysqldata
+ </code></p></li>
+<li><p>step2</p>
+
+<p>创建/usr/sbin/bakmysql文件,写入以下代码 </br>
+<code>
+  /usr/bin/mysqldump production -u root -p password | gzip -c | cat &gt; /var/www/mysqldata/production$(date +\%Y-\%m-\%d-\%H.\%M.\%S).sql.gz &gt;/dev/null 2&gt;&amp;1
+</code>
+  注意：</br>
+  1）备份数据库mysqldump必须要完整路径！！！！</br>
+  2）date后面的％前必须加\，因为在crontab中％代表new line 。所以最好的方式是在crontab里运行一个脚本，然后在脚本里加上Path。</p></li>
+<li><p>step 3</p>
+
+<p>  修改文件属性，使其可执行</br>
+<code>
+  chmod +x /usr/sbin/bakmysql
+</code></p></li>
+<li><p>step 4</p>
+
+<p>修改crontab -e,下面添加一下代码,每天3点钟执行备份</br>
+  <code>
+  01 3 * * * root /usr/sbin/bakmysql &gt;&gt; /dev/null 2&gt;&amp;1 （&gt;&gt; /dev/null 2&gt;&amp;1 用于防止log过多）
+ </code></p></li>
+<li><p>step 5</p>
+
+<p>每天你在/var/www/mysqldata可以看到这样的文件mysql20040619.tar.gz</p></li>
+<li><p>step 6</p>
+
+<p>  远程复制到桌面
+  <code>
+  scp g_dai@ip:/var/www/mysqldata/sqldata2013-01-29-15.06.22.sql.gz ~/Desktop/
+</code></p></li>
+<li><p>step 7</p>
+
+<p>  从桌面import到mysql
+  <code>
+mysql -u root -p
+show databases;
+source ~/Desktop/sqldata2013-01-29-15.06.22.sql
+</code></p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/08/crontab/">Crontab(2):环境变量 Environment Variables</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-08T18:04:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>6:04 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>导出crontab的环境变量</h2>
+
+<p>Add this to your cron:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>30 08 * * * env &gt; ~/cronenv</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>在bash中加载crontab的环境变量</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>env - `cat ~/cronenv` /bin/sh</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>在crontab中添加UTF-8 encoding环境变量</h2>
+
+<p>在crontab -e中所有需要运行的shell command前面添加</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>LANG=en_US.UTF-8
+</span><span class='line'>30 09 * * * /home/convertor/.rvm/rubies/ruby-1.9.3-p429/bin/ruby /home/convertor/bv_data_converter/lib/backup_remider.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Crontab中加载rvm环境</h2>
+
+<p><a href="http://rvm.io/integration/cron">Load rvm in crontab</a></p>
+
+<h2>Crontab的运行log</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo tail /var/log/cron </span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-executes-a-script-with">How to simulate the environment cron executes a script with</a></br>
+<a href="http://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use">Set environment variables in crontab</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/07/ruby-signal/">Ruby Signal</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-07T18:40:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>6:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>简单处理signal的例子</h2>
+
+<ul>
+<li>signal_test.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
+</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;INT&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on INT signal.&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;QUIT&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on QUIT signal.&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;TERM&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;U teminated me!&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>运行一下命令</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="n">c</span>
+</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="o">^</span><span class="no">CQuitting</span> <span class="n">on</span> <span class="no">INT</span> <span class="n">signal</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="p">\</span>
+</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="o">^</span><span class="p">\</span><span class="no">Quitting</span> <span class="n">on</span> <span class="no">QUIT</span> <span class="n">signal</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">kill</span> <span class="o">-</span><span class="no">TERM</span> <span class="n">pid</span>
+</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="n">U</span> <span class="n">teminated</span> <span class="n">me!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Trap SIGCHLD信号的例子</h2>
+
+<ul>
+<li>sub.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
+</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">3</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>signal_test.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Signal</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ss">:CHLD</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">print</span> <span class="s2">&quot;Child process is teminated.</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ruby sub.rb&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">pipe</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">, popen return child process pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;TERM&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">pid</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>运行一下命令</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">parent</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3275</span><span class="p">,</span> <span class="n">popen</span> <span class="k">return</span> <span class="n">child</span> <span class="n">process</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3276</span>
+</span><span class='line'><span class="no">Child</span> <span class="n">process</span> <span class="n">is</span> <span class="n">teminated</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>常用Signal的区别</h2>
+
+<p>SIGTERM和SIGKILL主要的目的就是用来结束一个进程。<br/>
+SIGTERM默认会结束一个进程，SIGKILL总是会结束一个进程。<br/>
+SIGTERM可以被进程trap，并进行相应处理；SIGKILL无法被trap或者忽略。</p>
+
+<p>SIGINT和SIGQUIT用来处理来自terminal的requests。<br/>
+特殊的terminal输入字符可以用来产生这些signal。SIGINT的默认处理和SIGTERM的默认处理相同。<br/>
+SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加的处理，比如生成core dump。这两个信号都可以被trap或者忽略。</p>
+
+<p>SIGHUP是用来处理terminal connection lost的问题，而不是结束一个进程。但是，SIGHUP的默认行为也SIGTERM一样，也是结束进程。</p>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/4042201/how-does-sigint-relate-to-the-other-termination-signals">How does termination signals related to each other</a><br/>
+<a href="http://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html">Signal header file with detailed description</a><br/>
+<a href="http://en.wikipedia.org/wiki/Signal_(computing">List of Unix signal</a>#List_of_signals)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/07/ruby-popen-subprocess/">Ruby Popen Subprocess</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-07T16:17:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>4:17 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Ruby有多种方法可以创建subprocess。当需要和subprocess的IO进行交互的时候，Ruby的popen方法是最合适的。</p>
+
+<ul>
+<li>sub.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;INT&quot;</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;sub pid </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2"> Control-C&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">2</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="no">STDOUT</span><span class="o">.</span><span class="n">flush</span>
+</span><span class='line'><span class="nb">sleep</span> <span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>popen_sub.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ruby sub.rb&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">pipe</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">, popen return (child) pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="n">line</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">gets</span>      <span class="c1"># pid from child</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;child says it&#39;s pid is: &quot;</span><span class="o">+</span><span class="n">line</span>
+</span><span class='line'>  <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;INT&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">pid</span>
+</span><span class='line'>  <span class="n">childs_last_word</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">gets</span>
+</span><span class='line'>  <span class="k">if</span> <span class="n">childs_last_word</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;child&#39;s last word: &quot;</span> <span class="o">+</span> <span class="n">childs_last_word</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;child&#39;s exit code: </span><span class="si">#{</span><span class="vg">$?</span><span class="o">.</span><span class="n">exitstatus</span><span class="si">}</span><span class="s2">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>运行一下命令</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">[</span><span class="n">mac</span><span class="o">]</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">popen_sub</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="n">parent</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3046</span><span class="p">,</span> <span class="n">popen</span> <span class="k">return</span> <span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3047</span>
+</span><span class='line'><span class="n">child</span> <span class="n">says</span> <span class="n">it</span><span class="s1">&#39;s pid is: 3047</span>
+</span><span class='line'><span class="s1">sub pid 3047 Control-C</span>
+</span><span class='line'><span class="s1">child&#39;</span><span class="n">s</span> <span class="nb">exit</span> <span class="ss">code</span><span class="p">:</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://blog.robseaman.com/2008/12/12/sending-ctrl-c-to-a-subprocess-with-ruby">sending ctrl c to a subprocess with ruby</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/27/ruby-wen-jian-de-du-xie/">Ruby文件的读写</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-09-27T23:40:00+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>11:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Basic</h2>
+
+<ol>
+<li>文件的关闭
+
+<ul>
+<li>当使用File.open打开文件的时候，block结束的时候，文件会自动关闭.</li>
+</ul>
+</li>
+<li>File.open and File.new的关系
+
+<ul>
+<li>File.new后面不能加block。With no associated block, File.open is a synonym for ::new.</li>
+</ul>
+</li>
+<li>Kernel.open和File.open的区别
+
+<ul>
+<li>Kernel.open除了打开文件之外，还可能打开其他内容，比如url。Kernel.open looks at the string to decide what to do with it.</li>
+</ul>
+</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;.irbrc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; File</span>
+</span><span class='line'><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;http://google.com/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; StringIO</span>
+</span><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;http://google.com/&quot;</span><span class="p">)</span> <span class="c1"># =&gt; Errno::ENOENT: No such file or directory - http://google.com/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>读文件</h2>
+
+<ul>
+<li>File的方式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>      <span class="c1">#=&gt; 最常用方式</span>
+</span><span class='line'> <span class="c1">#  IO class&#39;s instance method each_line equals to each.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file1</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+</span><span class='line'> <span class="c1"># File.new不能添加block。With no associated block, File.open is a synonym for ::new.    </span>
+</span><span class='line'><span class="n">file1</span><span class="o">.</span><span class="n">each_line</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">line</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">file1</span><span class="o">.</span><span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file2</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">while</span> <span class="n">line</span> <span class="o">=</span> <span class="n">file2</span><span class="o">.</span><span class="n">gets</span>    <span class="c1"># gets input from file, which means read from file</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="n">line</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">file2</span><span class="o">.</span><span class="n">close</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>IO的方式</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>  <span class="c1"># File.read reads a file completely and returns it as a string.</span>
+</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>
+</span><span class='line'> <span class="c1"># Reads the entire file specified by name as individual lines, and returns those lines in an array.</span>
+</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>写文件</h2>
+
+<p>1 常用方式 (preferred approach)</p>
+
+<pre><code>File.open("output.txt", "a+") { |file| file.puts "Hello World!"}   # 自动换行
+File.open("output.txt", "a+") { |file| writes "Hello World!\n"}   # 不会自动换行
+File.open("output.txt", "a+") { |file| file &lt;&lt; "Hello, world.\n"}   # 不会自动换行 
+</code></pre>
+
+<p>2 简单方式，一行写文件
+    File.write(&lsquo;output.txt&rsquo;, &lsquo;content&rsquo;)# 会将原来的内容删除，然后写入
+    IO.write(&ldquo;output.txt&rdquo;, new_line) # 会将原来的内容删除，然后写入</p>
+
+<p>3 Kernel.open方式</p>
+
+<pre><code>open('myfile.out', 'w') { |f|  f.puts "Hello, world."}
+</code></pre>
+
+<p>4 不使用block方式，需要使用ensure来关闭文件</p>
+
+<pre><code>begin 
+ file = File.open("/tmp/some_file", "w") 
+ file.write("your text") 
+rescue IOError =&gt; e #some error occur, dir not writable etc. 
+ensure 
+ file.close unless file == nil
+end
+</code></pre>
+
+<h2>将文件清空</h2>
+
+<pre><code> File.truncate("out.txt", 0)   #=&gt; 0
+ File.size("out")              #=&gt; 0
+</code></pre>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/1727217/file-open-open-and-io-foreach-in-ruby-what-is-the-difference">The difference of File.open ,open and IO.foreach in Ruby</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/index.html">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

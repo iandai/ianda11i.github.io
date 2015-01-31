@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Apache | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/apache/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-02-01T01:21:35+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Apache Server on MacOS Using .htaccess]]></title>
+    <link href="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-htaccess/"/>
+    <updated>2013-12-04T15:49:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-htaccess</id>
+    <content type="html"><![CDATA[<h3>检测Apache是否支持mod_rewrite</h3>
+
+<p>在httpd.conf文件中的Loaded Modules，是否包含了mod_rewrite模块；如果没有的话，去除这部分的注释。</p>
+
+<h3>让apache服务器支持.htaccess</h3>
+
+<p>在httpd.conf中的DocumentRoot的Directory中，AllowOverride修改为All。</p>
+
+<pre><code>&lt;Directory "/Library/WebServer/Documents"&gt;
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+&lt;/Directory&gt;
+</code></pre>
+
+<pre><code>&lt;Directory "/Library/WebServer/Documents"&gt;
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+&lt;/Directory&gt;
+</code></pre>
+
+<h3>在/Library/WebServer/Documents中建立.htaccess 文件</h3>
+
+<pre><code>RewriteEngine on
+RewriteRule ([a-zA-Z]{1,})-([0-9]{1,}).html$ index.php?action=$1&amp;id=$2
+</code></pre>
+
+<p>建立index.php文件
+<code>php
+&lt;?php
+echo ‘你的Action是：’ . $_GET['action'];
+echo ‘&lt;br/&gt;’;
+echo ‘你的ID是：’ . $_GET['id'];
+?&gt;
+</code></p>
+
+<pre><code>在浏览器中输入：localhost/view-12.html
+输出的是：
+你的Action是：view
+你的ID是：12
+</code></pre>
+
+<h3>Referance</h3>
+
+<p><a href="http://httpd.apache.org/docs/current/howto/htaccess.html">Apache htaccess doc</a></br>
+<a href="http://blog.csdn.net/Yuhao818/article/details/4680075">Apache htaccess tutorial</a></br>
+<a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">Apache mod_rewirte doc</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Apache Server on MacOS Using Alias]]></title>
+    <link href="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias/"/>
+    <updated>2013-12-04T15:48:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias</id>
+    <content type="html"><![CDATA[<ul>
+<li>检查httpd服务是否在运行，不存在的话需要启动.<br/>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo lsof -iTCP:80 -sTCP:LISTEN  -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
+</span><span class='line'>sudo apachectl start&lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;MacOS  apache path（&lt;a href="http://wiki.apache.org/httpd/DistrosDefaultLayout%EF%BC%89"&gt;http://wiki.apache.org/httpd/DistrosDefaultLayout%EF%BC%89&lt;/a&gt;
+</span><span class='line'>ServerRoot              ::      /usr
+</span><span class='line'>Primary Config Fle      ::      /etc/apache2/httpd.conf
+</span><span class='line'>DocumentRoot            ::      /Library/WebServer/Documents
+</span><span class='line'>ErrorLog                ::      /var/log/apache2/error_log
+</span><span class='line'>AccessLog               ::      /var/log/apache2/access_log
+</span><span class='line'>cgi-bin                 ::      /Library/WebServer/CGI-Executables (empty by default)
+</span><span class='line'>binary                  ::      /usr/sbin/httpd
+</span><span class='line'>start/stop              ::      /usr/sbin/   (start|stop|restart|fullstatus|status|graceful|graceful-stop|configtest|help)</span></code></pre></td></tr></table></div></figure></p>
+
+<ul>
+<li><p>在Users/g_dai/codes/site文件夹中建立project，创建文件1.html，并写入内容Hello world.</p></li>
+<li><p>在DocumentRoot /Library/WebServer/Documents中创建文件夹docs.</p></li>
+<li><p>在httpd.conf中写入，注意/docs 后面没有slash.
+<code>
+Alias /docs Users/g_dai/codes/site
+&lt;Directory Users/g_dai/codes/site&gt; (保证这个folder可以被apache访问）
+  Order allow,deny
+  Allow from all
+&lt;/Directory&gt;
+</code></p></li>
+</ul>
+
+
+<h4>Referance</h4>
+
+<p><a href="http://httpd.apache.org/docs/2.2/mod/mod_alias.html">Apache mod_alias</a></p>
+]]></content>
+  </entry>
+  
+</feed>

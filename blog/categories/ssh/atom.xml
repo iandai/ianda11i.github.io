@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ssh | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/ssh/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-02-01T01:21:35+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[SSH Port Forward/Tunnel]]></title>
+    <link href="http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel/"/>
+    <updated>2014-03-18T13:38:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel</id>
+    <content type="html"><![CDATA[<h3>Agent Forwarding</h3>
+
+<p>A - B - C 在从A访问C过程中经过B，但是不用在B上安装私钥，叫做Agent Forwarding</p>
+
+<p>We have also seen another type of SSH forwarding, agent forwarding. [Section 6.3.5] This let us
+create SSH connections from one computer, through a second computer, and onto a third using
+public-key authentication, but without installing our private key on the second machine.</p>
+
+<h3>Port Forwarding, also names as tunneliing</h3>
+
+<p>A - B 之间使用例如TCP/IP这种不安全的协议的时候，在TCP/IP协议之中，增加一个安全的通道</p>
+
+<p>Port forwarding is sometimes called tunneling because the SSH connection provides a secure &ldquo;tunnel&rdquo; through which another TCP/IP connection may pass.
+SSH uses TCP/IP as its transport mechanism, usually TCP port 22 on the server machine, as it encrypts and decrypts the traffic passing over the connection.</p>
+
+<h3>Local Port Forwarding and Remote Port Forwarding</h3>
+
+<p>Local Port Forwarding—In most cases, local port forwarding is used to forward data securely from another
+client application running on the same computer as the Secure Shell client. The Secure Shell client is
+configured to redirect data from a specified local port (on the same computer as the Secure Shell client),
+through the secure tunnel to a specified destination host and port. You can configure any other client
+running on the same computer to connect to the forwarded port (rather than directly to the destination
+host and port). After the Secure Shell connection is established, the Secure Shell client listens on the
+specified port and redirects all data sent to that port through the secure tunnel to the Secure Shell
+server. The server decrypts the data, and then directs it to the destination host and port.</p>
+
+<p>Remote Port Forwarding—Remote port forwarding is used to forward data securely from any client
+application running on the same computer as the Secure Shell server. In this case, the client session
+requests that a specified remote port (on the same computer as the Secure Shell server) be used to
+redirect the data. You can configure any other client running on the same computer as the Secure Shell
+server to connect to the forwarded port (rather than directly to the destination host and port). After the
+Secure Shell connection is established, the Secure Shell server listens on the specified port and redirects
+all data sent to that port through the secure tunnel to the Secure Shell client. The client decrypts the
+data and then directs it to the destination host and port.</p>
+
+<h3>多阶段Port Forwarding/Tunnelling</h3>
+
+<p><a href="http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops">http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops</a></p>
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.amazon.com/SSH-The-Secure-Shell-Definitive/dp/0596008953">SSH, The Secure Shell - The Definitive Guide | Chapter Port Forwarding and X Forwarding</a></br></p>
+]]></content>
+  </entry>
+  
+</feed>

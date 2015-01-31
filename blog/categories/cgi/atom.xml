@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Cgi | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/cgi/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-02-01T01:21:35+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Run Ruby CGI Scripts With Apache]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/"/>
+    <updated>2013-11-15T19:34:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache</id>
+    <content type="html"><![CDATA[<h2>CGI Scripts on server</h2>
+
+<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
+
+<pre><code> #!/bin/env ruby
+ print "Content-type: text/html\r\n\r\n"
+ print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"
+</code></pre>
+
+<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
+
+<p>CGI 设置的要点：<br/>
+The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
+The MIME media type must be the first output of your CGI script.<br/>
+A blank line follows the MIME media type.<br/>
+The CGI script must have the correct permissions.</p>
+
+<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
+<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
+
+<h2>Config apache to support running CGI</h2>
+
+<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
+
+<h2>Send parameters with get and post in ruby on client</h2>
+
+<pre><code class="ruby">require 'net/http'
+
+host = "…."       #*******.ap-northeast-1.compute.amazonaws.com
+port = 80
+
+Net::HTTP.version_1_2
+Net::HTTP.start(host, port) do |http|
+  response = http.get("/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI")
+  puts "Get request's parameters: #{response.body} "
+end
+</code></pre>
+
+<pre><code class="ruby">net = Net::HTTP.new(host, port)
+params = {:name =&gt; 'doris', :email =&gt; 'doris@foo.com'}
+
+ # Create HTTP request
+req = Net::HTTP::Post.new( '/cgi-bin/ruby.cgi', {} )
+req.set_form_data params
+
+ # Send request
+response = net.start do |http|
+  http.read_timeout = 5600
+  http.request req
+end
+
+puts "Post request's parameters: #{response.body} "
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

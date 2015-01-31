@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Server on MacOS Using Alias - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="检查httpd服务是否在运行，不存在的话需要启动. 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+sudo lsof -iTCP:80 -sTCP:LISTEN -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
+sudo apachectl start &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Apache Server on MacOS Using Alias</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-12-04T15:48:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>3:48 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+<li>检查httpd服务是否在运行，不存在的话需要启动.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo lsof -iTCP:80 -sTCP:LISTEN  -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
+</span><span class='line'>sudo apachectl start
+</span><span class='line'>
+</span><span class='line'>MacOS  apache path（http://wiki.apache.org/httpd/DistrosDefaultLayout）
+</span><span class='line'>ServerRoot              ::      /usr
+</span><span class='line'>Primary Config Fle      ::      /etc/apache2/httpd.conf
+</span><span class='line'>DocumentRoot            ::      /Library/WebServer/Documents
+</span><span class='line'>ErrorLog                ::      /var/log/apache2/error_log
+</span><span class='line'>AccessLog               ::      /var/log/apache2/access_log
+</span><span class='line'>cgi-bin                 ::      /Library/WebServer/CGI-Executables (empty by default)
+</span><span class='line'>binary                  ::      /usr/sbin/httpd
+</span><span class='line'>start/stop              ::      /usr/sbin/     (start|stop|restart|fullstatus|status|graceful|graceful-stop|configtest|help)</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>在Users/g_dai/codes/site文件夹中建立project，创建文件1.html，并写入内容Hello world.</p></li>
+<li><p>在DocumentRoot /Library/WebServer/Documents中创建文件夹docs.</p></li>
+<li><p>在httpd.conf中写入，注意/docs 后面没有slash.</p></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Alias /docs Users/g_dai/codes/site
+</span><span class='line'>&lt;Directory Users/g_dai/codes/site&gt; (保证这个folder可以被apache访问）
+</span><span class='line'>    Order allow,deny
+</span><span class='line'>    Allow from all
+</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Referance</h4>
+
+<p><a href="http://httpd.apache.org/docs/2.2/mod/mod_alias.html">Apache mod_alias</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-12-04T15:48:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>3:48 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apache/'>apache</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias/" data-via="" data-counturl="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/" title="Previous Post: Run ruby CGI Scripts with Apache">&laquo; Run ruby CGI Scripts with Apache</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/04/apache-server-on-macos-using-htaccess/" title="Next Post: Apache server on MacOS using .htaccess">Apache server on MacOS using .htaccess &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

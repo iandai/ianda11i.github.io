@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>SSH Port Forward/Tunnel - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="Agent Forwarding A - B - C 在从A访问C过程中经过B，但是不用在B上安装私钥，叫做Agent Forwarding We have also seen another type of SSH forwarding, agent forwarding. [Section 6 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">SSH Port Forward/Tunnel</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-03-18T13:38:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:38 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Agent Forwarding</h3>
+
+<p>A - B - C 在从A访问C过程中经过B，但是不用在B上安装私钥，叫做Agent Forwarding</p>
+
+<p>We have also seen another type of SSH forwarding, agent forwarding. [Section 6.3.5] This let us
+create SSH connections from one computer, through a second computer, and onto a third using
+public-key authentication, but without installing our private key on the second machine.</p>
+
+<h3>Port Forwarding, also names as tunneliing</h3>
+
+<p>A - B 之间使用例如TCP/IP这种不安全的协议的时候，在TCP/IP协议之中，增加一个安全的通道</p>
+
+<p>Port forwarding is sometimes called tunneling because the SSH connection provides a secure &ldquo;tunnel&rdquo; through which another TCP/IP connection may pass.
+SSH uses TCP/IP as its transport mechanism, usually TCP port 22 on the server machine, as it encrypts and decrypts the traffic passing over the connection.</p>
+
+<h3>Local Port Forwarding and Remote Port Forwarding</h3>
+
+<p>Local Port Forwarding—In most cases, local port forwarding is used to forward data securely from another
+client application running on the same computer as the Secure Shell client. The Secure Shell client is
+configured to redirect data from a specified local port (on the same computer as the Secure Shell client),
+through the secure tunnel to a specified destination host and port. You can configure any other client
+running on the same computer to connect to the forwarded port (rather than directly to the destination
+host and port). After the Secure Shell connection is established, the Secure Shell client listens on the
+specified port and redirects all data sent to that port through the secure tunnel to the Secure Shell
+server. The server decrypts the data, and then directs it to the destination host and port.</p>
+
+<p>Remote Port Forwarding—Remote port forwarding is used to forward data securely from any client
+application running on the same computer as the Secure Shell server. In this case, the client session
+requests that a specified remote port (on the same computer as the Secure Shell server) be used to
+redirect the data. You can configure any other client running on the same computer as the Secure Shell
+server to connect to the forwarded port (rather than directly to the destination host and port). After the
+Secure Shell connection is established, the Secure Shell server listens on the specified port and redirects
+all data sent to that port through the secure tunnel to the Secure Shell client. The client decrypts the
+data and then directs it to the destination host and port.</p>
+
+<h3>多阶段Port Forwarding/Tunnelling</h3>
+
+<p><a href="http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops">http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops</a></p>
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.amazon.com/SSH-The-Secure-Shell-Definitive/dp/0596008953">SSH, The Secure Shell - The Definitive Guide | Chapter Port Forwarding and X Forwarding</a></br></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-03-18T13:38:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:38 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/port-forward/'>port forward</a>, <a class='category' href='/blog/categories/ssh/'>ssh</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel/" data-via="" data-counturl="http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/" title="Previous Post: Rspec Test Principle - Test only your own code">&laquo; Rspec Test Principle - Test only your own code</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/08/css-notes/" title="Next Post: CSS NOTES">CSS NOTES &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

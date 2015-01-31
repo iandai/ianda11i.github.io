@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ruby Signal - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="简单处理signal的例子 signal_test.rb文件 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+while true trap(&quot;INT&quot;) { puts &quot;Quitting on INT signal.&quot; exit } &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2013/11/07/ruby-signal/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ruby Signal</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-07T18:40:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>6:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>简单处理signal的例子</h2>
+
+<ul>
+<li>signal_test.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
+</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;INT&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on INT signal.&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;QUIT&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on QUIT signal.&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;TERM&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;U teminated me!&quot;</span>
+</span><span class='line'>    <span class="nb">exit</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>运行一下命令</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="n">c</span>
+</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="o">^</span><span class="no">CQuitting</span> <span class="n">on</span> <span class="no">INT</span> <span class="n">signal</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="p">\</span>
+</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="o">^</span><span class="p">\</span><span class="no">Quitting</span> <span class="n">on</span> <span class="no">QUIT</span> <span class="n">signal</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">kill</span> <span class="o">-</span><span class="no">TERM</span> <span class="n">pid</span>
+</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
+</span><span class='line'><span class="n">U</span> <span class="n">teminated</span> <span class="n">me!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Trap SIGCHLD信号的例子</h2>
+
+<ul>
+<li>sub.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
+</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">3</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>signal_test.rb文件</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Signal</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ss">:CHLD</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nb">print</span> <span class="s2">&quot;Child process is teminated.</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ruby sub.rb&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">pipe</span><span class="o">|</span>
+</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">, popen return child process pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;TERM&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">pid</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>运行一下命令</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">parent</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3275</span><span class="p">,</span> <span class="n">popen</span> <span class="k">return</span> <span class="n">child</span> <span class="n">process</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3276</span>
+</span><span class='line'><span class="no">Child</span> <span class="n">process</span> <span class="n">is</span> <span class="n">teminated</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>常用Signal的区别</h2>
+
+<p>SIGTERM和SIGKILL主要的目的就是用来结束一个进程。<br/>
+SIGTERM默认会结束一个进程，SIGKILL总是会结束一个进程。<br/>
+SIGTERM可以被进程trap，并进行相应处理；SIGKILL无法被trap或者忽略。</p>
+
+<p>SIGINT和SIGQUIT用来处理来自terminal的requests。<br/>
+特殊的terminal输入字符可以用来产生这些signal。SIGINT的默认处理和SIGTERM的默认处理相同。<br/>
+SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加的处理，比如生成core dump。这两个信号都可以被trap或者忽略。</p>
+
+<p>SIGHUP是用来处理terminal connection lost的问题，而不是结束一个进程。但是，SIGHUP的默认行为也SIGTERM一样，也是结束进程。</p>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/4042201/how-does-sigint-relate-to-the-other-termination-signals">How does termination signals related to each other</a><br/>
+<a href="http://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html">Signal header file with detailed description</a><br/>
+<a href="http://en.wikipedia.org/wiki/Signal_(computing">List of Unix signal</a>#List_of_signals)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-11-07T18:40:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>6:40 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2013/11/07/ruby-signal/" data-via="" data-counturl="http://iandai.github.io/blog/2013/11/07/ruby-signal/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/11/07/ruby-popen-subprocess/" title="Previous Post: Ruby popen subprocess">&laquo; Ruby popen subprocess</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/11/08/crontab/" title="Next Post: Crontab(2):环境变量 environment variables">Crontab(2):环境变量 environment variables &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
