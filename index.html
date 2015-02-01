@@ -9,10 +9,7 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Steps Apply Google Map Api Key
-Import GoogleMaps.bundle in GoogleMaps.framework
-In Other Linker Flags section, add -ObjC
-In AppDelegate . #import &lt &hellip;">
+  <meta name="description" content="A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +71,305 @@ In AppDelegate . #import &lt &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-01T02:07:59+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>2:07 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
+
+<p>Rails fragment caching code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="o">&lt;</span><span class="sx">% cache </span><span class="k">do</span> <span class="sx">%&gt;</span>
+</span><span class='line'><span class="sx">  &lt;% end %&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple.<br/>
+But where is <code>cache</code> from?</p>
+
+<p>With a search of Rails api, We can find that it is a helper from ActionView::Helpers::CacheHelper.</p>
+
+<p>Reading the api, we still have no clue about how does this <code>cache</code> helper method calls the memcached store.
+So let&rsquo;s started to read source.</p>
+
+<p>First, open file actionview/lib/action_view/helpers/cache_helper.rb. We can find following cache method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">perform_caching</span>
+</span><span class='line'>      <span class="n">safe_concat</span><span class="p">(</span><span class="n">fragment_for</span><span class="p">(</span><span class="n">cache_fragment_name</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">),</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">yield</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We notice there is a <code>fragment_for</code> method, let&rsquo;s see where it leads us.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What does <code>read_fragment_for</code> method do?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">controller</span><span class="o">.</span><span class="n">read_fragment</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So <code>read_fragment_for</code> method leads us to a <code>read_fragment</code> method belongs to an object called <code>controller</code>.<br/>
+Where does this <code>controller</code> object comes from?<br/>
+It is actually an attribute reader and writer backed by an internally-named instance variable.<br/>
+It is define in actionview/lib/action_view/helpers/controller_helper.rb file.<br/>
+And it is initiated in actionview/lib/action_view/base.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionView</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Helpers</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">ControllerHelper</span>
+</span><span class='line'>        <span class="n">attr_internal</span> <span class="ss">:controller</span><span class="p">,</span> <span class="ss">:request</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">assign_controller</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="vi">@_controller</span> <span class="o">=</span> <span class="n">controller</span>
+</span><span class='line'>            <span class="vi">@_request</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">request</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:request</span><span class="p">)</span>
+</span><span class='line'>            <span class="vi">@_config</span>  <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inheritable_copy</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:config</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s come back to <code>read_fragment</code> method.
+In actionpack/lib/action_controller/caching/fragments.rb file, we find this method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionController</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Caching</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">Fragments</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">read_fragment</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">unless</span> <span class="n">cache_configured?</span>
+</span><span class='line'>          <span class="n">key</span> <span class="o">=</span> <span class="n">fragment_cache_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">instrument_fragment_cache</span> <span class="ss">:read_fragment</span><span class="p">,</span> <span class="n">key</span> <span class="k">do</span>
+</span><span class='line'>            <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">result</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:html_safe</span><span class="p">)</span> <span class="p">?</span> <span class="n">result</span><span class="o">.</span><span class="n">html_safe</span> <span class="p">:</span> <span class="n">result</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We are closer, because we see this line.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where is <code>cache_store</code> defined? We can find following code in actionpack/lib/action_controller/caching.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span><span class="o">=</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span> <span class="o">=</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">.</span><span class="n">lookup_store</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, in activesupport/lib/active_support/cache.rb filem, we find <code>lookup_store</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">lookup_store</span><span class="p">(</span><span class="o">*</span><span class="n">store_option</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">store</span><span class="p">,</span> <span class="o">*</span><span class="n">parameters</span> <span class="o">=</span> <span class="o">*</span><span class="nb">Array</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">store_option</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">case</span> <span class="n">store</span>
+</span><span class='line'>    <span class="k">when</span> <span class="no">Symbol</span>
+</span><span class='line'>      <span class="n">retrieve_store_class</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">*</span><span class="n">parameters</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">when</span> <span class="kp">nil</span>
+</span><span class='line'>      <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">::</span><span class="no">MemoryStore</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">store</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>An abstract cache store class alse defined in same file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">class</span> <span class="nc">Store</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">options</span> <span class="o">=</span> <span class="n">merged_options</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">key</span> <span class="o">=</span> <span class="n">namespaced_key</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">instrument</span><span class="p">(</span><span class="ss">:read</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">payload</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">entry</span> <span class="o">=</span> <span class="n">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">entry</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">expired?</span>
+</span><span class='line'>            <span class="n">delete_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="kp">nil</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="n">entry</span><span class="o">.</span><span class="n">value</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>          <span class="kp">nil</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In activesupport/lib/active_support/cache/mem_cache_store.rb file, <code>read_entry</code> is implemented.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1"># :nodoc:</span>
+</span><span class='line'>    <span class="n">deserialize_entry</span><span class="p">(</span><span class="vi">@data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">escape_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">options</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Dalli</span><span class="o">::</span><span class="no">DalliError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;DalliError (</span><span class="si">#{</span><span class="n">e</span><span class="si">}</span><span class="s2">): </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">logger</span>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is how fragment cache works in rails.</p>
+
+<p>(完)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a></h1>
     
     
@@ -93,19 +389,26 @@ In AppDelegate . #import &lt &hellip;">
   <div class="entry-content"><h2>Steps</h2>
 
 <ol>
-<li>Apply Google Map Api Key</li>
-<li>Import GoogleMaps.bundle in GoogleMaps.framework</li>
-<li>In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
-<li><p>In <code>AppDelegate</code> .</p>
-
-<pre><code class="`sh"> #import &lt;GoogleMaps/GoogleMaps.h&gt;
- - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
- {
-     [GMSServices provideAPIKey:@"API_KEY"];
-     return YES;
- }
-</code></pre></li>
+<li> Apply Google Map Api Key</li>
+<li> Import GoogleMaps.bundle in GoogleMaps.framework</li>
+<li> In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
+<li> In <code>AppDelegate</code></li>
 </ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="bp">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">GMSServices</span> <span class="nl">provideAPIKey</span><span class="p">:</span><span class="s">@&quot;API_KEY&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Possible issues</h2>
@@ -116,67 +419,122 @@ In AppDelegate . #import &lt &hellip;">
  <code>sh
  -force_load $(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps
 </code></li>
-<li><p>Delay when load maps. When user click to access maps view, app will fetch location data from server. This process takes time and map will have a moment stop at the position of starting position. This will confuse user and thought maps is not working properly.
-Solution is to preload data that is near the really location, so google maps will do the animation. Since the animation will take a while, during which time, another thread will fetch the data and then show the correct location.</p>
+<li>Delay when load maps. When user click to access maps view, app will fetch location data from server. This process takes time and map will have a moment stop at the position of starting position. This will confuse user and thought maps is not working properly.
+Solution is to preload data that is near the really location, so google maps will do the animation. Since the animation will take a while, during which time, another thread will fetch the data and then show the correct location.</li>
+</ol>
 
-<pre><code class="``">  - (void)viewDidLoad
-  {
-      [super viewDidLoad];
-      CGPoint center = CGPointMake(44.209769, -69.0648919);
-      GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:center.x
-                                                          longitude:center.y
-                                                               zoom:15.5];
-      self.mapView.camera = camera;
-  }
-</code></pre></li>
-<li><p>Use google maps in a subview.<br/>
-Following Code will not work in a subview.</p>
 
-<pre><code class="``">  #import "YourViewController.h"
-  #import &lt;GoogleMaps/GoogleMaps.h&gt;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
+</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
+</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-  @implementation YourViewController {
-      GMSMapView *mapView_;
-  }
 
-  - (void)viewDidLoad {
-      // Create a GMSCameraPosition that tells the map to display the
-      // coordinate -33.86,151.20 at zoom level 6.
-      GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:-33.86
-                                                        longitude:151.20
-                                                             zoom:6];
-      mapView_ = [GMSMapView mapWithFrame:CGRectZero camera:camera];
-      mapView_.myLocationEnabled = YES;
-      self.view = mapView_;
+<ol>
+<li>Use google maps in a subview.<br/>
+Following Code will not work in a subview.</li>
+</ol>
 
-      // Creates a marker in the center of the map.
-      GMSMarker *marker = [[GMSMarker alloc] init];
-      marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
-      marker.title = @"Sydney";
-      marker.snippet = @"Australia";
-      marker.map = mapView_;
-      }
-  @end
-</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;YourViewController.h&quot;</span>
+</span><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">YourViewController</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Create a GMSCameraPosition that tells the map to display the</span>
+</span><span class='line'>    <span class="c1">// coordinate -33.86,151.20 at zoom level 6.</span>
+</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="o">-</span><span class="mf">33.86</span>
+</span><span class='line'>                                                      <span class="nl">longitude</span><span class="p">:</span><span class="mf">151.20</span>
+</span><span class='line'>                                                           <span class="nl">zoom</span><span class="p">:</span><span class="mi">6</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSMapView</span> <span class="nl">mapWithFrame</span><span class="p">:</span><span class="n">CGRectZero</span> <span class="nl">camera</span><span class="p">:</span><span class="n">camera</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span><span class="p">.</span><span class="n">myLocationEnabled</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Creates a marker in the center of the map.</span>
+</span><span class='line'>    <span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Chnage the existing Xib&rsquo;s class into GSMMapView will solve the problem.</p>
 
-<pre><code class="``">  @property (weak, nonatomic) IBOutlet GMSMapView *mapView;
-
-  CGPoint center = CGPointMake(44.209769, -69.0648919);
-  GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:center.x
-                                                          longitude:center.y
-                                                               zoom:15.5];
-  self.mapView.camera = camera;
-
-  GMSMarker *marker = [[GMSMarker alloc] init];
-  marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
-  marker.title = @"Sydney";
-  marker.snippet = @"Australia";
-  marker.icon = [UIImage imageNamed:@"map_pin_icon"];
-  marker.map = self.mapView;
-</code></pre></li>
-</ol>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">weak</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">)</span> <span class="kt">IBOutlet</span> <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
+</span><span class='line'><span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
+</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
+</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">icon</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;map_pin_icon&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Reference</h2>
@@ -1008,88 +1366,6 @@ The CGI script must have the correct permissions.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/15/ruby-file-flock/">Ruby File Flock</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-15T19:25:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:25 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li>在多线程的环境中，flock可lock文件独占使用。</li>
-</ul>
-
-
-<p>运行前文件1.txt:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>a
-</span><span class='line'>b</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;1.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">fp</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_EX</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span>
-</span><span class='line'>    <span class="n">arr</span> <span class="o">=</span> <span class="n">file_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_str</span>
-</span><span class='line'>    <span class="n">arr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="n">arr</span><span class="o">.</span><span class="n">inspect</span>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">rewind</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_str</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flush</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_UN</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行后文件1.txt</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">b</span>
-</span><span class='line'><span class="n">b</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1105,6 +1381,10 @@ The CGI script must have the correct permissions.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
       </li>
     
@@ -1118,10 +1398,6 @@ The CGI script must have the correct permissions.</p>
     
       <li class="post">
         <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
       </li>
     
   </ul>

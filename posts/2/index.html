@@ -9,9 +9,24 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Ways to use crontab crobtab -e 当前用户环境下运行的cron
-sudo vi /etc/crontab 在系统环境下运行的cron，所有用户都可以使用
-/etc/cron.d/ 将文件放在该目录下，系统则会自动运行 Example: backup mysql &hellip;">
+  <meta name="description" content="在多线程的环境中，flock可lock文件独占使用。 运行前文件1.txt: 1
+2
+a
+b 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+File.open(&quot;1.txt&quot;, &#39;r+&#39;) do |fp| fp.flock(File:: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,6 +82,88 @@ sudo vi /etc/crontab 在系统环境下运行的cron，所有用户都可以使�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/15/ruby-file-flock/">Ruby File Flock</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-15T19:25:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:25 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>在多线程的环境中，flock可lock文件独占使用。</li>
+</ul>
+
+
+<p>运行前文件1.txt:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>a
+</span><span class='line'>b</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;1.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">fp</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_EX</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span>
+</span><span class='line'>    <span class="n">arr</span> <span class="o">=</span> <span class="n">file_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_str</span>
+</span><span class='line'>    <span class="n">arr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
+</span><span class='line'>    <span class="nb">puts</span> <span class="n">arr</span><span class="o">.</span><span class="n">inspect</span>
+</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">rewind</span>
+</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_str</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flush</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_UN</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行后文件1.txt</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">b</span>
+</span><span class='line'><span class="n">b</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -662,6 +759,10 @@ end
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
       </li>
     
@@ -675,10 +776,6 @@ end
     
       <li class="post">
         <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
       </li>
     
   </ul>

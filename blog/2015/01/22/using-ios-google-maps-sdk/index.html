@@ -9,10 +9,13 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Steps Apply Google Map Api Key
-Import GoogleMaps.bundle in GoogleMaps.framework
-In Other Linker Flags section, add -ObjC
-In AppDelegate . #import &lt &hellip;">
+  <meta name="description" content="Steps Apply Google Map Api Key Import GoogleMaps.bundle in GoogleMaps.framework In Other Linker Flags section, add -ObjC In AppDelegate 1
+2
+3
+4
+5
+6
+# &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -90,19 +93,26 @@ In AppDelegate . #import &lt &hellip;">
 <div class="entry-content"><h2>Steps</h2>
 
 <ol>
-<li>Apply Google Map Api Key</li>
-<li>Import GoogleMaps.bundle in GoogleMaps.framework</li>
-<li>In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
-<li><p>In <code>AppDelegate</code> .</p>
-
-<pre><code class="`sh"> #import &lt;GoogleMaps/GoogleMaps.h&gt;
- - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
- {
-     [GMSServices provideAPIKey:@"API_KEY"];
-     return YES;
- }
-</code></pre></li>
+<li> Apply Google Map Api Key</li>
+<li> Import GoogleMaps.bundle in GoogleMaps.framework</li>
+<li> In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
+<li> In <code>AppDelegate</code></li>
 </ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="bp">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">GMSServices</span> <span class="nl">provideAPIKey</span><span class="p">:</span><span class="s">@&quot;API_KEY&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Possible issues</h2>
@@ -113,67 +123,122 @@ In AppDelegate . #import &lt &hellip;">
  <code>sh
  -force_load $(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps
 </code></li>
-<li><p>Delay when load maps. When user click to access maps view, app will fetch location data from server. This process takes time and map will have a moment stop at the position of starting position. This will confuse user and thought maps is not working properly.
-Solution is to preload data that is near the really location, so google maps will do the animation. Since the animation will take a while, during which time, another thread will fetch the data and then show the correct location.</p>
+<li>Delay when load maps. When user click to access maps view, app will fetch location data from server. This process takes time and map will have a moment stop at the position of starting position. This will confuse user and thought maps is not working properly.
+Solution is to preload data that is near the really location, so google maps will do the animation. Since the animation will take a while, during which time, another thread will fetch the data and then show the correct location.</li>
+</ol>
 
-<pre><code class="``">  - (void)viewDidLoad
-  {
-      [super viewDidLoad];
-      CGPoint center = CGPointMake(44.209769, -69.0648919);
-      GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:center.x
-                                                          longitude:center.y
-                                                               zoom:15.5];
-      self.mapView.camera = camera;
-  }
-</code></pre></li>
-<li><p>Use google maps in a subview.<br/>
-Following Code will not work in a subview.</p>
 
-<pre><code class="``">  #import "YourViewController.h"
-  #import &lt;GoogleMaps/GoogleMaps.h&gt;
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
+</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
+</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-  @implementation YourViewController {
-      GMSMapView *mapView_;
-  }
 
-  - (void)viewDidLoad {
-      // Create a GMSCameraPosition that tells the map to display the
-      // coordinate -33.86,151.20 at zoom level 6.
-      GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:-33.86
-                                                        longitude:151.20
-                                                             zoom:6];
-      mapView_ = [GMSMapView mapWithFrame:CGRectZero camera:camera];
-      mapView_.myLocationEnabled = YES;
-      self.view = mapView_;
+<ol>
+<li>Use google maps in a subview.<br/>
+Following Code will not work in a subview.</li>
+</ol>
 
-      // Creates a marker in the center of the map.
-      GMSMarker *marker = [[GMSMarker alloc] init];
-      marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
-      marker.title = @"Sydney";
-      marker.snippet = @"Australia";
-      marker.map = mapView_;
-      }
-  @end
-</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;YourViewController.h&quot;</span>
+</span><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">YourViewController</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Create a GMSCameraPosition that tells the map to display the</span>
+</span><span class='line'>    <span class="c1">// coordinate -33.86,151.20 at zoom level 6.</span>
+</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="o">-</span><span class="mf">33.86</span>
+</span><span class='line'>                                                      <span class="nl">longitude</span><span class="p">:</span><span class="mf">151.20</span>
+</span><span class='line'>                                                           <span class="nl">zoom</span><span class="p">:</span><span class="mi">6</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSMapView</span> <span class="nl">mapWithFrame</span><span class="p">:</span><span class="n">CGRectZero</span> <span class="nl">camera</span><span class="p">:</span><span class="n">camera</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span><span class="p">.</span><span class="n">myLocationEnabled</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Creates a marker in the center of the map.</span>
+</span><span class='line'>    <span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Chnage the existing Xib&rsquo;s class into GSMMapView will solve the problem.</p>
 
-<pre><code class="``">  @property (weak, nonatomic) IBOutlet GMSMapView *mapView;
-
-  CGPoint center = CGPointMake(44.209769, -69.0648919);
-  GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:center.x
-                                                          longitude:center.y
-                                                               zoom:15.5];
-  self.mapView.camera = camera;
-
-  GMSMarker *marker = [[GMSMarker alloc] init];
-  marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
-  marker.title = @"Sydney";
-  marker.snippet = @"Australia";
-  marker.icon = [UIImage imageNamed:@"map_pin_icon"];
-  marker.map = self.mapView;
-</code></pre></li>
-</ol>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">weak</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">)</span> <span class="kt">IBOutlet</span> <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
+</span><span class='line'><span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
+</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
+</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">icon</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;map_pin_icon&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Reference</h2>
@@ -202,6 +267,12 @@ Following Code will not work in a subview.</p>
 <time class='entry-date' datetime='2015-01-22T20:10:37+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>8:10 pm</span></time>
       
 
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/objective-c/'>objective-c</a>
+  
+</span>
+
 
     </p>
     
@@ -219,6 +290,8 @@ Following Code will not work in a subview.</p>
         <a class="basic-alignment left" href="/blog/2014/07/08/cache-expiration/" title="Previous Post: Cache Expiration">&laquo; Cache Expiration</a>
       
       
+        <a class="basic-alignment right" href="/blog/2015/02/01/rails-source-code-fragement-caching/" title="Next Post: Rails Source Code: Fragement Caching">Rails Source Code: Fragement Caching &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -230,6 +303,10 @@ Following Code will not work in a subview.</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
@@ -245,10 +322,6 @@ Following Code will not work in a subview.</p>
     
       <li class="post">
         <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a>
       </li>
     
   </ul>

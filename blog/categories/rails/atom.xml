@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Rails | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-02-02T01:07:20+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Rails Source Code: Fragement Caching]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching/"/>
+    <updated>2015-02-01T02:07:59+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching</id>
+    <content type="html"><![CDATA[<p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
+
+<p>Rails fragment caching code:</p>
+
+<pre><code class="ruby">  &lt;% cache do %&gt;
+  &lt;% end %&gt;
+</code></pre>
+
+<p>Simple.<br/>
+But where is <code>cache</code> from?</p>
+
+<p>With a search of Rails api, We can find that it is a helper from ActionView::Helpers::CacheHelper.</p>
+
+<p>Reading the api, we still have no clue about how does this <code>cache</code> helper method calls the memcached store.
+So let&rsquo;s started to read source.</p>
+
+<p>First, open file actionview/lib/action_view/helpers/cache_helper.rb. We can find following cache method.</p>
+
+<pre><code class="ruby">  def cache(name = {}, options = nil, &amp;block)
+    if controller.perform_caching
+      safe_concat(fragment_for(cache_fragment_name(name, options), options, &amp;block))
+    else
+      yield
+    end
+
+    nil
+  end
+</code></pre>
+
+<p>We notice there is a <code>fragment_for</code> method, let&rsquo;s see where it leads us.</p>
+
+<pre><code class="ruby">    def fragment_for(name = {}, options = nil, &amp;block) #:nodoc:
+      read_fragment_for(name, options) || write_fragment_for(name, options, &amp;block)
+    end
+</code></pre>
+
+<p>What does <code>read_fragment_for</code> method do?</p>
+
+<pre><code class="ruby">    def fragment_for(name = {}, options = nil, &amp;block) #:nodoc:
+      read_fragment_for(name, options) || write_fragment_for(name, options, &amp;block)
+    end
+
+    def read_fragment_for(name, options) #:nodoc:
+      controller.read_fragment(name, options)
+    end
+</code></pre>
+
+<p>So <code>read_fragment_for</code> method leads us to a <code>read_fragment</code> method belongs to an object called <code>controller</code>.<br/>
+Where does this <code>controller</code> object comes from?<br/>
+It is actually an attribute reader and writer backed by an internally-named instance variable.<br/>
+It is define in actionview/lib/action_view/helpers/controller_helper.rb file.<br/>
+And it is initiated in actionview/lib/action_view/base.rb file.</p>
+
+<pre><code class="ruby">  module ActionView
+    module Helpers
+      module ControllerHelper
+        attr_internal :controller, :request
+
+        def assign_controller(controller)
+          if @_controller = controller
+            @_request = controller.request if controller.respond_to?(:request)
+            @_config  = controller.config.inheritable_copy if controller.respond_to?(:config)
+          end
+        end
+      end
+    end
+  end
+</code></pre>
+
+<p>Let&rsquo;s come back to <code>read_fragment</code> method.
+In actionpack/lib/action_controller/caching/fragments.rb file, we find this method.</p>
+
+<pre><code class="ruby">  module ActionController
+    module Caching
+      module Fragments
+        def read_fragment(key, options = nil)
+          return unless cache_configured?
+          key = fragment_cache_key(key)
+          instrument_fragment_cache :read_fragment, key do
+            result = cache_store.read(key, options)
+            result.respond_to?(:html_safe) ? result.html_safe : result
+          end
+        end
+      end
+    end
+  end
+</code></pre>
+
+<p>We are closer, because we see this line.</p>
+
+<pre><code class="ruby">        result = cache_store.read(key, options)
+</code></pre>
+
+<p>Where is <code>cache_store</code> defined? We can find following code in actionpack/lib/action_controller/caching.rb file.</p>
+
+<pre><code class="ruby">  def cache_store
+    config.cache_store
+  end
+
+  def cache_store=(store)
+    config.cache_store = ActiveSupport::Cache.lookup_store(store)
+  end
+</code></pre>
+
+<p>Finally, in activesupport/lib/active_support/cache.rb filem, we find <code>lookup_store</code> method.</p>
+
+<pre><code class="ruby">  def lookup_store(*store_option)
+    store, *parameters = *Array.wrap(store_option).flatten
+
+    case store
+    when Symbol
+      retrieve_store_class(store).new(*parameters)
+    when nil
+      ActiveSupport::Cache::MemoryStore.new
+    else
+      store
+    end
+  end
+</code></pre>
+
+<p>An abstract cache store class alse defined in same file.</p>
+
+<pre><code class="ruby">  class Store
+        ...
+    def read(name, options = nil)
+      options = merged_options(options)
+      key = namespaced_key(name, options)
+      instrument(:read, name, options) do |payload|
+        entry = read_entry(key, options)
+        if entry
+          if entry.expired?
+            delete_entry(key, options)
+            payload[:hit] = false if payload
+            nil
+          else
+            payload[:hit] = true if payload
+            entry.value
+          end
+        else
+          payload[:hit] = false if payload
+          nil
+        end
+      end
+    end
+        ...
+    end
+</code></pre>
+
+<p>In activesupport/lib/active_support/cache/mem_cache_store.rb file, <code>read_entry</code> is implemented.</p>
+
+<pre><code class="ruby">  def read_entry(key, options) # :nodoc:
+    deserialize_entry(@data.get(escape_key(key), options))
+  rescue Dalli::DalliError =&gt; e
+    logger.error("DalliError (#{e}): #{e.message}") if logger
+    nil
+  end
+</code></pre>
+
+<p>This is how fragment cache works in rails.</p>
+
+<p>(完)</p>
+]]></content>
+  </entry>
+  
+</feed>
