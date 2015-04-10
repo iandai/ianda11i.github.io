@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/</loc>
+    <lastmod>2015-04-10T12:08:39+09:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://iandai.github.io/blog/2015/02/06/mysql-performance-tuning/</loc>
+    <lastmod>2015-02-06T14:57:02+09:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching/</loc>
     <lastmod>2015-02-01T02:07:59+09:00</lastmod>
     <priority>0.8</priority>
@@ -82,13 +92,13 @@
   </url>
   <url>
     <loc>http://iandai.github.io/blog/archives/</loc>
-    <lastmod>2015-02-02T01:10:25+09:00</lastmod>
+    <lastmod>2015-04-10T12:14:54+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/</loc>
-    <lastmod>2015-02-02T01:10:25+09:00</lastmod>
+    <lastmod>2015-04-10T12:14:54+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
