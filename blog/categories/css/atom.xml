@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Css | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/css/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-02-02T01:07:20+09:00</updated>
+  <updated>2015-05-22T17:05:34+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -87,7 +87,7 @@ space占有4px的空间，所以无法被消除。<br/>
 </code>
 按照这种方式排列html，中间的space就会消失。<br/>
 另一种方法是将 ul tag 的字体大小设置为0，然后把li tag中的font-size设置回来。<br/>
-Referance: <a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items</a></p>
+<a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">Referance</a></p>
 
 <h4>Margin的垂直collapse（Collapsing margins）</h4>
 
@@ -96,9 +96,9 @@ Referance: <a href="http://stackoverflow.com/questions/5256533/a-space-between-i
 两种情况：<br/>
 1. 对于上下两个并列的div块而言，上面div的margin-bottom和下面div的margin-top会塌陷，也就是会取上下两者margin里最大值作为显示值。<br/>
 2. 对于有块级子元素的元素计算高度的方式,如果元素没有垂直边框和填充,那其高度就是其子元素顶部和底部边框边缘之间的距离。<br/>
-Referance：<br/>
-CSS的margin塌陷（collapse） <a href="http://blog.csdn.net/dclchj/article/details/9787481  ">http://blog.csdn.net/dclchj/article/details/9787481  </a>
-Box model 8.3.1   <a href="http://www.w3.org/TR/CSS2/box.html">http://www.w3.org/TR/CSS2/box.html</a></p>
+Referance<br/>
+<a href="http://blog.csdn.net/dclchj/article/details/9787481">CSS的margin塌陷（collapse）</a><br/>
+<a href="http://www.w3.org/TR/CSS2/box.html">Box model 8.3.1</a></p>
 ]]></content>
   </entry>
   

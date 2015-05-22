@@ -9,10 +9,7 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="在多线程的环境中，flock可lock文件独占使用。 运行前文件1.txt: 1
-2
-a
-b 1
+  <meta name="description" content="检查httpd服务是否在运行，不存在的话需要启动. 1
 2
 3
 4
@@ -24,9 +21,8 @@ b 1
 10
 11
 12
-13
-14
-File.open(&quot;1.txt&quot;, &#39;r+&#39;) do |fp| fp.flock(File:: &hellip;">
+sudo lsof -iTCP:80 -sTCP:LISTEN -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
+sudo apachectl start &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -55,7 +51,7 @@ File.open(&quot;1.txt&quot;, &#39;r+&#39;) do |fp| fp.flock(File:: &hellip;">
   <header role="banner"><hgroup>
   <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
   
-    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+    <h2>Thoughts about Ruby, iOS and Growth Hacking</h2>
   
 </hgroup>
 
@@ -73,7 +69,10 @@ File.open(&quot;1.txt&quot;, &#39;r+&#39;) do |fp| fp.flock(File:: &hellip;">
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/ios">iOS</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
@@ -82,6 +81,199 @@ File.open(&quot;1.txt&quot;, &#39;r+&#39;) do |fp| fp.flock(File:: &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/04/apache-server-on-macos-using-alias/">Apache Server on MacOS Using Alias</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-12-04T15:48:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>3:48 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>检查httpd服务是否在运行，不存在的话需要启动.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo lsof -iTCP:80 -sTCP:LISTEN  -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
+</span><span class='line'>sudo apachectl start
+</span><span class='line'>
+</span><span class='line'>MacOS  apache path（http://wiki.apache.org/httpd/DistrosDefaultLayout）
+</span><span class='line'>ServerRoot              ::      /usr
+</span><span class='line'>Primary Config Fle      ::      /etc/apache2/httpd.conf
+</span><span class='line'>DocumentRoot            ::      /Library/WebServer/Documents
+</span><span class='line'>ErrorLog                ::      /var/log/apache2/error_log
+</span><span class='line'>AccessLog               ::      /var/log/apache2/access_log
+</span><span class='line'>cgi-bin                 ::      /Library/WebServer/CGI-Executables (empty by default)
+</span><span class='line'>binary                  ::      /usr/sbin/httpd
+</span><span class='line'>start/stop              ::      /usr/sbin/     (start|stop|restart|fullstatus|status|graceful|graceful-stop|configtest|help)</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>在Users/g_dai/codes/site文件夹中建立project，创建文件1.html，并写入内容Hello world.</p></li>
+<li><p>在DocumentRoot /Library/WebServer/Documents中创建文件夹docs.</p></li>
+<li><p>在httpd.conf中写入，注意/docs 后面没有slash.</p></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Alias /docs Users/g_dai/codes/site
+</span><span class='line'>&lt;Directory Users/g_dai/codes/site&gt; (保证这个folder可以被apache访问）
+</span><span class='line'>    Order allow,deny
+</span><span class='line'>    Allow from all
+</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Referance</h4>
+
+<p><a href="http://httpd.apache.org/docs/2.2/mod/mod_alias.html">Apache mod_alias</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/">Run Ruby CGI Scripts With Apache</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-15T19:34:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:34 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>CGI Scripts on server</h2>
+
+<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> #!/bin/env ruby
+</span><span class='line'> print "Content-type: text/html\r\n\r\n"
+</span><span class='line'> print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
+
+<p>CGI 设置的要点：<br/>
+The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
+The MIME media type must be the first output of your CGI script.<br/>
+A blank line follows the MIME media type.<br/>
+The CGI script must have the correct permissions.</p>
+
+<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
+<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
+
+<h2>Config apache to support running CGI</h2>
+
+<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
+
+<h2>Send parameters with get and post in ruby on client</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;….&quot;</span>       <span class="c1">#*******.ap-northeast-1.compute.amazonaws.com</span>
+</span><span class='line'><span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">version_1_2</span>
+</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Get request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">net</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+</span><span class='line'><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris&#39;</span><span class="p">,</span> <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris@foo.com&#39;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># Create HTTP request</span>
+</span><span class='line'><span class="n">req</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="s1">&#39;/cgi-bin/ruby.cgi&#39;</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span>
+</span><span class='line'><span class="n">req</span><span class="o">.</span><span class="n">set_form_data</span> <span class="n">params</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># Send request</span>
+</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">read_timeout</span> <span class="o">=</span> <span class="mi">5600</span>
+</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="n">req</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Post request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -755,8 +947,21 @@ end
 <aside class="sidebar">
   
     <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan, mainly about ruby and iOS development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/10/ruby-hash-implementation/">Ruby Hash Implementation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a>
@@ -768,14 +973,6 @@ end
     
       <li class="post">
         <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
       </li>
     
   </ul>

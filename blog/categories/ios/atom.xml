@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-05-22T17:05:34+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using iOS Google Maps SDK]]></title>
+    <link href="http://iandai.github.io/blog/2015/01/22/using-ios-google-maps-sdk/"/>
+    <updated>2015-01-22T20:10:37+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/01/22/using-ios-google-maps-sdk</id>
+    <content type="html"><![CDATA[<h2>Steps</h2>
+
+<ol>
+<li> Apply Google Map Api Key</li>
+<li> Import GoogleMaps.bundle in GoogleMaps.framework</li>
+<li> In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
+<li> In <code>AppDelegate</code></li>
+</ol>
+
+
+<pre><code class="objc">    #import &lt;GoogleMaps/GoogleMaps.h&gt;
+    - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+    {
+        [GMSServices provideAPIKey:@"API_KEY"];
+        return YES;
+    }
+</code></pre>
+
+<h2>Possible issues</h2>
+
+<p>1.In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework.</p>
+
+<p>2.In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:<br/>
+<code>sh
+-force_load $(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps
+</code></p>
+
+<p>3.Use google maps in a subview.<br/>
+Following Code will not work in a subview.
+&#8220;`objc
+    #import &ldquo;YourViewController.h&rdquo;
+    #import &lt;GoogleMaps/GoogleMaps.h></p>
+
+<pre><code>@implementation YourViewController {
+    GMSMapView *mapView_;
+}
+
+- (void)viewDidLoad {
+    // Create a GMSCameraPosition that tells the map to display the
+    // coordinate -33.86,151.20 at zoom level 6.
+    GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:-33.86
+                                                      longitude:151.20
+                                                           zoom:6];
+    mapView_ = [GMSMapView mapWithFrame:CGRectZero camera:camera];
+    mapView_.myLocationEnabled = YES;
+    self.view = mapView_;
+
+    // Creates a marker in the center of the map.
+    GMSMarker *marker = [[GMSMarker alloc] init];
+    marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
+    marker.title = @"Sydney";
+    marker.snippet = @"Australia";
+    marker.map = mapView_;
+    }
+@end
+</code></pre>
+
+<pre><code>Chnage the existing Xib's class into GSMMapView will solve the problem.    
+</code></pre>
+
+<pre><code>@property (weak, nonatomic) IBOutlet GMSMapView *mapView;
+
+CGPoint center = CGPointMake(44.209769, -69.0648919);
+GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:center.x
+                                                        longitude:center.y
+                                                             zoom:15.5];
+self.mapView.camera = camera;
+
+GMSMarker *marker = [[GMSMarker alloc] init];
+marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
+marker.title = @"Sydney";
+marker.snippet = @"Australia";
+marker.icon = [UIImage imageNamed:@"map_pin_icon"];
+marker.map = self.mapView;
+</code></pre>
+
+<p>&#8220;`</p>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15417811/cannot-put-a-google-maps-gmsmapview-in-a-subview-of-main-main-view">Add google maps in a subview</a></li>
+<li><a href="http://dev.classmethod.jp/smartphone/iphone/ios-map-programming-series-1/">Customise GMSMarker</a></li>
+<li><a href="http://stackoverflow.com/questions/16706587/can-i-link-googlemaps-sdk-for-ios-with-a-linker-flag-other-than-objc">Other Linker Flags Conflict</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

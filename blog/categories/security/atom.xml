@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Sql | Ian's Tech Note]]></title>
-  <link href="http://iandai.github.io/blog/categories/sql/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Security | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/security/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-02-02T01:07:20+09:00</updated>
+  <updated>2015-05-22T17:05:34+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>

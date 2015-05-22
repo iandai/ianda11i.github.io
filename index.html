@@ -9,7 +9,8 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually &hellip;">
+  <meta name="description" content="murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。 1
+murmur_hash(key) % M hash collision的处理方法 当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -38,7 +39,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
   
-    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+    <h2>Thoughts about Ruby, iOS and Growth Hacking</h2>
   
 </hgroup>
 
@@ -56,7 +57,10 @@
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/ios">iOS</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
@@ -65,6 +69,256 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/10/ruby-hash-implementation/">Ruby Hash Implementation</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-10T12:08:39+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>murmur_hash(key) % M</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>hash collision的处理方法
+
+<ul>
+<li>当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小，全部重新计算所有的hash数值（因为当单个位置不停增长的话，就又变回O(n)的复杂度了）。</li>
+<li>质数的选取2的指数附近的数字</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>private static final int MRI_PRIMES[] = {8 + 3, 16 + 3, 32 + 5, 64 + 3, 128 + 3, 256 + 27, ....};</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-06T14:57:02+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>查看mysql运行状况</h2>
+
+<ul>
+<li>SHOW STATUS是查看MySQL运行情况</li>
+<li>SHOW VARIABLES是查看MySQL的配置参数，可以使用类似SHOW VARIABLES LIKE &lsquo;Key%&rsquo;</li>
+<li>SHOW PROCESSLIST是查看当前正在进行的进程</li>
+</ul>
+
+
+<h2>Mysql tunning</h2>
+
+<h3>（1） Rule: 一次只修改一个参数！</h3>
+
+<h3>（2）查看各种指标，寻找Bottle neck：</h3>
+
+<ul>
+<li>如果 Unix top显示服务的 CPU 占用率小于 70%，系统瓶颈可能在磁盘读写上。</li>
+<li><code>iostat -d -x -k 1 10</code>查看设备使用率（%util）、响应时间（await）。Disk I/O 如果高的话，打开Innodb_buffer_pool_size可以提高速度，因为mysql可以把许多东西放在内存，而不用频繁的去读磁盘数据，进行DISK I/O.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size’;
+</span><span class='line'>
+</span><span class='line'>决定innodb-buffer-pool-size方法：
+</span><span class='line'>mysql&gt;     SELECT CEILING(Total_InnoDB_Bytes*1.6/POWER(1024,3)) RIBPS FROM
+</span><span class='line'>(SELECT SUM(data_length+index_length) Total_InnoDB_Bytes
+</span><span class='line'>FROM information_schema.tables WHERE engine='InnoDB') A;
+</span><span class='line'>mysql&gt;     SELECT (PagesData*PageSize)/POWER(1024,3) DataGB FROM
+</span><span class='line'>(SELECT variable_value PagesData
+</span><span class='line'>FROM information_schema.global_status
+</span><span class='line'>WHERE variable_name='Innodb_buffer_pool_pages_data') A,
+</span><span class='line'>(SELECT variable_value PageSize
+</span><span class='line'>FROM information_schema.global_status
+</span><span class='line'>WHERE variable_name='Innodb_page_size') B;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>innodb_flush_log_at_trx_commit  （这个很管用）</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>默认值1的意思是每一次事务提交或事务外的指令都需要把日志写入（flush）硬盘，这是很费时的。特别是使用电 池供电缓存（Battery backed up cache）时。设成2对于很多运用，特别是从MyISAM表转过来的是可以的，它的意思是不写入硬盘而是写入系统缓存。日志仍然会每秒flush到硬 盘，所以你一般不会丢失超过1-2秒的更新。设成0会更快一点，但安全方面比较差，即使MySQL挂了也可能会丢失事务的数据。而值2只会在整个操作系统 挂了时才可能丢数据。 </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Query tuning</h2>
+
+<h3>(1) Slow query log</h3>
+
+<ul>
+<li>打开slow_query_log和log_queries_not_using_indexes</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>long_query_time    ：  设定慢查询的阀值，超出次设定值的SQL即被记录到慢查询日志，缺省值为10s
+</span><span class='line'>slow_query_log      ：  指定是否开启慢查询日志
+</span><span class='line'>log_slow_queries    ：  指定是否开启慢查询日志(该参数要被slow_query_log取代，做兼容性保留)
+</span><span class='line'>slow_query_log_file ：  指定慢日志文件存放位置，可以为空，系统会给一个缺省的文件host_name-slow.log
+</span><span class='line'>min_examined_row_limit：查询检查返回少于该参数指定行的SQL不被记录到慢查询日志
+</span><span class='line'>log_queries_not_using_indexes: 不使用索引的慢查询日志是否记录到索引
+</span><span class='line'>
+</span><span class='line'>show global  variables like '%slow%';
+</span><span class='line'>set global log_slow_queries=1;
+</span><span class='line'>set global long_query_time=1;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>使用<code>mysqldumpslow -s c -t 10 /database/mysql/slow-log</code>来查看slow log</li>
+</ul>
+
+
+<h3>(2) Optimize query</h3>
+
+<ul>
+<li>Use Explain</li>
+<li>Use Select_scan
+
+<ul>
+<li>show status like &lsquo;Select_scan&rsquo;;   Select_scan/总查询数量商应该是常数。该值持续增长，说明需要优化。</li>
+</ul>
+</li>
+<li>Use Select_full_join
+
+<ul>
+<li>没有主键（key）联合（Join）的执行。</li>
+</ul>
+</li>
+<li>Use MySQL Query Analyzer（or alternative）</li>
+<li>Tips:
+
+<ul>
+<li>The IN clause in MySQL is very fast, much faster than a join.</li>
+<li>Avoid % at the start of LIKE on an index</li>
+<li>Use UNION ALL when appropriate; default is UNION DISTINCT!</li>
+<li>Understand left/right joins and use only when needed</li>
+<li>使用memlock可以避免MySQL内存进入swap</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>(3) insert/update</h3>
+
+<ul>
+<li>Use batch insert</li>
+<li>在向 InnoDB 导入数据时，确认MySQL没有打开 autocommit=1 。否则每个插入语句都要将 log 刷新到磁盘。在你的 SQL 导入文件的第一行加入<code>set autocommit=0;</code>,并在最后一行加入<code>commit</code>;</li>
+</ul>
+
+
+<h3>(4) index</h3>
+
+<ul>
+<li>For large strings that need to be indexed, i.e. URLs, consider using a separate column using the MySQL MD5 to create a hash key and
+index on it instead.</li>
+<li>使用多列索引，multiple column index （force index）</li>
+<li>Use prefix indexes on large keys</li>
+</ul>
+
+
+<h2>Schemas</h2>
+
+<ul>
+<li>Do not automatically use 255 for VARCHAR</li>
+<li>如果要存储变长的字符串或字段可能会包含大量的 NULLs，请使用 VARCHAR 型字段代替 CHAR 。一个 CHAR(n) 字段总是使用 n bytes 来存储数据，即使这个字符串很短或是一个 NULL 值。较小的表更加适合缓冲池同时能够减少磁盘 I/O 。</li>
+<li>Use procedue analyse to get recommedataion
+
+<ul>
+<li>SELECT * FROM sprocket_engine_execute_log PROCEDURE ANALYSE();</li>
+</ul>
+</li>
+<li>Consider use enum, set types</li>
+</ul>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://dba.stackexchange.com/questions/27328/how-large-should-be-mysql-innodb-buffer-pool-size">调节innodb-buffer-pool-size</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-measure-mysql-query-performance-with-mysqlslap">mysqlslap</a></li>
+<li><a href="http://downloads.mysql.com/presentations/MySQL_Perfornance__Tuning_Overview_jp.pdf">MySQL Performance &amp; Tuning</a></li>
+<li><a href="http://man.chinaunix.net/database/mysql/inonodb_zh/9.htm">InnoDB性能调整技巧</a></li>
+<li><a href="http://robbin.iteye.com/blog/461382">MySQL InnoDB性能调整实践</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -413,43 +667,17 @@ In actionpack/lib/action_controller/caching/fragments.rb file, we find this meth
 
 <h2>Possible issues</h2>
 
-<ol>
-<li>In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework</li>
-<li>In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:
- <code>sh
- -force_load $(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps
-</code></li>
-<li>Delay when load maps. When user click to access maps view, app will fetch location data from server. This process takes time and map will have a moment stop at the position of starting position. This will confuse user and thought maps is not working properly.
-Solution is to preload data that is near the really location, so google maps will do the animation. Since the animation will take a while, during which time, another thread will fetch the data and then show the correct location.</li>
-</ol>
+<p>1.In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework.</p>
 
+<p>2.In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
-</span><span class='line'>    <span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
-</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
-</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
-</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-force_load <span class="k">$(</span>PROJECT_DIR<span class="k">)</span>/GoogleMaps.framework/GoogleMaps
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Use google maps in a subview.<br/>
-Following Code will not work in a subview.</li>
-</ol>
-
+<p>3.Use google maps in a subview.<br/>
+Following Code will not work in a subview.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -596,11 +824,6 @@ Following Code will not work in a subview.</li>
       如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
 </ul>
 
-
-<h2>参考文献</h2>
-
-<p><a href="http://octopress.org/docs/">octopress docs</a><br/>
-<a href="http://stackoverflow.com/editing-help">stackoverflow markdown help</a></p>
 </div>
   
   
@@ -798,7 +1021,7 @@ line-height: 100%;   等于font-size的高度，而不是div的高度<br/>
 
 <p>按照这种方式排列html，中间的space就会消失。<br/>
 另一种方法是将 ul tag 的字体大小设置为0，然后把li tag中的font-size设置回来。<br/>
-Referance: <a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items</a></p>
+<a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">Referance</a></p>
 
 <h4>Margin的垂直collapse（Collapsing margins）</h4>
 
@@ -807,9 +1030,9 @@ Referance: <a href="http://stackoverflow.com/questions/5256533/a-space-between-i
 两种情况：<br/>
 1. 对于上下两个并列的div块而言，上面div的margin-bottom和下面div的margin-top会塌陷，也就是会取上下两者margin里最大值作为显示值。<br/>
 2. 对于有块级子元素的元素计算高度的方式,如果元素没有垂直边框和填充,那其高度就是其子元素顶部和底部边框边缘之间的距离。<br/>
-Referance：<br/>
-CSS的margin塌陷（collapse） <a href="http://blog.csdn.net/dclchj/article/details/9787481  ">http://blog.csdn.net/dclchj/article/details/9787481  </a>
-Box model 8.3.1   <a href="http://www.w3.org/TR/CSS2/box.html">http://www.w3.org/TR/CSS2/box.html</a></p>
+Referance<br/>
+<a href="http://blog.csdn.net/dclchj/article/details/9787481">CSS的margin塌陷（collapse）</a><br/>
+<a href="http://www.w3.org/TR/CSS2/box.html">Box model 8.3.1</a></p>
 </div>
   
   
@@ -1173,199 +1396,6 @@ data and then directs it to the destination host and port.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/04/apache-server-on-macos-using-alias/">Apache Server on MacOS Using Alias</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-12-04T15:48:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>3:48 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li>检查httpd服务是否在运行，不存在的话需要启动.</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo lsof -iTCP:80 -sTCP:LISTEN  -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
-</span><span class='line'>sudo apachectl start
-</span><span class='line'>
-</span><span class='line'>MacOS  apache path（http://wiki.apache.org/httpd/DistrosDefaultLayout）
-</span><span class='line'>ServerRoot              ::      /usr
-</span><span class='line'>Primary Config Fle      ::      /etc/apache2/httpd.conf
-</span><span class='line'>DocumentRoot            ::      /Library/WebServer/Documents
-</span><span class='line'>ErrorLog                ::      /var/log/apache2/error_log
-</span><span class='line'>AccessLog               ::      /var/log/apache2/access_log
-</span><span class='line'>cgi-bin                 ::      /Library/WebServer/CGI-Executables (empty by default)
-</span><span class='line'>binary                  ::      /usr/sbin/httpd
-</span><span class='line'>start/stop              ::      /usr/sbin/     (start|stop|restart|fullstatus|status|graceful|graceful-stop|configtest|help)</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><p>在Users/g_dai/codes/site文件夹中建立project，创建文件1.html，并写入内容Hello world.</p></li>
-<li><p>在DocumentRoot /Library/WebServer/Documents中创建文件夹docs.</p></li>
-<li><p>在httpd.conf中写入，注意/docs 后面没有slash.</p></li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Alias /docs Users/g_dai/codes/site
-</span><span class='line'>&lt;Directory Users/g_dai/codes/site&gt; (保证这个folder可以被apache访问）
-</span><span class='line'>    Order allow,deny
-</span><span class='line'>    Allow from all
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Referance</h4>
-
-<p><a href="http://httpd.apache.org/docs/2.2/mod/mod_alias.html">Apache mod_alias</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/">Run Ruby CGI Scripts With Apache</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-15T19:34:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:34 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>CGI Scripts on server</h2>
-
-<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> #!/bin/env ruby
-</span><span class='line'> print "Content-type: text/html\r\n\r\n"
-</span><span class='line'> print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
-
-<p>CGI 设置的要点：<br/>
-The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
-The MIME media type must be the first output of your CGI script.<br/>
-A blank line follows the MIME media type.<br/>
-The CGI script must have the correct permissions.</p>
-
-<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
-<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
-
-<h2>Config apache to support running CGI</h2>
-
-<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
-
-<h2>Send parameters with get and post in ruby on client</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;….&quot;</span>       <span class="c1">#*******.ap-northeast-1.compute.amazonaws.com</span>
-</span><span class='line'><span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">version_1_2</span>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Get request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">net</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-</span><span class='line'><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris&#39;</span><span class="p">,</span> <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris@foo.com&#39;</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Create HTTP request</span>
-</span><span class='line'><span class="n">req</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="s1">&#39;/cgi-bin/ruby.cgi&#39;</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span>
-</span><span class='line'><span class="n">req</span><span class="o">.</span><span class="n">set_form_data</span> <span class="n">params</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Send request</span>
-</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">read_timeout</span> <span class="o">=</span> <span class="mi">5600</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="n">req</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Post request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1377,8 +1407,21 @@ The CGI script must have the correct permissions.</p>
 <aside class="sidebar">
   
     <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan, mainly about ruby and iOS development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/10/ruby-hash-implementation/">Ruby Hash Implementation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a>
@@ -1390,14 +1433,6 @@ The CGI script must have the correct permissions.</p>
     
       <li class="post">
         <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
       </li>
     
   </ul>

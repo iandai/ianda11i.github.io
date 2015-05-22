@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-02-02T01:07:20+09:00</updated>
+  <updated>2015-05-22T17:05:34+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,204 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby Hash Implementation]]></title>
+    <link href="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/"/>
+    <updated>2015-04-10T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。
+<code>
+murmur_hash(key) % M
+</code></p></li>
+<li><p>hash collision的处理方法</p>
+
+<ul>
+<li>当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小，全部重新计算所有的hash数值（因为当单个位置不停增长的话，就又变回O(n)的复杂度了）。</li>
+<li>质数的选取2的指数附近的数字
+<code>
+private static final int MRI_PRIMES[] = {8 + 3, 16 + 3, 32 + 5, 64 + 3, 128 + 3, 256 + 27, ....};
+</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Rails Source Code: Fragement Caching]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching/"/>
+    <updated>2015-02-01T02:07:59+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching</id>
+    <content type="html"><![CDATA[<p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
+
+<p>Rails fragment caching code:</p>
+
+<pre><code class="ruby">  &lt;% cache do %&gt;
+  &lt;% end %&gt;
+</code></pre>
+
+<p>Simple.<br/>
+But where is <code>cache</code> from?</p>
+
+<p>With a search of Rails api, We can find that it is a helper from ActionView::Helpers::CacheHelper.</p>
+
+<p>Reading the api, we still have no clue about how does this <code>cache</code> helper method calls the memcached store.
+So let&rsquo;s started to read source.</p>
+
+<p>First, open file actionview/lib/action_view/helpers/cache_helper.rb. We can find following cache method.</p>
+
+<pre><code class="ruby">  def cache(name = {}, options = nil, &amp;block)
+    if controller.perform_caching
+      safe_concat(fragment_for(cache_fragment_name(name, options), options, &amp;block))
+    else
+      yield
+    end
+
+    nil
+  end
+</code></pre>
+
+<p>We notice there is a <code>fragment_for</code> method, let&rsquo;s see where it leads us.</p>
+
+<pre><code class="ruby">    def fragment_for(name = {}, options = nil, &amp;block) #:nodoc:
+      read_fragment_for(name, options) || write_fragment_for(name, options, &amp;block)
+    end
+</code></pre>
+
+<p>What does <code>read_fragment_for</code> method do?</p>
+
+<pre><code class="ruby">    def fragment_for(name = {}, options = nil, &amp;block) #:nodoc:
+      read_fragment_for(name, options) || write_fragment_for(name, options, &amp;block)
+    end
+
+    def read_fragment_for(name, options) #:nodoc:
+      controller.read_fragment(name, options)
+    end
+</code></pre>
+
+<p>So <code>read_fragment_for</code> method leads us to a <code>read_fragment</code> method belongs to an object called <code>controller</code>.<br/>
+Where does this <code>controller</code> object comes from?<br/>
+It is actually an attribute reader and writer backed by an internally-named instance variable.<br/>
+It is define in actionview/lib/action_view/helpers/controller_helper.rb file.<br/>
+And it is initiated in actionview/lib/action_view/base.rb file.</p>
+
+<pre><code class="ruby">  module ActionView
+    module Helpers
+      module ControllerHelper
+        attr_internal :controller, :request
+
+        def assign_controller(controller)
+          if @_controller = controller
+            @_request = controller.request if controller.respond_to?(:request)
+            @_config  = controller.config.inheritable_copy if controller.respond_to?(:config)
+          end
+        end
+      end
+    end
+  end
+</code></pre>
+
+<p>Let&rsquo;s come back to <code>read_fragment</code> method.
+In actionpack/lib/action_controller/caching/fragments.rb file, we find this method.</p>
+
+<pre><code class="ruby">  module ActionController
+    module Caching
+      module Fragments
+        def read_fragment(key, options = nil)
+          return unless cache_configured?
+          key = fragment_cache_key(key)
+          instrument_fragment_cache :read_fragment, key do
+            result = cache_store.read(key, options)
+            result.respond_to?(:html_safe) ? result.html_safe : result
+          end
+        end
+      end
+    end
+  end
+</code></pre>
+
+<p>We are closer, because we see this line.</p>
+
+<pre><code class="ruby">        result = cache_store.read(key, options)
+</code></pre>
+
+<p>Where is <code>cache_store</code> defined? We can find following code in actionpack/lib/action_controller/caching.rb file.</p>
+
+<pre><code class="ruby">  def cache_store
+    config.cache_store
+  end
+
+  def cache_store=(store)
+    config.cache_store = ActiveSupport::Cache.lookup_store(store)
+  end
+</code></pre>
+
+<p>Finally, in activesupport/lib/active_support/cache.rb filem, we find <code>lookup_store</code> method.</p>
+
+<pre><code class="ruby">  def lookup_store(*store_option)
+    store, *parameters = *Array.wrap(store_option).flatten
+
+    case store
+    when Symbol
+      retrieve_store_class(store).new(*parameters)
+    when nil
+      ActiveSupport::Cache::MemoryStore.new
+    else
+      store
+    end
+  end
+</code></pre>
+
+<p>An abstract cache store class alse defined in same file.</p>
+
+<pre><code class="ruby">  class Store
+        ...
+    def read(name, options = nil)
+      options = merged_options(options)
+      key = namespaced_key(name, options)
+      instrument(:read, name, options) do |payload|
+        entry = read_entry(key, options)
+        if entry
+          if entry.expired?
+            delete_entry(key, options)
+            payload[:hit] = false if payload
+            nil
+          else
+            payload[:hit] = true if payload
+            entry.value
+          end
+        else
+          payload[:hit] = false if payload
+          nil
+        end
+      end
+    end
+        ...
+    end
+</code></pre>
+
+<p>In activesupport/lib/active_support/cache/mem_cache_store.rb file, <code>read_entry</code> is implemented.</p>
+
+<pre><code class="ruby">  def read_entry(key, options) # :nodoc:
+    deserialize_entry(@data.get(escape_key(key), options))
+  rescue Dalli::DalliError =&gt; e
+    logger.error("DalliError (#{e}): #{e.message}") if logger
+    nil
+  end
+</code></pre>
+
+<p>This is how fragment cache works in rails.</p>
+
+<p>(完)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rspec Test Principle - Test Only Your Own Code]]></title>
@@ -204,169 +402,6 @@ end
 b
 b
 </code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby Signal]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/07/ruby-signal/"/>
-    <updated>2013-11-07T18:40:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/07/ruby-signal</id>
-    <content type="html"><![CDATA[<h2>简单处理signal的例子</h2>
-
-<ul>
-<li><p>signal_test.rb文件
-<code>ruby
-while true
-trap("INT") {
-  puts "Quitting on INT signal."
-  exit
-}
-trap("QUIT") {
-  puts "Quitting on QUIT signal."
-  exit
-}
-trap("TERM") {
-  puts "U teminated me!"
-  exit
-}
-end
-</code></p></li>
-<li><p>运行一下命令
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Press ctrl + c
-</span><span class='line'>mac$ ruby signal_test.rb
-</span><span class='line'>^CQuitting on INT signal.&lt;/p&gt;&lt;/li&gt;
-</span><span class='line'>&lt;/ul&gt;
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;Press ctrl + \
-</span><span class='line'>mac$ ruby signal_test.rb
-</span><span class='line'>^\Quitting on QUIT signal.&lt;/p&gt;
-</span><span class='line'>
-</span><span class='line'>&lt;p&gt;kill -TERM pid
-</span><span class='line'>mac$ ruby signal_test.rb
-</span><span class='line'>U teminated me!</span></code></pre></td></tr></table></div></figure></p>
-
-<h2>Trap SIGCHLD信号的例子</h2>
-
-<ul>
-<li><p>sub.rb文件
-<code>ruby
-while true
- sleep 3
-end
-</code></p></li>
-<li><p>signal_test.rb文件
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Signal</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ss">:CHLD</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nb">print</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="no">Child</span> <span class="n">process</span> <span class="n">is</span> <span class="n">teminated</span><span class="o">.</span><span class="p">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span><span class="o">&lt;</span><span class="sr">/p&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="sr">/ul&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="sr">&lt;p&gt;IO.popen(&amp;ldquo;ruby sub.rb&amp;rdquo;) do |pipe|</span>
-</span><span class='line'><span class="sr">  print &amp;ldquo;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="sr">, popen return child process pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="sr">\n&amp;rdquo;</span>
-</span><span class='line'><span class="sr">  Process.kill &amp;lsquo;TERM&amp;rsquo;, pipe.pid</span>
-</span><span class='line'><span class="sr">end</span>
-</span></code></pre></td></tr></table></div></figure></p>
-
-<ul>
-<li>运行一下命令
-<code>
-parent pid: 3275, popen return child process pid: 3276
-Child process is teminated.
-</code></li>
-</ul>
-
-
-<h2>常用Signal的区别</h2>
-
-<p>SIGTERM和SIGKILL主要的目的就是用来结束一个进程。<br/>
-SIGTERM默认会结束一个进程，SIGKILL总是会结束一个进程。<br/>
-SIGTERM可以被进程trap，并进行相应处理；SIGKILL无法被trap或者忽略。</p>
-
-<p>SIGINT和SIGQUIT用来处理来自terminal的requests。<br/>
-特殊的terminal输入字符可以用来产生这些signal。SIGINT的默认处理和SIGTERM的默认处理相同。<br/>
-SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加的处理，比如生成core dump。这两个信号都可以被trap或者忽略。</p>
-
-<p>SIGHUP是用来处理terminal connection lost的问题，而不是结束一个进程。但是，SIGHUP的默认行为也SIGTERM一样，也是结束进程。</p>
-
-<h6>参考文献</h6>
-
-<p><a href="http://stackoverflow.com/questions/4042201/how-does-sigint-relate-to-the-other-termination-signals">How does termination signals related to each other</a><br/>
-<a href="http://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html">Signal header file with detailed description</a><br/>
-<a href="http://en.wikipedia.org/wiki/Signal_(computing">List of Unix signal</a>#List_of_signals)</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby Popen Subprocess]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/07/ruby-popen-subprocess/"/>
-    <updated>2013-11-07T16:17:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/07/ruby-popen-subprocess</id>
-    <content type="html"><![CDATA[<p>Ruby有多种方法可以创建subprocess。当需要和subprocess的IO进行交互的时候，Ruby的popen方法是最合适的。</p>
-
-<ul>
-<li><p>sub.rb文件
-<code>ruby
-trap("INT") do
-  STDERR.puts "sub pid #{$$} Control-C"
-  exit 2
-end
-puts "#{$$}"
-STDOUT.flush
-sleep 10
-</code></p></li>
-<li><p>popen_sub.rb文件
-<code>ruby
-IO.popen("ruby sub.rb") do |pipe|
-puts "parent pid: #{$$}, popen return (child) pid: #{pipe.pid}"
-line = pipe.gets      # pid from child
-puts "child says it's pid is: "+line
-Process.kill 'INT', pipe.pid
-childs_last_word = pipe.gets
-if childs_last_word
-  puts "child's last word: " + childs_last_word
-end
-end
-puts "child's exit code: #{$?.exitstatus}"
-</code></p></li>
-<li><p>运行一下命令
-<code>
-[mac]$  ruby popen_sub.rb
-parent pid: 3046, popen return (child) pid: 3047
-child says it's pid is: 3047
-sub pid 3047 Control-C
-child's exit code: 2
-</code></p></li>
-</ul>
-
-
-<h6>参考文献</h6>
-
-<p><a href="http://blog.robseaman.com/2008/12/12/sending-ctrl-c-to-a-subprocess-with-ruby">sending ctrl c to a subprocess with ruby</a></p>
 ]]></content>
   </entry>
   

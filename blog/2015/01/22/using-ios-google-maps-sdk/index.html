@@ -44,7 +44,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
   
-    <h2>Thoughts about Ruby, Rails and iOS.</h2>
+    <h2>Thoughts about Ruby, iOS and Growth Hacking</h2>
   
 </hgroup>
 
@@ -62,7 +62,10 @@
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/ios">iOS</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
@@ -117,43 +120,17 @@
 
 <h2>Possible issues</h2>
 
-<ol>
-<li>In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework</li>
-<li>In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:
- <code>sh
- -force_load $(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps
-</code></li>
-<li>Delay when load maps. When user click to access maps view, app will fetch location data from server. This process takes time and map will have a moment stop at the position of starting position. This will confuse user and thought maps is not working properly.
-Solution is to preload data that is near the really location, so google maps will do the animation. Since the animation will take a while, during which time, another thread will fetch the data and then show the correct location.</li>
-</ol>
+<p>1.In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework.</p>
 
+<p>2.In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
-</span><span class='line'>    <span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
-</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
-</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
-</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-force_load <span class="k">$(</span>PROJECT_DIR<span class="k">)</span>/GoogleMaps.framework/GoogleMaps
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ol>
-<li>Use google maps in a subview.<br/>
-Following Code will not work in a subview.</li>
-</ol>
-
+<p>3.Use google maps in a subview.<br/>
+Following Code will not work in a subview.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -269,7 +246,7 @@ Following Code will not work in a subview.</li>
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/objective-c/'>objective-c</a>
+    <a class='category' href='/blog/categories/ios/'>ios</a>
   
 </span>
 
@@ -301,8 +278,21 @@ Following Code will not work in a subview.</li>
 <aside class="sidebar">
   
     <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan, mainly about ruby and iOS development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/10/ruby-hash-implementation/">Ruby Hash Implementation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a>
@@ -314,14 +304,6 @@ Following Code will not work in a subview.</li>
     
       <li class="post">
         <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/05/01/sql-injection/">SQL Injection</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/08/css-notes/">CSS NOTES</a>
       </li>
     
   </ul>
