@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Cache Expiration - Ian&#8217;s Tech Note</title>
+  <title>Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method - Ian&#8217;s Tech Note</title>
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Cache过期 Key Based Cache Expiration 优点： 降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。 缺点： 适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法） 每次查询， &hellip;">
+  <meta name="description" content="No, but it&rsquo;s good practise to call. 1
+It's a good habit to get into, in case you change your inheritance structure and suddenly the class that &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://iandai.github.io/blog/2014/07/08/cache-expiration/">
+  <link rel="canonical" href="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
@@ -71,7 +72,7 @@
   
   <header>
     
-      <h1 class="entry-title">Cache Expiration</h1>
+      <h1 class="entry-title">Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method</h1>
     
     
       <p class="meta">
@@ -80,36 +81,25 @@
 
 
 
-<time class='entry-date' datetime='2014-07-08T18:46:10+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:46 pm</span></time>
+<time class='entry-date' datetime='2015-06-09T12:08:39+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>Cache过期</h2>
-
-<ul>
-<li><p>Key Based Cache Expiration<br/>
-  优点：
-      降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。
-  缺点：
-      适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法）
-      每次查询，都需要首先查询update_at字段。</p></li>
-<li><p>ORM模型回调接口删除cache（after_save, before_destroy, etc)<br/>
-  优点：
-      快。
-  缺点：
-      增加一定的代码复杂度。
-      若不是ORM模型的代码，需要手动添加回调接口。</p></li>
-<li><p>在代码中增加删除cache的代码<br/>
-  优点：
-      无。
-  缺点：
-      增加代码复杂度。      <br/>
-      如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
+<div class="entry-content"><ul>
+<li>No, but it&rsquo;s good practise to call.</li>
 </ul>
 
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>It's a good habit to get into, in case you change your inheritance structure and suddenly the class that used to inherit from UIViewController now inherits from something that does do something in the viewDidLoad method.</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
 </div>
 
 
@@ -125,12 +115,12 @@
 
 
 
-<time class='entry-date' datetime='2014-07-08T18:46:10+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:46 pm</span></time>
+<time class='entry-date' datetime='2015-06-09T12:08:39+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/cache/'>cache</a>
+    <a class='category' href='/blog/categories/ios/'>ios</a>
   
 </span>
 
@@ -139,7 +129,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2014/07/08/cache-expiration/" data-via="" data-counturl="http://iandai.github.io/blog/2014/07/08/cache-expiration/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/" data-via="" data-counturl="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/" >Tweet</a>
   
   
   
@@ -148,10 +138,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/05/01/sql-injection/" title="Previous Post: SQL Injection">&laquo; SQL Injection</a>
+        <a class="basic-alignment left" href="/blog/2015/04/10/ruby-hash-implementation/" title="Previous Post: Ruby hash implementation">&laquo; Ruby hash implementation</a>
       
       
-        <a class="basic-alignment right" href="/blog/2015/01/22/using-ios-google-maps-sdk/" title="Next Post: Using iOS Google Maps SDK">Using iOS Google Maps SDK &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2015/06/12/average-reteion-for-google-play-apps/" title="Next Post: average reteion for google play apps">average reteion for google play apps &raquo;</a>
       
     </p>
   </footer>

@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Cache Expiration - Ian&#8217;s Tech Note</title>
+  <title>Facebook Growth VP Alex Schultz&#8217;s Talk on Growth - Ian&#8217;s Tech Note</title>
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Cache过期 Key Based Cache Expiration 优点： 降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。 缺点： 适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法） 每次查询， &hellip;">
+  <meta name="description" content="Facebook Growth Team VP Alex Schultz关于Growth的演讲。
+Alex Schultz认为对于growth来说什么最重要：retention。
+然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80% &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://iandai.github.io/blog/2014/07/08/cache-expiration/">
+  <link rel="canonical" href="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
@@ -71,7 +73,7 @@
   
   <header>
     
-      <h1 class="entry-title">Cache Expiration</h1>
+      <h1 class="entry-title">Facebook Growth VP Alex Schultz&#8217;s Talk on Growth</h1>
     
     
       <p class="meta">
@@ -80,36 +82,27 @@
 
 
 
-<time class='entry-date' datetime='2014-07-08T18:46:10+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:46 pm</span></time>
+<time class='entry-date' datetime='2015-02-15T12:08:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>Cache过期</h2>
+<div class="entry-content"><div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div>
 
-<ul>
-<li><p>Key Based Cache Expiration<br/>
-  优点：
-      降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。
-  缺点：
-      适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法）
-      每次查询，都需要首先查询update_at字段。</p></li>
-<li><p>ORM模型回调接口删除cache（after_save, before_destroy, etc)<br/>
-  优点：
-      快。
-  缺点：
-      增加一定的代码复杂度。
-      若不是ORM模型的代码，需要手动添加回调接口。</p></li>
-<li><p>在代码中增加删除cache的代码<br/>
-  优点：
-      无。
-  缺点：
-      增加代码复杂度。      <br/>
-      如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
-</ul>
 
+<p>Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
+Alex Schultz认为对于growth来说什么最重要：retention。<br/>
+然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
+具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
+另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
+然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
+再之后，讲了一些具体策略。介绍个facebook,hotmail,paypal等公司实现增长的一些策略。</p>
+
+<h6>Source</h6>
+
+<p><a href="http://startupclass.samaltman.com/courses/lec06/">How to Start a Startup: Growth</a></p>
 </div>
 
 
@@ -125,12 +118,12 @@
 
 
 
-<time class='entry-date' datetime='2014-07-08T18:46:10+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:46 pm</span></time>
+<time class='entry-date' datetime='2015-02-15T12:08:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/cache/'>cache</a>
+    <a class='category' href='/blog/categories/growthhacking/'>growthhacking</a>
   
 </span>
 
@@ -139,7 +132,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2014/07/08/cache-expiration/" data-via="" data-counturl="http://iandai.github.io/blog/2014/07/08/cache-expiration/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/" data-via="" data-counturl="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/" >Tweet</a>
   
   
   
@@ -148,10 +141,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/05/01/sql-injection/" title="Previous Post: SQL Injection">&laquo; SQL Injection</a>
+        <a class="basic-alignment left" href="/blog/2015/02/06/mysql-performance-tuning/" title="Previous Post: Mysql Performance Tuning">&laquo; Mysql Performance Tuning</a>
       
       
-        <a class="basic-alignment right" href="/blog/2015/01/22/using-ios-google-maps-sdk/" title="Next Post: Using iOS Google Maps SDK">Using iOS Google Maps SDK &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2015/04/10/ruby-hash-implementation/" title="Next Post: Ruby hash implementation">Ruby hash implementation &raquo;</a>
       
     </p>
   </footer>

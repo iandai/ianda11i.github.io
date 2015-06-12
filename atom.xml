@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-05-22T17:05:34+09:00</updated>
+  <updated>2015-06-12T16:06:54+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,41 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Average Reteion for Google Play Apps]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/"/>
+    <updated>2015-06-12T15:41:08+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps</id>
+    <content type="html"><![CDATA[<p>原链接
+<a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
+
+<p>Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
+题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
+作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
+另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/"/>
+    <updated>2015-06-09T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/09/call-super-viewdidload</id>
+    <content type="html"><![CDATA[<ul>
+<li>No, but it&rsquo;s good practise to call.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>It's a good habit to get into, in case you change your inheritance structure and suddenly the class that used to inherit from UIViewController now inherits from something that does do something in the viewDidLoad method.</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby Hash Implementation]]></title>
@@ -45,6 +80,28 @@
 <h6>参考文献</h6>
 
 <p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Facebook Growth VP Alex Schultz's Talk on Growth]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/"/>
+    <updated>2015-02-15T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth</id>
+    <content type="html"><![CDATA[<div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div>
+
+
+<p>Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
+Alex Schultz认为对于growth来说什么最重要：retention。<br/>
+然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
+具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
+另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
+然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
+再之后，讲了一些具体策略。介绍个facebook,hotmail,paypal等公司实现增长的一些策略。</p>
+
+<h6>Source</h6>
+
+<p><a href="http://startupclass.samaltman.com/courses/lec06/">How to Start a Startup: Growth</a></p>
 ]]></content>
   </entry>
   
@@ -1691,145 +1748,6 @@ SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加�
 <h6>参考文献</h6>
 
 <p><a href="http://blog.robseaman.com/2008/12/12/sending-ctrl-c-to-a-subprocess-with-ruby">sending ctrl c to a subprocess with ruby</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby文件的读写]]></title>
-    <link href="http://iandai.github.io/blog/2013/09/27/ruby-wen-jian-de-du-xie/"/>
-    <updated>2013-09-27T23:40:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/09/27/ruby-wen-jian-de-du-xie</id>
-    <content type="html"><![CDATA[<h2>Basic</h2>
-
-<ol>
-<li>文件的关闭
-
-<ul>
-<li>当使用File.open打开文件的时候，block结束的时候，文件会自动关闭.</li>
-</ul>
-</li>
-<li>File.open and File.new的关系
-
-<ul>
-<li>File.new后面不能加block。With no associated block, File.open is a synonym for ::new.</li>
-</ul>
-</li>
-<li>Kernel.open和File.open的区别
-
-<ul>
-<li>Kernel.open除了打开文件之外，还可能打开其他内容，比如url。Kernel.open looks at the string to decide what to do with it.</li>
-</ul>
-</li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;.irbrc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; File</span>
-</span><span class='line'><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;http://google.com/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">class</span> <span class="c1"># =&gt; StringIO</span>
-</span><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;http://google.com/&quot;</span><span class="p">)</span> <span class="c1"># =&gt; Errno::ENOENT: No such file or directory - http://google.com/</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>读文件</h2>
-
-<ul>
-<li>File的方式</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>      <span class="c1">#=&gt; 最常用方式</span>
-</span><span class='line'> <span class="c1">#  IO class&#39;s instance method each_line equals to each.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file1</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
-</span><span class='line'> <span class="c1"># File.new不能添加block。With no associated block, File.open is a synonym for ::new.    </span>
-</span><span class='line'><span class="n">file1</span><span class="o">.</span><span class="n">each_line</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="n">line</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="n">file1</span><span class="o">.</span><span class="n">close</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">file2</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="k">while</span> <span class="n">line</span> <span class="o">=</span> <span class="n">file2</span><span class="o">.</span><span class="n">gets</span>    <span class="c1"># gets input from file, which means read from file</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="n">line</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="n">file2</span><span class="o">.</span><span class="n">close</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>IO的方式</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-</span><span class='line'>  <span class="c1"># File.read reads a file completely and returns it as a string.</span>
-</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">readlines</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>
-</span><span class='line'> <span class="c1"># Reads the entire file specified by name as individual lines, and returns those lines in an array.</span>
-</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="s2">&quot;test.txt&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span> <span class="nb">puts</span> <span class="n">line</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>写文件</h2>
-
-<p>1 常用方式 (preferred approach)</p>
-
-<pre><code>File.open("output.txt", "a+") { |file| file.puts "Hello World!"}   # 自动换行
-File.open("output.txt", "a+") { |file| writes "Hello World!\n"}   # 不会自动换行
-File.open("output.txt", "a+") { |file| file &lt;&lt; "Hello, world.\n"}   # 不会自动换行 
-</code></pre>
-
-<p>2 简单方式，一行写文件
-    File.write(&lsquo;output.txt&rsquo;, &lsquo;content&rsquo;)# 会将原来的内容删除，然后写入
-    IO.write(&ldquo;output.txt&rdquo;, new_line) # 会将原来的内容删除，然后写入</p>
-
-<p>3 Kernel.open方式</p>
-
-<pre><code>open('myfile.out', 'w') { |f|  f.puts "Hello, world."}
-</code></pre>
-
-<p>4 不使用block方式，需要使用ensure来关闭文件</p>
-
-<pre><code>begin 
- file = File.open("/tmp/some_file", "w") 
- file.write("your text") 
-rescue IOError =&gt; e #some error occur, dir not writable etc. 
-ensure 
- file.close unless file == nil
-end
-</code></pre>
-
-<h2>将文件清空</h2>
-
-<pre><code> File.truncate("out.txt", 0)   #=&gt; 0
- File.size("out")              #=&gt; 0
-</code></pre>
-
-<h6>参考文献</h6>
-
-<p><a href="http://stackoverflow.com/questions/1727217/file-open-open-and-io-foreach-in-ruby-what-is-the-difference">The difference of File.open ,open and IO.foreach in Ruby</a></p>
 ]]></content>
   </entry>
   

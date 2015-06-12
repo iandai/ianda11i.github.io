@@ -9,8 +9,8 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。 1
-murmur_hash(key) % M hash collision的处理方法 当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小， &hellip;">
+  <meta name="description" content="原链接
+http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/ Andrew Chen的文章：New data &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +75,81 @@ murmur_hash(key) % M hash collision的处理方法 当碰撞的某一个位置�
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/06/12/average-reteion-for-google-play-apps/">Average Reteion for Google Play Apps</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-12T15:41:08+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:41 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>原链接
+<a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
+
+<p>Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
+题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
+作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
+另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/09/call-super-viewdidload/">Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-09T12:08:39+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>No, but it&rsquo;s good practise to call.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>It's a good habit to get into, in case you change your inheritance structure and suddenly the class that used to inherit from UIViewController now inherits from something that does do something in the viewDidLoad method.</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/04/10/ruby-hash-implementation/">Ruby Hash Implementation</a></h1>
     
     
@@ -118,6 +193,48 @@ murmur_hash(key) % M hash collision的处理方法 当碰撞的某一个位置�
 <h6>参考文献</h6>
 
 <p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/15/facebook-growth-vp-talk-about-growth/">Facebook Growth VP Alex Schultz&#8217;s Talk on Growth</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-15T12:08:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div>
+
+
+<p>Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
+Alex Schultz认为对于growth来说什么最重要：retention。<br/>
+然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
+具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
+另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
+然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
+再之后，讲了一些具体策略。介绍个facebook,hotmail,paypal等公司实现增长的一些策略。</p>
+
+<h6>Source</h6>
+
+<p><a href="http://startupclass.samaltman.com/courses/lec06/">How to Start a Startup: Growth</a></p>
 </div>
   
   
@@ -1040,362 +1157,6 @@ Referance<br/>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-03-18T13:38:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:38 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Agent Forwarding</h3>
-
-<p>A - B - C 在从A访问C过程中经过B，但是不用在B上安装私钥，叫做Agent Forwarding</p>
-
-<p>We have also seen another type of SSH forwarding, agent forwarding. [Section 6.3.5] This let us
-create SSH connections from one computer, through a second computer, and onto a third using
-public-key authentication, but without installing our private key on the second machine.</p>
-
-<h3>Port Forwarding, also names as tunneliing</h3>
-
-<p>A - B 之间使用例如TCP/IP这种不安全的协议的时候，在TCP/IP协议之中，增加一个安全的通道</p>
-
-<p>Port forwarding is sometimes called tunneling because the SSH connection provides a secure &ldquo;tunnel&rdquo; through which another TCP/IP connection may pass.
-SSH uses TCP/IP as its transport mechanism, usually TCP port 22 on the server machine, as it encrypts and decrypts the traffic passing over the connection.</p>
-
-<h3>Local Port Forwarding and Remote Port Forwarding</h3>
-
-<p>Local Port Forwarding—In most cases, local port forwarding is used to forward data securely from another
-client application running on the same computer as the Secure Shell client. The Secure Shell client is
-configured to redirect data from a specified local port (on the same computer as the Secure Shell client),
-through the secure tunnel to a specified destination host and port. You can configure any other client
-running on the same computer to connect to the forwarded port (rather than directly to the destination
-host and port). After the Secure Shell connection is established, the Secure Shell client listens on the
-specified port and redirects all data sent to that port through the secure tunnel to the Secure Shell
-server. The server decrypts the data, and then directs it to the destination host and port.</p>
-
-<p>Remote Port Forwarding—Remote port forwarding is used to forward data securely from any client
-application running on the same computer as the Secure Shell server. In this case, the client session
-requests that a specified remote port (on the same computer as the Secure Shell server) be used to
-redirect the data. You can configure any other client running on the same computer as the Secure Shell
-server to connect to the forwarded port (rather than directly to the destination host and port). After the
-Secure Shell connection is established, the Secure Shell server listens on the specified port and redirects
-all data sent to that port through the secure tunnel to the Secure Shell client. The client decrypts the
-data and then directs it to the destination host and port.</p>
-
-<h3>多阶段Port Forwarding/Tunnelling</h3>
-
-<p><a href="http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops">http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops</a></p>
-
-<h6>参考文献</h6>
-
-<p><a href="http://www.amazon.com/SSH-The-Secure-Shell-Definitive/dp/0596008953">SSH, The Secure Shell - The Definitive Guide | Chapter Port Forwarding and X Forwarding</a></br></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/">Rspec Test Principle - Test Only Your Own Code</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-02-27T20:47:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:47 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>测试的时候，这一点常常被忘记，那就是———只测试自己的代码。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">S3Bucket</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">config_file</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;.....&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@config</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;access_key_id&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;secret_access_key&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;bucket_name&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;bucket_name&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">s3b</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">S3Bucket</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket with wrong access_key_id&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>    <span class="n">expect</span> <span class="p">{</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="n">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">&quot;AWS Access Key Id does not exist in our records.&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;upload file to s3&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">public_url</span> <span class="o">=</span> <span class="n">s3b</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span><span class="si">}</span><span class="s2">/s3.yml&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">public_url</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">URI</span><span class="o">::</span><span class="no">HTTPS</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面这段代码，测试上传文件到Amazon S3的代码。这段代码的问题是，它依赖于S3的服务是可行的，而且它其实更多的是在测试S3 SDK。
-比如它测试了access key id出错的时候，会抛出ArgumentError。但是抛出ArgumentError的是S3的SDK，而不是S3Bucket类中的代码，所以这个测试其实是不必要的。</p>
-
-<p>在测试这类测试的时候，可以使用rspec-mocks来进行测试。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">S3Bucket</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>    <span class="vi">@file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span><span class="si">}</span><span class="s2">/../../../test.txt&quot;</span>
-</span><span class='line'>    <span class="n">config_file</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;.....&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@config</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;access_key_id&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;secret_access_key&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;bucket_name&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;bucket_name&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>      
-</span><span class='line'>    <span class="c1"># AWS::S3 class should response to :new method</span>
-</span><span class='line'>    <span class="n">s3</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="p">)</span>
-</span><span class='line'>    <span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:new</span><span class="p">)</span><span class="o">.</span><span class="n">with</span><span class="p">(</span><span class="ss">:access_key_id</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:secret_access_key</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># build bucket object</span>
-</span><span class='line'>    <span class="n">bucket</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">Bucket</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">s3</span><span class="o">.</span><span class="n">stub_chain</span><span class="p">(</span><span class="ss">:buckets</span><span class="p">,</span> <span class="ss">:[]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># build s3 object with method upload and delete</span>
-</span><span class='line'>    <span class="n">s3_obj</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">S3Object</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">bucket</span><span class="o">.</span><span class="n">stub_chain</span><span class="p">(</span><span class="ss">:objects</span><span class="p">,</span> <span class="ss">:[]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">s3_obj</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">s3_obj</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:write</span><span class="p">)</span><span class="o">.</span><span class="n">with</span><span class="p">(</span><span class="ss">:file</span> <span class="o">=&gt;</span> <span class="vi">@file_path</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@test_url</span> <span class="o">=</span> <span class="no">URI</span><span class="o">::</span><span class="no">HTTPS</span><span class="o">.</span><span class="n">build</span><span class="p">({</span><span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s1">&#39;www.example.com&#39;</span><span class="p">,</span> <span class="ss">:path</span> <span class="o">=&gt;</span> <span class="s1">&#39;/foo/bar&#39;</span><span class="p">})</span>
-</span><span class='line'>    <span class="n">s3_obj</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:public_url</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="vi">@test_url</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket with &quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">s3b</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">S3Bucket</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;upload file to s3&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">public_url</span> <span class="o">=</span> <span class="n">s3b</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="vi">@file_path</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">public_url</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="vi">@test_url</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码，对访问S3的代码mock，从而不需要进行网络访问便测试了S3Bucket类中的代码。</p>
-
-<h6>参考</h6>
-
-<p><a href="https://github.com/rspec/rspec-expectations">Rspec Expectations</a></br>
-<a href="http://betterspecs.org/">BetterSpec</a></br></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/04/apache-server-on-macos-using-htaccess/">Apache Server on MacOS Using .htaccess</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-12-04T15:49:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>3:49 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>检测Apache是否支持mod_rewrite</h3>
-
-<p>在httpd.conf文件中的Loaded Modules，是否包含了mod_rewrite模块；如果没有的话，去除这部分的注释。</p>
-
-<h3>让apache服务器支持.htaccess</h3>
-
-<p>在httpd.conf中的DocumentRoot的Directory中，AllowOverride修改为All。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;Directory "/Library/WebServer/Documents"&gt;
-</span><span class='line'>    Options Indexes FollowSymLinks MultiViews
-</span><span class='line'>    AllowOverride None
-</span><span class='line'>    Order allow,deny
-</span><span class='line'>    Allow from all
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;Directory "/Library/WebServer/Documents"&gt;
-</span><span class='line'>    Options Indexes FollowSymLinks MultiViews
-</span><span class='line'>    AllowOverride All
-</span><span class='line'>    Order allow,deny
-</span><span class='line'>    Allow from all
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>在/Library/WebServer/Documents中建立.htaccess 文件</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>RewriteEngine on
-</span><span class='line'>RewriteRule ([a-zA-Z]{1,})-([0-9]{1,}).html$ index.php?action=$1&id=$2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>建立index.php文件</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">echo</span> <span class="nx">‘你的Action是：’</span> <span class="o">.</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="k">echo</span> <span class="nx">‘</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span><span class="nx">’</span><span class="p">;</span>
-</span><span class='line'><span class="k">echo</span> <span class="nx">‘你的ID是：’</span> <span class="o">.</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">在浏览器中输入：localhost</span><span class="o">/</span><span class="nx">view</span><span class="o">-</span><span class="mf">12.</span><span class="nx">html</span>
-</span><span class='line'><span class="nx">输出的是：</span>
-</span><span class='line'><span class="nx">你的Action是：view</span>
-</span><span class='line'><span class="nx">你的ID是：12</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Referance</h3>
-
-<p><a href="http://httpd.apache.org/docs/current/howto/htaccess.html">Apache htaccess doc</a></br>
-<a href="http://blog.csdn.net/Yuhao818/article/details/4680075">Apache htaccess tutorial</a></br>
-<a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">Apache mod_rewirte doc</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1416,23 +1177,23 @@ data and then directs it to the destination host and port.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/06/12/average-reteion-for-google-play-apps/">Average Reteion for Google Play Apps</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/09/call-super-viewdidload/">Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/04/10/ruby-hash-implementation/">Ruby Hash Implementation</a>
       </li>
     
       <li class="post">
+        <a href="/blog/2015/02/15/facebook-growth-vp-talk-about-growth/">Facebook Growth VP Alex Schultz&#8217;s Talk on Growth</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a>
       </li>
     
   </ul>

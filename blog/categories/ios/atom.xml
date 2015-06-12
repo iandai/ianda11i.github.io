@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-05-22T17:05:34+09:00</updated>
+  <updated>2015-06-12T16:06:54+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,25 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/"/>
+    <updated>2015-06-09T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/09/call-super-viewdidload</id>
+    <content type="html"><![CDATA[<ul>
+<li>No, but it&rsquo;s good practise to call.</li>
+</ul>
+
+
+<pre><code>It's a good habit to get into, in case you change your inheritance structure and suddenly the class that used to inherit from UIViewController now inherits from something that does do something in the viewDidLoad method.
+</code></pre>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using iOS Google Maps SDK]]></title>

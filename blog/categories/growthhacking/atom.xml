@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Growthhacking | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/growthhacking/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-06-12T16:06:54+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Average Reteion for Google Play Apps]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/"/>
+    <updated>2015-06-12T15:41:08+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps</id>
+    <content type="html"><![CDATA[<p>原链接
+<a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
+
+<p>Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
+题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
+作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
+另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Facebook Growth VP Alex Schultz's Talk on Growth]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/"/>
+    <updated>2015-02-15T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth</id>
+    <content type="html"><![CDATA[<p><div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div></p>
+
+<p>Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
+Alex Schultz认为对于growth来说什么最重要：retention。<br/>
+然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
+具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
+另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
+然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
+再之后，讲了一些具体策略。介绍个facebook,hotmail,paypal等公司实现增长的一些策略。</p>
+
+<h6>Source</h6>
+
+<p><a href="http://startupclass.samaltman.com/courses/lec06/">How to Start a Startup: Growth</a></p>
+]]></content>
+  </entry>
+  
+</feed>
