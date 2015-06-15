@@ -9,7 +9,10 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Agent Forwarding A - B - C 在从A访问C过程中经过B，但是不用在B上安装私钥，叫做Agent Forwarding We have also seen another type of SSH forwarding, agent forwarding. [Section 6 &hellip;">
+  <meta name="description" content="Source:
+How to Start a Startup: Growth
+http://startupclass.samaltman.com/courses/lec06/ Summuary:
+Facebook Growth Team VP Alex Schultz关于Growth的演讲。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +71,964 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/15/facebook-growth-vp-talk-about-growth/">Facebook Growth VP Alex Schultz&#8217;s Talk on Growth</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-15T12:08:39+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div>
+
+
+<p>Source:
+How to Start a Startup: Growth
+<a href="http://startupclass.samaltman.com/courses/lec06/">http://startupclass.samaltman.com/courses/lec06/</a></p>
+
+<p>Summuary:<br/>
+Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
+Alex Schultz认为对于growth来说什么最重要：retention。<br/>
+然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
+具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
+另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
+然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
+再之后，讲了一些具体策略。介绍个facebook，hotmail，paypal等公司实现增长的一些策略。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-06T14:57:02+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>查看mysql运行状况</h2>
+
+<ul>
+<li>SHOW STATUS是查看MySQL运行情况</li>
+<li>SHOW VARIABLES是查看MySQL的配置参数，可以使用类似SHOW VARIABLES LIKE &lsquo;Key%&rsquo;</li>
+<li>SHOW PROCESSLIST是查看当前正在进行的进程</li>
+</ul>
+
+
+<h2>Mysql tunning</h2>
+
+<h3>（1） Rule: 一次只修改一个参数！</h3>
+
+<h3>（2）查看各种指标，寻找Bottle neck：</h3>
+
+<ul>
+<li>如果 Unix top显示服务的 CPU 占用率小于 70%，系统瓶颈可能在磁盘读写上。</li>
+<li><code>iostat -d -x -k 1 10</code>查看设备使用率（%util）、响应时间（await）。Disk I/O 如果高的话，打开Innodb_buffer_pool_size可以提高速度，因为mysql可以把许多东西放在内存，而不用频繁的去读磁盘数据，进行DISK I/O.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size’;
+</span><span class='line'>
+</span><span class='line'>决定innodb-buffer-pool-size方法：
+</span><span class='line'>mysql&gt;     SELECT CEILING(Total_InnoDB_Bytes*1.6/POWER(1024,3)) RIBPS FROM
+</span><span class='line'>(SELECT SUM(data_length+index_length) Total_InnoDB_Bytes
+</span><span class='line'>FROM information_schema.tables WHERE engine='InnoDB') A;
+</span><span class='line'>mysql&gt;     SELECT (PagesData*PageSize)/POWER(1024,3) DataGB FROM
+</span><span class='line'>(SELECT variable_value PagesData
+</span><span class='line'>FROM information_schema.global_status
+</span><span class='line'>WHERE variable_name='Innodb_buffer_pool_pages_data') A,
+</span><span class='line'>(SELECT variable_value PageSize
+</span><span class='line'>FROM information_schema.global_status
+</span><span class='line'>WHERE variable_name='Innodb_page_size') B;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>innodb_flush_log_at_trx_commit  （这个很管用）</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>默认值1的意思是每一次事务提交或事务外的指令都需要把日志写入（flush）硬盘，这是很费时的。特别是使用电 池供电缓存（Battery backed up cache）时。设成2对于很多运用，特别是从MyISAM表转过来的是可以的，它的意思是不写入硬盘而是写入系统缓存。日志仍然会每秒flush到硬 盘，所以你一般不会丢失超过1-2秒的更新。设成0会更快一点，但安全方面比较差，即使MySQL挂了也可能会丢失事务的数据。而值2只会在整个操作系统 挂了时才可能丢数据。 </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Query tuning</h2>
+
+<h3>(1) Slow query log</h3>
+
+<ul>
+<li>打开slow_query_log和log_queries_not_using_indexes</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>long_query_time    ：  设定慢查询的阀值，超出次设定值的SQL即被记录到慢查询日志，缺省值为10s
+</span><span class='line'>slow_query_log      ：  指定是否开启慢查询日志
+</span><span class='line'>log_slow_queries    ：  指定是否开启慢查询日志(该参数要被slow_query_log取代，做兼容性保留)
+</span><span class='line'>slow_query_log_file ：  指定慢日志文件存放位置，可以为空，系统会给一个缺省的文件host_name-slow.log
+</span><span class='line'>min_examined_row_limit：查询检查返回少于该参数指定行的SQL不被记录到慢查询日志
+</span><span class='line'>log_queries_not_using_indexes: 不使用索引的慢查询日志是否记录到索引
+</span><span class='line'>
+</span><span class='line'>show global  variables like '%slow%';
+</span><span class='line'>set global log_slow_queries=1;
+</span><span class='line'>set global long_query_time=1;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>使用<code>mysqldumpslow -s c -t 10 /database/mysql/slow-log</code>来查看slow log</li>
+</ul>
+
+
+<h3>(2) Optimize query</h3>
+
+<ul>
+<li>Use Explain</li>
+<li>Use Select_scan
+
+<ul>
+<li>show status like &lsquo;Select_scan&rsquo;;   Select_scan/总查询数量商应该是常数。该值持续增长，说明需要优化。</li>
+</ul>
+</li>
+<li>Use Select_full_join
+
+<ul>
+<li>没有主键（key）联合（Join）的执行。</li>
+</ul>
+</li>
+<li>Use MySQL Query Analyzer（or alternative）</li>
+<li>Tips:
+
+<ul>
+<li>The IN clause in MySQL is very fast, much faster than a join.</li>
+<li>Avoid % at the start of LIKE on an index</li>
+<li>Use UNION ALL when appropriate; default is UNION DISTINCT!</li>
+<li>Understand left/right joins and use only when needed</li>
+<li>使用memlock可以避免MySQL内存进入swap</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>(3) insert/update</h3>
+
+<ul>
+<li>Use batch insert</li>
+<li>在向 InnoDB 导入数据时，确认MySQL没有打开 autocommit=1 。否则每个插入语句都要将 log 刷新到磁盘。在你的 SQL 导入文件的第一行加入<code>set autocommit=0;</code>,并在最后一行加入<code>commit</code>;</li>
+</ul>
+
+
+<h3>(4) index</h3>
+
+<ul>
+<li>For large strings that need to be indexed, i.e. URLs, consider using a separate column using the MySQL MD5 to create a hash key and
+index on it instead.</li>
+<li>使用多列索引，multiple column index （force index）</li>
+<li>Use prefix indexes on large keys</li>
+</ul>
+
+
+<h2>Schemas</h2>
+
+<ul>
+<li>Do not automatically use 255 for VARCHAR</li>
+<li>如果要存储变长的字符串或字段可能会包含大量的 NULLs，请使用 VARCHAR 型字段代替 CHAR 。一个 CHAR(n) 字段总是使用 n bytes 来存储数据，即使这个字符串很短或是一个 NULL 值。较小的表更加适合缓冲池同时能够减少磁盘 I/O 。</li>
+<li>Use procedue analyse to get recommedataion
+
+<ul>
+<li>SELECT * FROM sprocket_engine_execute_log PROCEDURE ANALYSE();</li>
+</ul>
+</li>
+<li>Consider use enum, set types</li>
+</ul>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://dba.stackexchange.com/questions/27328/how-large-should-be-mysql-innodb-buffer-pool-size">调节innodb-buffer-pool-size</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-measure-mysql-query-performance-with-mysqlslap">mysqlslap</a></li>
+<li><a href="http://downloads.mysql.com/presentations/MySQL_Perfornance__Tuning_Overview_jp.pdf">MySQL Performance &amp; Tuning</a></li>
+<li><a href="http://man.chinaunix.net/database/mysql/inonodb_zh/9.htm">InnoDB性能调整技巧</a></li>
+<li><a href="http://robbin.iteye.com/blog/461382">MySQL InnoDB性能调整实践</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-01T02:07:59+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>2:07 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
+
+<p>Rails fragment caching code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="o">&lt;</span><span class="sx">% cache </span><span class="k">do</span> <span class="sx">%&gt;</span>
+</span><span class='line'><span class="sx">  &lt;% end %&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple.<br/>
+But where is <code>cache</code> from?</p>
+
+<p>With a search of Rails api, We can find that it is a helper from ActionView::Helpers::CacheHelper.</p>
+
+<p>Reading the api, we still have no clue about how does this <code>cache</code> helper method calls the memcached store.
+So let&rsquo;s started to read source.</p>
+
+<p>First, open file actionview/lib/action_view/helpers/cache_helper.rb. We can find following cache method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">perform_caching</span>
+</span><span class='line'>      <span class="n">safe_concat</span><span class="p">(</span><span class="n">fragment_for</span><span class="p">(</span><span class="n">cache_fragment_name</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">),</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">yield</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We notice there is a <code>fragment_for</code> method, let&rsquo;s see where it leads us.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What does <code>read_fragment_for</code> method do?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">controller</span><span class="o">.</span><span class="n">read_fragment</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So <code>read_fragment_for</code> method leads us to a <code>read_fragment</code> method belongs to an object called <code>controller</code>.<br/>
+Where does this <code>controller</code> object comes from?<br/>
+It is actually an attribute reader and writer backed by an internally-named instance variable.<br/>
+It is define in actionview/lib/action_view/helpers/controller_helper.rb file.<br/>
+And it is initiated in actionview/lib/action_view/base.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionView</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Helpers</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">ControllerHelper</span>
+</span><span class='line'>        <span class="n">attr_internal</span> <span class="ss">:controller</span><span class="p">,</span> <span class="ss">:request</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">assign_controller</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="vi">@_controller</span> <span class="o">=</span> <span class="n">controller</span>
+</span><span class='line'>            <span class="vi">@_request</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">request</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:request</span><span class="p">)</span>
+</span><span class='line'>            <span class="vi">@_config</span>  <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inheritable_copy</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:config</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s come back to <code>read_fragment</code> method.
+In actionpack/lib/action_controller/caching/fragments.rb file, we find this method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionController</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Caching</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">Fragments</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">read_fragment</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">unless</span> <span class="n">cache_configured?</span>
+</span><span class='line'>          <span class="n">key</span> <span class="o">=</span> <span class="n">fragment_cache_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">instrument_fragment_cache</span> <span class="ss">:read_fragment</span><span class="p">,</span> <span class="n">key</span> <span class="k">do</span>
+</span><span class='line'>            <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">result</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:html_safe</span><span class="p">)</span> <span class="p">?</span> <span class="n">result</span><span class="o">.</span><span class="n">html_safe</span> <span class="p">:</span> <span class="n">result</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We are closer, because we see this line.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where is <code>cache_store</code> defined? We can find following code in actionpack/lib/action_controller/caching.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span><span class="o">=</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span> <span class="o">=</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">.</span><span class="n">lookup_store</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, in activesupport/lib/active_support/cache.rb filem, we find <code>lookup_store</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">lookup_store</span><span class="p">(</span><span class="o">*</span><span class="n">store_option</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">store</span><span class="p">,</span> <span class="o">*</span><span class="n">parameters</span> <span class="o">=</span> <span class="o">*</span><span class="nb">Array</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">store_option</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">case</span> <span class="n">store</span>
+</span><span class='line'>    <span class="k">when</span> <span class="no">Symbol</span>
+</span><span class='line'>      <span class="n">retrieve_store_class</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">*</span><span class="n">parameters</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">when</span> <span class="kp">nil</span>
+</span><span class='line'>      <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">::</span><span class="no">MemoryStore</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">store</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>An abstract cache store class alse defined in same file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">class</span> <span class="nc">Store</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">options</span> <span class="o">=</span> <span class="n">merged_options</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">key</span> <span class="o">=</span> <span class="n">namespaced_key</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">instrument</span><span class="p">(</span><span class="ss">:read</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">payload</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">entry</span> <span class="o">=</span> <span class="n">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">entry</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">expired?</span>
+</span><span class='line'>            <span class="n">delete_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="kp">nil</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="n">entry</span><span class="o">.</span><span class="n">value</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>          <span class="kp">nil</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In activesupport/lib/active_support/cache/mem_cache_store.rb file, <code>read_entry</code> is implemented.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1"># :nodoc:</span>
+</span><span class='line'>    <span class="n">deserialize_entry</span><span class="p">(</span><span class="vi">@data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">escape_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">options</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Dalli</span><span class="o">::</span><span class="no">DalliError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;DalliError (</span><span class="si">#{</span><span class="n">e</span><span class="si">}</span><span class="s2">): </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">logger</span>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is how fragment cache works in rails.</p>
+
+<p>(完)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-22T20:10:37+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>8:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Steps</h2>
+
+<ol>
+<li> Apply Google Map Api Key</li>
+<li> Import GoogleMaps.bundle in GoogleMaps.framework</li>
+<li> In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
+<li> In <code>AppDelegate</code></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="bp">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">GMSServices</span> <span class="nl">provideAPIKey</span><span class="p">:</span><span class="s">@&quot;API_KEY&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Possible issues</h2>
+
+<p>1.In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework.</p>
+
+<p>2.In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-force_load <span class="k">$(</span>PROJECT_DIR<span class="k">)</span>/GoogleMaps.framework/GoogleMaps
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3.Use google maps in a subview.<br/>
+Following Code will not work in a subview.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;YourViewController.h&quot;</span>
+</span><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">YourViewController</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Create a GMSCameraPosition that tells the map to display the</span>
+</span><span class='line'>    <span class="c1">// coordinate -33.86,151.20 at zoom level 6.</span>
+</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="o">-</span><span class="mf">33.86</span>
+</span><span class='line'>                                                      <span class="nl">longitude</span><span class="p">:</span><span class="mf">151.20</span>
+</span><span class='line'>                                                           <span class="nl">zoom</span><span class="p">:</span><span class="mi">6</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSMapView</span> <span class="nl">mapWithFrame</span><span class="p">:</span><span class="n">CGRectZero</span> <span class="nl">camera</span><span class="p">:</span><span class="n">camera</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span><span class="p">.</span><span class="n">myLocationEnabled</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Creates a marker in the center of the map.</span>
+</span><span class='line'>    <span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Chnage the existing Xib&rsquo;s class into GSMMapView will solve the problem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">weak</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">)</span> <span class="kt">IBOutlet</span> <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
+</span><span class='line'><span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
+</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
+</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">icon</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;map_pin_icon&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15417811/cannot-put-a-google-maps-gmsmapview-in-a-subview-of-main-main-view">Add google maps in a subview</a></li>
+<li><a href="http://dev.classmethod.jp/smartphone/iphone/ios-map-programming-series-1/">Customise GMSMarker</a></li>
+<li><a href="http://stackoverflow.com/questions/16706587/can-i-link-googlemaps-sdk-for-ios-with-a-linker-flag-other-than-objc">Other Linker Flags Conflict</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-07-08T18:46:10+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:46 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Cache过期</h2>
+
+<ul>
+<li><p>Key Based Cache Expiration<br/>
+  优点：
+      降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。
+  缺点：
+      适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法）
+      每次查询，都需要首先查询update_at字段。</p></li>
+<li><p>ORM模型回调接口删除cache（after_save, before_destroy, etc)<br/>
+  优点：
+      快。
+  缺点：
+      增加一定的代码复杂度。
+      若不是ORM模型的代码，需要手动添加回调接口。</p></li>
+<li><p>在代码中增加删除cache的代码<br/>
+  优点：
+      无。
+  缺点：
+      增加代码复杂度。      <br/>
+      如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/01/sql-injection/">SQL Injection</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-05-01T18:41:00+09:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>6:41 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>SQL 注入方法</h2>
+
+<ul>
+<li><p>SQL 扫描工具<br/>
+  sqlmap  <a href="https://github.com/sqlmapproject/sqlmap/wiki/Screenshots">https://github.com/sqlmapproject/sqlmap/wiki/Screenshots</a></p></li>
+<li><p>SQL injection方法<br/>
+1 ‘ or 1 = 1 —<br/>
+2 select * from xxx where a = ‘123;  输入非法内容，看是否有sql error返回。</p></li>
+<li><p>利用漏洞<br/>
+ereg()有bug，无法检测到\0之后的内容，有可能将注入的内容隐藏在\0的后面。</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s2">&quot;123</span><span class="se">\0\0</span><span class="s2">abc&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;source=[</span><span class="si">$a</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/123/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/abc/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">/// ereg cannot detect &quot;abc&quot; after &quot;\0&quot;, so you must not use raw source string!</span>
+</span><span class='line'><span class="c1">/// and you should not use ereg(). instead of it, use preg_match().</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>SQL注入的对策</h2>
+
+<ul>
+<li><p>输入<br/>
+1 不要信任用户的输入，包括cookie。对用户的输入进行校验。如果是数字，就转化为数字，而不是字符类型的数字。<br/>
+2 不要使用动态拼装sql，可以使用参数化的sql或者直接使用存储过程进行数据查询存取。</p></li>
+<li><p>权限<br/>
+1 不要使用有超级用户或其它有权创建新用户的数据库帐号来连接数据库，攻击者可以在数据库中新建一个超级用户。为每个应用使用单独的权限有限的数据库连接。<br/>
+2 删除不再需要的存储过程，例如：master..Xp_cmdshell, xp_startmail, xp_sendmail, sp_makewebtask.</p></li>
+<li><p>其他<br/>
+1 不要把机密信息直接存放，加密或者hash掉密码和敏感的信息。<br/>
+2 应用的异常信息应该给出尽可能少的提示，最好使用自定义的错误信息对原始错误信息进行包装。</p></li>
+</ul>
+
+
+<h3>参考链接</h3>
+
+<p><a href="http://www.php.net/manual/zh/security.database.sql-injection.php">PHP官方手册对策</a><br/>
+<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet">OWASP的SQL注入防止CheatSheet</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/08/css-notes/">CSS NOTES</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-04-08T17:47:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:47 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>Tips</h4>
+
+<p>zen coding快捷键<code>command+e</code><br/>
+CSS布局技术都依赖于三个基本概念：定位，浮动和空白边(margin).<br/>
+Link css: <code>&lt;link rel="stylesheet" href="…." /&gt;</code>, rel stands for relation.<br/>
+inline box 不响应垂直margin, width, height, max/min width/height 等属性声明；block box 则可以响应这些属性。</p>
+
+<h4>CSS使用原则</h4>
+
+<p>前端的素养：注意各个元素之间的对齐方式。<br/>
+html是用来标记这段内容是在做社么，而不是用来stlying的。<br/>
+所以，table tag不用来表示styling画方框，而只是用来显示数据表格。</p>
+
+<h4>font-family属性</h4>
+
+<p>font-family: Verdana, Arial，sans-serif<br/>
+浏览器会依次调用各个字体，直到系统装有该字体。 sans-serif为通用字体族，多数系统都装有该字体族中间的字体。<br/>
+sans-serif代表无衬线体，与中文的黑体相对应.<br/>
+Referance: <a href="http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.">http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.</a></p>
+
+<h4>图片格式</h4>
+
+<p>html使用的图片格式：普通图片使用jpeg，如果需要背景为透明，就必须使用png-24。</p>
+
+<h4>normalize.css</h4>
+
+<p>解决各种浏览器初始状态的不同和兼容问题<br/>
+<a href="https://github.com/necolas/normalize.css">https://github.com/necolas/normalize.css</a></p>
+
+<h4>HTML img标签的alt属性</h4>
+
+<p>alt属性是一个必需的属性，它规定在图像无法显示时的替代文本.<br/>
+alt stands for alternative text.</p>
+
+<h4>使得竖着的list变成横向的navigation list方法</h4>
+
+<p>添加display: inline;<br/>
+Referance: <a href="https://tutsplus.com/lesson/navigation-lists/">https://tutsplus.com/lesson/navigation-lists/</a></p>
+
+<h4>postion: relative和absolute定位 （相对定位和绝对定位）</h4>
+
+<p>相对定位是“相对于”元素在文档流中的初始位置，而绝对定位是“相对于”最近的已定位祖先元素，如果不存在已定位的祖先元素，那么是最初的包含块。<br/>
+相对定位在移动位置之后，不会影响其他文档流中元素的位置。<br/>
+绝对定位在移动位置之后，元素从文档流中抽取出来，原占有的位置被后面的对象顶替上来。</p>
+
+<p>position: absolute 会使得原来的inline元素变成block元素，从而能够使用width属性。</p>
+
+<h4>居中</h4>
+
+<p>水平居中(：margin和width同时使用的时候，才会有居中效果。<br/>
+垂直居中(1)：vertical-align:middle;<br/>
+line-height: 10px;   /<em> must define line-height to use vertical-align </em>/    <br/>
+line-height: 100%;   等于font-size的高度，而不是div的高度<br/>
+垂直居中(2)：padding:25px;  上下padding相等，则自动会垂直居中了</p>
+
+<h4>奇怪的inline-block</h4>
+
+<p>对li使用inline-block的时候，li之间存在space，即使把margin和padding都设置为0，依然无法消除。<br/>
+问题的本质是两个li之间的space问题。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;li&gt;1&lt;/li&gt;
+</span><span class='line'>&lt;li&gt;2&lt;/li&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>space占有4px的空间，所以无法被消除。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;li&gt;1&lt;/li&gt;&lt;li&gt;2&lt;/li&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按照这种方式排列html，中间的space就会消失。<br/>
+另一种方法是将 ul tag 的字体大小设置为0，然后把li tag中的font-size设置回来。<br/>
+<a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">Referance</a></p>
+
+<h4>Margin的垂直collapse（Collapsing margins）</h4>
+
+<p>Horizontal margins never collapse.<br/>
+定义： the expression collapsing margins means that adjoining margins (no non-empty content, padding or border areas or clearance separate them) of two or more boxes (which may be next to one another or nested) combine to form a single margin.<br/>
+两种情况：<br/>
+1. 对于上下两个并列的div块而言，上面div的margin-bottom和下面div的margin-top会塌陷，也就是会取上下两者margin里最大值作为显示值。<br/>
+2. 对于有块级子元素的元素计算高度的方式,如果元素没有垂直边框和填充,那其高度就是其子元素顶部和底部边框边缘之间的距离。<br/>
+Referance<br/>
+<a href="http://blog.csdn.net/dclchj/article/details/9787481">CSS的margin塌陷（collapse）</a><br/>
+<a href="http://www.w3.org/TR/CSS2/box.html">Box model 8.3.1</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -425,701 +1386,6 @@ data and then directs it to the destination host and port.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/12/04/apache-server-on-macos-using-alias/">Apache Server on MacOS Using Alias</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-12-04T15:48:00+09:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>3:48 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li>检查httpd服务是否在运行，不存在的话需要启动.</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo lsof -iTCP:80 -sTCP:LISTEN  -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
-</span><span class='line'>sudo apachectl start
-</span><span class='line'>
-</span><span class='line'>MacOS  apache path（http://wiki.apache.org/httpd/DistrosDefaultLayout）
-</span><span class='line'>ServerRoot              ::      /usr
-</span><span class='line'>Primary Config Fle      ::      /etc/apache2/httpd.conf
-</span><span class='line'>DocumentRoot            ::      /Library/WebServer/Documents
-</span><span class='line'>ErrorLog                ::      /var/log/apache2/error_log
-</span><span class='line'>AccessLog               ::      /var/log/apache2/access_log
-</span><span class='line'>cgi-bin                 ::      /Library/WebServer/CGI-Executables (empty by default)
-</span><span class='line'>binary                  ::      /usr/sbin/httpd
-</span><span class='line'>start/stop              ::      /usr/sbin/     (start|stop|restart|fullstatus|status|graceful|graceful-stop|configtest|help)</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><p>在Users/g_dai/codes/site文件夹中建立project，创建文件1.html，并写入内容Hello world.</p></li>
-<li><p>在DocumentRoot /Library/WebServer/Documents中创建文件夹docs.</p></li>
-<li><p>在httpd.conf中写入，注意/docs 后面没有slash.</p></li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Alias /docs Users/g_dai/codes/site
-</span><span class='line'>&lt;Directory Users/g_dai/codes/site&gt; (保证这个folder可以被apache访问）
-</span><span class='line'>    Order allow,deny
-</span><span class='line'>    Allow from all
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Referance</h4>
-
-<p><a href="http://httpd.apache.org/docs/2.2/mod/mod_alias.html">Apache mod_alias</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/">Run Ruby CGI Scripts With Apache</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-15T19:34:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:34 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>CGI Scripts on server</h2>
-
-<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> #!/bin/env ruby
-</span><span class='line'> print "Content-type: text/html\r\n\r\n"
-</span><span class='line'> print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
-
-<p>CGI 设置的要点：<br/>
-The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
-The MIME media type must be the first output of your CGI script.<br/>
-A blank line follows the MIME media type.<br/>
-The CGI script must have the correct permissions.</p>
-
-<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
-<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
-
-<h2>Config apache to support running CGI</h2>
-
-<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
-
-<h2>Send parameters with get and post in ruby on client</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;….&quot;</span>       <span class="c1">#*******.ap-northeast-1.compute.amazonaws.com</span>
-</span><span class='line'><span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">version_1_2</span>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Get request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">net</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-</span><span class='line'><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris&#39;</span><span class="p">,</span> <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris@foo.com&#39;</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Create HTTP request</span>
-</span><span class='line'><span class="n">req</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="s1">&#39;/cgi-bin/ruby.cgi&#39;</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span>
-</span><span class='line'><span class="n">req</span><span class="o">.</span><span class="n">set_form_data</span> <span class="n">params</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Send request</span>
-</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">read_timeout</span> <span class="o">=</span> <span class="mi">5600</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="n">req</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Post request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/15/ruby-file-flock/">Ruby File Flock</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-15T19:25:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:25 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li>在多线程的环境中，flock可lock文件独占使用。</li>
-</ul>
-
-
-<p>运行前文件1.txt:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>a
-</span><span class='line'>b</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;1.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">fp</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_EX</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span>
-</span><span class='line'>    <span class="n">arr</span> <span class="o">=</span> <span class="n">file_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_str</span>
-</span><span class='line'>    <span class="n">arr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="n">arr</span><span class="o">.</span><span class="n">inspect</span>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">rewind</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_str</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flush</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_UN</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行后文件1.txt</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">b</span>
-</span><span class='line'><span class="n">b</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/08/crontab-1-basic-usage/">Crontab(1):Basic Usage</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-08T19:04:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:04 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Ways to use crontab</h2>
-
-<ul>
-<li>crobtab -e  当前用户环境下运行的cron</li>
-<li>sudo vi /etc/crontab    在系统环境下运行的cron，所有用户都可以使用</li>
-<li>/etc/cron.d/  将文件放在该目录下，系统则会自动运行</li>
-</ul>
-
-
-<h2>Example: backup mysql every day</h2>
-
-<ul>
-<li><p>step1</p>
-
-<p>创建保存备份文件的路径/mysqldata </br>
-<code>
-  mkdir /var/www/mysqldata
- </code></p></li>
-<li><p>step2</p>
-
-<p>创建/usr/sbin/bakmysql文件,写入以下代码 </br>
-<code>
-  /usr/bin/mysqldump production -u root -p password | gzip -c | cat &gt; /var/www/mysqldata/production$(date +\%Y-\%m-\%d-\%H.\%M.\%S).sql.gz &gt;/dev/null 2&gt;&amp;1
-</code>
-  注意：</br>
-  1）备份数据库mysqldump必须要完整路径！！！！</br>
-  2）date后面的％前必须加\，因为在crontab中％代表new line 。所以最好的方式是在crontab里运行一个脚本，然后在脚本里加上Path。</p></li>
-<li><p>step 3</p>
-
-<p>  修改文件属性，使其可执行</br>
-<code>
-  chmod +x /usr/sbin/bakmysql
-</code></p></li>
-<li><p>step 4</p>
-
-<p>修改crontab -e,下面添加一下代码,每天3点钟执行备份</br>
-  <code>
-  01 3 * * * root /usr/sbin/bakmysql &gt;&gt; /dev/null 2&gt;&amp;1 （&gt;&gt; /dev/null 2&gt;&amp;1 用于防止log过多）
- </code></p></li>
-<li><p>step 5</p>
-
-<p>每天你在/var/www/mysqldata可以看到这样的文件mysql20040619.tar.gz</p></li>
-<li><p>step 6</p>
-
-<p>  远程复制到桌面
-  <code>
-  scp g_dai@ip:/var/www/mysqldata/sqldata2013-01-29-15.06.22.sql.gz ~/Desktop/
-</code></p></li>
-<li><p>step 7</p>
-
-<p>  从桌面import到mysql
-  <code>
-mysql -u root -p
-show databases;
-source ~/Desktop/sqldata2013-01-29-15.06.22.sql
-</code></p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/08/crontab/">Crontab(2):环境变量 Environment Variables</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-08T18:04:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>6:04 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>导出crontab的环境变量</h2>
-
-<p>Add this to your cron:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>30 08 * * * env &gt; ~/cronenv</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>在bash中加载crontab的环境变量</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>env - `cat ~/cronenv` /bin/sh</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>在crontab中添加UTF-8 encoding环境变量</h2>
-
-<p>在crontab -e中所有需要运行的shell command前面添加</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>LANG=en_US.UTF-8
-</span><span class='line'>30 09 * * * /home/convertor/.rvm/rubies/ruby-1.9.3-p429/bin/ruby /home/convertor/bv_data_converter/lib/backup_remider.rb</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Crontab中加载rvm环境</h2>
-
-<p><a href="http://rvm.io/integration/cron">Load rvm in crontab</a></p>
-
-<h2>Crontab的运行log</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo tail /var/log/cron </span></code></pre></td></tr></table></div></figure>
-
-
-<h6>参考文献</h6>
-
-<p><a href="http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-executes-a-script-with">How to simulate the environment cron executes a script with</a></br>
-<a href="http://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use">Set environment variables in crontab</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/07/ruby-signal/">Ruby Signal</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-07T18:40:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>6:40 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>简单处理signal的例子</h2>
-
-<ul>
-<li>signal_test.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
-</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;INT&quot;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on INT signal.&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;QUIT&quot;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on QUIT signal.&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;TERM&quot;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;U teminated me!&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>运行一下命令</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="n">c</span>
-</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="o">^</span><span class="no">CQuitting</span> <span class="n">on</span> <span class="no">INT</span> <span class="n">signal</span><span class="o">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="p">\</span>
-</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="o">^</span><span class="p">\</span><span class="no">Quitting</span> <span class="n">on</span> <span class="no">QUIT</span> <span class="n">signal</span><span class="o">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">kill</span> <span class="o">-</span><span class="no">TERM</span> <span class="n">pid</span>
-</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="n">U</span> <span class="n">teminated</span> <span class="n">me!</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Trap SIGCHLD信号的例子</h2>
-
-<ul>
-<li>sub.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
-</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">3</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>signal_test.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Signal</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ss">:CHLD</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">print</span> <span class="s2">&quot;Child process is teminated.</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ruby sub.rb&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">pipe</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">, popen return child process pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;TERM&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">pid</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>运行一下命令</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">parent</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3275</span><span class="p">,</span> <span class="n">popen</span> <span class="k">return</span> <span class="n">child</span> <span class="n">process</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3276</span>
-</span><span class='line'><span class="no">Child</span> <span class="n">process</span> <span class="n">is</span> <span class="n">teminated</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>常用Signal的区别</h2>
-
-<p>SIGTERM和SIGKILL主要的目的就是用来结束一个进程。<br/>
-SIGTERM默认会结束一个进程，SIGKILL总是会结束一个进程。<br/>
-SIGTERM可以被进程trap，并进行相应处理；SIGKILL无法被trap或者忽略。</p>
-
-<p>SIGINT和SIGQUIT用来处理来自terminal的requests。<br/>
-特殊的terminal输入字符可以用来产生这些signal。SIGINT的默认处理和SIGTERM的默认处理相同。<br/>
-SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加的处理，比如生成core dump。这两个信号都可以被trap或者忽略。</p>
-
-<p>SIGHUP是用来处理terminal connection lost的问题，而不是结束一个进程。但是，SIGHUP的默认行为也SIGTERM一样，也是结束进程。</p>
-
-<h6>参考文献</h6>
-
-<p><a href="http://stackoverflow.com/questions/4042201/how-does-sigint-relate-to-the-other-termination-signals">How does termination signals related to each other</a><br/>
-<a href="http://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html">Signal header file with detailed description</a><br/>
-<a href="http://en.wikipedia.org/wiki/Signal_(computing">List of Unix signal</a>#List_of_signals)</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/07/ruby-popen-subprocess/">Ruby Popen Subprocess</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-07T16:17:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>4:17 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Ruby有多种方法可以创建subprocess。当需要和subprocess的IO进行交互的时候，Ruby的popen方法是最合适的。</p>
-
-<ul>
-<li>sub.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;INT&quot;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>    <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;sub pid </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2"> Control-C&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span> <span class="mi">2</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="no">STDOUT</span><span class="o">.</span><span class="n">flush</span>
-</span><span class='line'><span class="nb">sleep</span> <span class="mi">10</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>popen_sub.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ruby sub.rb&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">pipe</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">, popen return (child) pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="n">line</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">gets</span>      <span class="c1"># pid from child</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;child says it&#39;s pid is: &quot;</span><span class="o">+</span><span class="n">line</span>
-</span><span class='line'>  <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;INT&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">pid</span>
-</span><span class='line'>  <span class="n">childs_last_word</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">gets</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">childs_last_word</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;child&#39;s last word: &quot;</span> <span class="o">+</span> <span class="n">childs_last_word</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;child&#39;s exit code: </span><span class="si">#{</span><span class="vg">$?</span><span class="o">.</span><span class="n">exitstatus</span><span class="si">}</span><span class="s2">&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>运行一下命令</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">[</span><span class="n">mac</span><span class="o">]</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">popen_sub</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="n">parent</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3046</span><span class="p">,</span> <span class="n">popen</span> <span class="k">return</span> <span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3047</span>
-</span><span class='line'><span class="n">child</span> <span class="n">says</span> <span class="n">it</span><span class="s1">&#39;s pid is: 3047</span>
-</span><span class='line'><span class="s1">sub pid 3047 Control-C</span>
-</span><span class='line'><span class="s1">child&#39;</span><span class="n">s</span> <span class="nb">exit</span> <span class="ss">code</span><span class="p">:</span> <span class="mi">2</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h6>参考文献</h6>
-
-<p><a href="http://blog.robseaman.com/2008/12/12/sending-ctrl-c-to-a-subprocess-with-ruby">sending ctrl c to a subprocess with ruby</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -1142,23 +1408,23 @@ SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加�
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/06/12/average-reteion-for-google-play-apps/">Average Reteion for Google Play Apps</a>
+        <a href="/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/">A/B Testing: Why, What, When, How by Mike Greenfield</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/06/09/call-super-viewdidload/">Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method</a>
+        <a href="/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/">A/B Testing: When to Do A/B Testing by Mike Greenfield.</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/04/10/ruby-hash-implementation/">Ruby Hash Implementation</a>
+        <a href="/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/">Video: 10 Habits of High-Growth Startups by Sean Ellis</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/02/15/facebook-growth-vp-talk-about-growth/">Facebook Growth VP Alex Schultz&#8217;s Talk on Growth</a>
+        <a href="/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/">Linkedin Use Dark Pattern Design to Get New User</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a>
+        <a href="/blog/2015/06/12/successful-mobile-app-entrepreneurs/">Successful Mobile App Entrepreneurs</a>
       </li>
     
   </ul>

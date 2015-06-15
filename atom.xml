@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-12T16:06:54+09:00</updated>
+  <updated>2015-06-15T20:40:41+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -14,14 +14,112 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Average Reteion for Google Play Apps]]></title>
+    <title type="html"><![CDATA[A/B Testing: Why, What, When, How by Mike Greenfield]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:22:05+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield">http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield</a></p>
+
+<p>Summary:<br/>
+回答why, what, when, how和经验。<br/>
+why因为有了数据才能衡量任何东西。<br/>
+what 不要测试不能影响全局的细小因素。<br/>
+when 只测试能够带来business significant的内容，经验是1万到10万人才值得做AB测试。<br/>
+How 建自己的framework，这样才更佳自由。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: When to Do A/B Testing by Mike Greenfield.]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:14:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/">http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/</a></p>
+
+<p>Summary:<br/>
+什么时候要做AB测试，非常靠谱的回答。<br/>
+对于signup和邀请好友。如果受到邀请的好友signup，只有邀请人的0.8%，那么不应该做AB Testing。<br/>
+对Email的Title和content做AB testing往往会有很好的效果。不过做之前，要想好会不会有大影响。如果email每天只有100个打开率，那么再优化，也不会有什么大影响。   <br/>
+Purchase funnel也非常值得做AB测试。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> - Viral signup flows. If your current signup flow features 1000 signups inviting 3000 people, 900 of whom register for your product, you’re very close to being viral (K=0.9). A/B testing would be a good use of time. If your current flow features 1000 signups inviting 600 people, 80 of whom join (K=0.08), then you aren’t in the ballpark: optimizing button text is likely a waste of time. Go bigger.
+</span><span class='line'> - Email content. Subject lines and link text can have a huge impact on email clickthrough rates. One typical example: an email with the subject “5 Embarrassing Kid Moments” gets 2.5 times as many clicks as one with the subject “The Craziest Thing My Child Has Done.” But again, being close to “good” is key: if that 2.5x is the difference between 50 clicks a week and 125 clicks a week, does it matter? If it doesn’t matter (and good estimation is key), no point spending time A/B testing it.
+</span><span class='line'> - Purchase funnel. Much of Team Rankings‘ revenue comes from subscriptions, and some purchase funnels can be much more effective than others. Last year, for instance, our March Madness product, BracketBrains, generated 30% more sales when we prompted people to “Get 2011 Picks” than to “Get BracketBrains”. Same caveats apply here, though: test if and only if the differences are likely to matter for your business.</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Video: 10 Habits of High-Growth Startups by Sean Ellis]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/"/>
+    <updated>2015-06-15T19:25:06+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/">https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/</a></p>
+
+<p>Summary:<br/>
+Video: 10 Habits of High-Growth Startups by Sean Ellis<br/>
+第一次提出Growth Hacker这个名字的人Sean Ellis的演讲：10个让创业公司快速成长的习惯<br/>
+1 Putting the first thing first. 意思是做一个好的产品是一切的基础，A product that worth growth<br/>
+2 Curious about Customers. 倾听你的customer，看他们是否觉得你提供的service有价值，是否一个must have的service<br/>
+3 Instrument Powerful Analytics<br/>
+4 Optimize Conversions<br/>
+5 Treat Growth as Team Sport 各个team之间，透明很重要。客服和工程师提出的想法的角度往往不同<br/>
+6 Experiment on Ideas 测试才能知道idea的效果，往往你觉得有用的没用，你觉得没用的反而有用<br/>
+7 Prioritize Resources for Growth   <br/>
+8 Execute at High Tempo 执行要快，并发执行实验<br/>
+9 Accontability for inputs 要有足够的输出，就要有足够的输入<br/>
+10 Double Down on Success  在已经有效果的channel上面，更加深入和精细，以求获得更好的效果</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linkedin Use Dark Pattern Design to Get New User]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/"/>
+    <updated>2015-06-15T19:19:41+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user</id>
+    <content type="html"><![CDATA[<p>Source: <br/>
+<a href="https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462">https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462</a></p>
+
+<p>Summary:<br/>
+Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或者疏忽，获取的用户的全部邮件好友列表。<br/>
+获取注册用户的好友，对于Linkedin来说是非常重要的。Linkedin通过设计，让你不经意间授权了他获取好友email列表，然后让你不经意间邀请那些不在Linkedin上的好友。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Successful Mobile App Entrepreneurs]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs/"/>
+    <updated>2015-06-12T19:13:36+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs</id>
+    <content type="html"><![CDATA[<p>Source:  <br/>
+<a href="http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/">http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/</a></p>
+
+<p>Summary:
+要做好mobile app entrepreneurs，应该做的9件事儿。
+有启发的两件事儿是：<br/>
+1.研究App Store，研究好的APP好在哪儿，不好的地方哪儿可以提高的，熟悉App Store的算法是如何工作的。
+2.跟不好的APP学习。找出一些共同的patten，自己要避免。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Average Reteion for Google Play Apps by Andrew Chen]]></title>
     <link href="http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/"/>
     <updated>2015-06-12T15:41:08+09:00</updated>
     <id>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps</id>
-    <content type="html"><![CDATA[<p>原链接
+    <content type="html"><![CDATA[<p>Source:<br/>
 <a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
 
-<p>Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
+<p>Summary:<br/>
+Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
 题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
 作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
 另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
@@ -84,6 +182,35 @@
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[A/B Testing: Avoid Repeated Significance Testing Errors]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors/"/>
+    <updated>2015-03-25T19:46:02+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://www.evanmiller.org/how-not-to-run-an-ab-test.html">http://www.evanmiller.org/how-not-to-run-an-ab-test.html</a></p>
+
+<p>Summary:<br/>
+文章介绍了AB测试的常见统计错误：重复显著性测试错误（repeated significance testing errors）<br/>
+值得注意的地方是：作者指出，在实验没有结束的时候，不停的去看结果是否显著，是不可取的。你很可能发现结果的显著性达到了1%或者5%而停止AB测试。
+实际上这是人为的操纵了数据。显著性检验的前提条件是：你的样本大小sample size是固定的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Use Third-party Solution or Build Own Solution?]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/24/a-slash-b-testing-use-third-party-solution-or-build-own-solution/"/>
+    <updated>2015-03-24T19:59:01+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/24/a-slash-b-testing-use-third-party-solution-or-build-own-solution</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://lukethomas.com/ab-testing-solution-should-i-use-rails-app/">http://lukethomas.com/ab-testing-solution-should-i-use-rails-app/</a></p>
+
+<p>Summary:<br/>
+文中提到的有趣的一点是： sample size。AB测试要进行多久，收集到多数数据才能得出统计显著的结论呢？
+具体的情况要具体分析。但是自己实现AB test的时候的优点在于，你不用担心多进行ab测试会花掉更多钱。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Facebook Growth VP Alex Schultz's Talk on Growth]]></title>
     <link href="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/"/>
     <updated>2015-02-15T12:08:39+09:00</updated>
@@ -91,17 +218,18 @@
     <content type="html"><![CDATA[<div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div>
 
 
-<p>Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
+<p>Source:
+How to Start a Startup: Growth
+<a href="http://startupclass.samaltman.com/courses/lec06/">http://startupclass.samaltman.com/courses/lec06/</a></p>
+
+<p>Summuary:<br/>
+Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
 Alex Schultz认为对于growth来说什么最重要：retention。<br/>
 然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
 具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
 另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
 然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
-再之后，讲了一些具体策略。介绍个facebook,hotmail,paypal等公司实现增长的一些策略。</p>
-
-<h6>Source</h6>
-
-<p><a href="http://startupclass.samaltman.com/courses/lec06/">How to Start a Startup: Growth</a></p>
+再之后，讲了一些具体策略。介绍个facebook，hotmail，paypal等公司实现增长的一些策略。</p>
 ]]></content>
   </entry>
   
@@ -1193,561 +1321,6 @@ data and then directs it to the destination host and port.</p>
 <p><a href="http://httpd.apache.org/docs/current/howto/htaccess.html">Apache htaccess doc</a></br>
 <a href="http://blog.csdn.net/Yuhao818/article/details/4680075">Apache htaccess tutorial</a></br>
 <a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">Apache mod_rewirte doc</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Apache Server on MacOS Using Alias]]></title>
-    <link href="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias/"/>
-    <updated>2013-12-04T15:48:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias</id>
-    <content type="html"><![CDATA[<ul>
-<li>检查httpd服务是否在运行，不存在的话需要启动.</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo lsof -iTCP:80 -sTCP:LISTEN  -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
-</span><span class='line'>sudo apachectl start
-</span><span class='line'>
-</span><span class='line'>MacOS  apache path（http://wiki.apache.org/httpd/DistrosDefaultLayout）
-</span><span class='line'>ServerRoot              ::      /usr
-</span><span class='line'>Primary Config Fle      ::      /etc/apache2/httpd.conf
-</span><span class='line'>DocumentRoot            ::      /Library/WebServer/Documents
-</span><span class='line'>ErrorLog                ::      /var/log/apache2/error_log
-</span><span class='line'>AccessLog               ::      /var/log/apache2/access_log
-</span><span class='line'>cgi-bin                 ::      /Library/WebServer/CGI-Executables (empty by default)
-</span><span class='line'>binary                  ::      /usr/sbin/httpd
-</span><span class='line'>start/stop              ::      /usr/sbin/     (start|stop|restart|fullstatus|status|graceful|graceful-stop|configtest|help)</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><p>在Users/g_dai/codes/site文件夹中建立project，创建文件1.html，并写入内容Hello world.</p></li>
-<li><p>在DocumentRoot /Library/WebServer/Documents中创建文件夹docs.</p></li>
-<li><p>在httpd.conf中写入，注意/docs 后面没有slash.</p></li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Alias /docs Users/g_dai/codes/site
-</span><span class='line'>&lt;Directory Users/g_dai/codes/site&gt; (保证这个folder可以被apache访问）
-</span><span class='line'>    Order allow,deny
-</span><span class='line'>    Allow from all
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Referance</h4>
-
-<p><a href="http://httpd.apache.org/docs/2.2/mod/mod_alias.html">Apache mod_alias</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Run Ruby CGI Scripts With Apache]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/"/>
-    <updated>2013-11-15T19:34:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache</id>
-    <content type="html"><![CDATA[<h2>CGI Scripts on server</h2>
-
-<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> #!/bin/env ruby
-</span><span class='line'> print "Content-type: text/html\r\n\r\n"
-</span><span class='line'> print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
-
-<p>CGI 设置的要点：<br/>
-The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
-The MIME media type must be the first output of your CGI script.<br/>
-A blank line follows the MIME media type.<br/>
-The CGI script must have the correct permissions.</p>
-
-<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
-<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
-
-<h2>Config apache to support running CGI</h2>
-
-<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
-
-<h2>Send parameters with get and post in ruby on client</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;….&quot;</span>       <span class="c1">#*******.ap-northeast-1.compute.amazonaws.com</span>
-</span><span class='line'><span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">version_1_2</span>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Get request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">net</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-</span><span class='line'><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris&#39;</span><span class="p">,</span> <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris@foo.com&#39;</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Create HTTP request</span>
-</span><span class='line'><span class="n">req</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="s1">&#39;/cgi-bin/ruby.cgi&#39;</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span>
-</span><span class='line'><span class="n">req</span><span class="o">.</span><span class="n">set_form_data</span> <span class="n">params</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Send request</span>
-</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">read_timeout</span> <span class="o">=</span> <span class="mi">5600</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="n">req</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Post request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby File Flock]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/15/ruby-file-flock/"/>
-    <updated>2013-11-15T19:25:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/15/ruby-file-flock</id>
-    <content type="html"><![CDATA[<ul>
-<li>在多线程的环境中，flock可lock文件独占使用。</li>
-</ul>
-
-
-<p>运行前文件1.txt:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>a
-</span><span class='line'>b</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;1.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">fp</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_EX</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span>
-</span><span class='line'>    <span class="n">arr</span> <span class="o">=</span> <span class="n">file_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_str</span>
-</span><span class='line'>    <span class="n">arr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="n">arr</span><span class="o">.</span><span class="n">inspect</span>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">rewind</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_str</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flush</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_UN</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行后文件1.txt</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">b</span>
-</span><span class='line'><span class="n">b</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Crontab(1):Basic Usage]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/08/crontab-1-basic-usage/"/>
-    <updated>2013-11-08T19:04:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/08/crontab-1-basic-usage</id>
-    <content type="html"><![CDATA[<h2>Ways to use crontab</h2>
-
-<ul>
-<li>crobtab -e  当前用户环境下运行的cron</li>
-<li>sudo vi /etc/crontab    在系统环境下运行的cron，所有用户都可以使用</li>
-<li>/etc/cron.d/  将文件放在该目录下，系统则会自动运行</li>
-</ul>
-
-
-<h2>Example: backup mysql every day</h2>
-
-<ul>
-<li><p>step1</p>
-
-<p>创建保存备份文件的路径/mysqldata </br>
-<code>
-  mkdir /var/www/mysqldata
- </code></p></li>
-<li><p>step2</p>
-
-<p>创建/usr/sbin/bakmysql文件,写入以下代码 </br>
-<code>
-  /usr/bin/mysqldump production -u root -p password | gzip -c | cat &gt; /var/www/mysqldata/production$(date +\%Y-\%m-\%d-\%H.\%M.\%S).sql.gz &gt;/dev/null 2&gt;&amp;1
-</code>
-  注意：</br>
-  1）备份数据库mysqldump必须要完整路径！！！！</br>
-  2）date后面的％前必须加\，因为在crontab中％代表new line 。所以最好的方式是在crontab里运行一个脚本，然后在脚本里加上Path。</p></li>
-<li><p>step 3</p>
-
-<p>  修改文件属性，使其可执行</br>
-<code>
-  chmod +x /usr/sbin/bakmysql
-</code></p></li>
-<li><p>step 4</p>
-
-<p>修改crontab -e,下面添加一下代码,每天3点钟执行备份</br>
-  <code>
-  01 3 * * * root /usr/sbin/bakmysql &gt;&gt; /dev/null 2&gt;&amp;1 （&gt;&gt; /dev/null 2&gt;&amp;1 用于防止log过多）
- </code></p></li>
-<li><p>step 5</p>
-
-<p>每天你在/var/www/mysqldata可以看到这样的文件mysql20040619.tar.gz</p></li>
-<li><p>step 6</p>
-
-<p>  远程复制到桌面
-  <code>
-  scp g_dai@ip:/var/www/mysqldata/sqldata2013-01-29-15.06.22.sql.gz ~/Desktop/
-</code></p></li>
-<li><p>step 7</p>
-
-<p>  从桌面import到mysql
-  <code>
-mysql -u root -p
-show databases;
-source ~/Desktop/sqldata2013-01-29-15.06.22.sql
-</code></p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Crontab(2):环境变量 Environment Variables]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/08/crontab/"/>
-    <updated>2013-11-08T18:04:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/08/crontab</id>
-    <content type="html"><![CDATA[<h2>导出crontab的环境变量</h2>
-
-<p>Add this to your cron:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>30 08 * * * env &gt; ~/cronenv</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>在bash中加载crontab的环境变量</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>env - `cat ~/cronenv` /bin/sh</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>在crontab中添加UTF-8 encoding环境变量</h2>
-
-<p>在crontab -e中所有需要运行的shell command前面添加</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>LANG=en_US.UTF-8
-</span><span class='line'>30 09 * * * /home/convertor/.rvm/rubies/ruby-1.9.3-p429/bin/ruby /home/convertor/bv_data_converter/lib/backup_remider.rb</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Crontab中加载rvm环境</h2>
-
-<p><a href="http://rvm.io/integration/cron">Load rvm in crontab</a></p>
-
-<h2>Crontab的运行log</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>sudo tail /var/log/cron </span></code></pre></td></tr></table></div></figure>
-
-
-<h6>参考文献</h6>
-
-<p><a href="http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-executes-a-script-with">How to simulate the environment cron executes a script with</a></br>
-<a href="http://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use">Set environment variables in crontab</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby Signal]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/07/ruby-signal/"/>
-    <updated>2013-11-07T18:40:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/07/ruby-signal</id>
-    <content type="html"><![CDATA[<h2>简单处理signal的例子</h2>
-
-<ul>
-<li>signal_test.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
-</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;INT&quot;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on INT signal.&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;QUIT&quot;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;Quitting on QUIT signal.&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;TERM&quot;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;U teminated me!&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>运行一下命令</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="n">c</span>
-</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="o">^</span><span class="no">CQuitting</span> <span class="n">on</span> <span class="no">INT</span> <span class="n">signal</span><span class="o">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Press</span> <span class="n">ctrl</span> <span class="o">+</span> <span class="p">\</span>
-</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="o">^</span><span class="p">\</span><span class="no">Quitting</span> <span class="n">on</span> <span class="no">QUIT</span> <span class="n">signal</span><span class="o">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">kill</span> <span class="o">-</span><span class="no">TERM</span> <span class="n">pid</span>
-</span><span class='line'><span class="n">mac</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">signal_test</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="n">U</span> <span class="n">teminated</span> <span class="n">me!</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Trap SIGCHLD信号的例子</h2>
-
-<ul>
-<li>sub.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">while</span> <span class="kp">true</span>
-</span><span class='line'>   <span class="nb">sleep</span> <span class="mi">3</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>signal_test.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Signal</span><span class="o">.</span><span class="n">trap</span><span class="p">(</span><span class="ss">:CHLD</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nb">print</span> <span class="s2">&quot;Child process is teminated.</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ruby sub.rb&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">pipe</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">print</span> <span class="s2">&quot;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">, popen return child process pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;TERM&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">pid</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>运行一下命令</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">parent</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3275</span><span class="p">,</span> <span class="n">popen</span> <span class="k">return</span> <span class="n">child</span> <span class="n">process</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3276</span>
-</span><span class='line'><span class="no">Child</span> <span class="n">process</span> <span class="n">is</span> <span class="n">teminated</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>常用Signal的区别</h2>
-
-<p>SIGTERM和SIGKILL主要的目的就是用来结束一个进程。<br/>
-SIGTERM默认会结束一个进程，SIGKILL总是会结束一个进程。<br/>
-SIGTERM可以被进程trap，并进行相应处理；SIGKILL无法被trap或者忽略。</p>
-
-<p>SIGINT和SIGQUIT用来处理来自terminal的requests。<br/>
-特殊的terminal输入字符可以用来产生这些signal。SIGINT的默认处理和SIGTERM的默认处理相同。<br/>
-SIGQUIT的默认处理也同样是结束进程，只是可能会有其他附加的处理，比如生成core dump。这两个信号都可以被trap或者忽略。</p>
-
-<p>SIGHUP是用来处理terminal connection lost的问题，而不是结束一个进程。但是，SIGHUP的默认行为也SIGTERM一样，也是结束进程。</p>
-
-<h6>参考文献</h6>
-
-<p><a href="http://stackoverflow.com/questions/4042201/how-does-sigint-relate-to-the-other-termination-signals">How does termination signals related to each other</a><br/>
-<a href="http://pubs.opengroup.org/onlinepubs/009695399/basedefs/signal.h.html">Signal header file with detailed description</a><br/>
-<a href="http://en.wikipedia.org/wiki/Signal_(computing">List of Unix signal</a>#List_of_signals)</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby Popen Subprocess]]></title>
-    <link href="http://iandai.github.io/blog/2013/11/07/ruby-popen-subprocess/"/>
-    <updated>2013-11-07T16:17:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/11/07/ruby-popen-subprocess</id>
-    <content type="html"><![CDATA[<p>Ruby有多种方法可以创建subprocess。当需要和subprocess的IO进行交互的时候，Ruby的popen方法是最合适的。</p>
-
-<ul>
-<li>sub.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">trap</span><span class="p">(</span><span class="s2">&quot;INT&quot;</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>    <span class="no">STDERR</span><span class="o">.</span><span class="n">puts</span> <span class="s2">&quot;sub pid </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2"> Control-C&quot;</span>
-</span><span class='line'>    <span class="nb">exit</span> <span class="mi">2</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="no">STDOUT</span><span class="o">.</span><span class="n">flush</span>
-</span><span class='line'><span class="nb">sleep</span> <span class="mi">10</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>popen_sub.rb文件</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">IO</span><span class="o">.</span><span class="n">popen</span><span class="p">(</span><span class="s2">&quot;ruby sub.rb&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">pipe</span><span class="o">|</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;parent pid: </span><span class="si">#{</span><span class="vg">$$</span><span class="si">}</span><span class="s2">, popen return (child) pid: </span><span class="si">#{</span><span class="n">pipe</span><span class="o">.</span><span class="n">pid</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'>  <span class="n">line</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">gets</span>      <span class="c1"># pid from child</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;child says it&#39;s pid is: &quot;</span><span class="o">+</span><span class="n">line</span>
-</span><span class='line'>  <span class="no">Process</span><span class="o">.</span><span class="n">kill</span> <span class="s1">&#39;INT&#39;</span><span class="p">,</span> <span class="n">pipe</span><span class="o">.</span><span class="n">pid</span>
-</span><span class='line'>  <span class="n">childs_last_word</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">gets</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">childs_last_word</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;child&#39;s last word: &quot;</span> <span class="o">+</span> <span class="n">childs_last_word</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;child&#39;s exit code: </span><span class="si">#{</span><span class="vg">$?</span><span class="o">.</span><span class="n">exitstatus</span><span class="si">}</span><span class="s2">&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>运行一下命令</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">[</span><span class="n">mac</span><span class="o">]</span><span class="err">$</span> <span class="n">ruby</span> <span class="n">popen_sub</span><span class="o">.</span><span class="n">rb</span>
-</span><span class='line'><span class="n">parent</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3046</span><span class="p">,</span> <span class="n">popen</span> <span class="k">return</span> <span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="ss">pid</span><span class="p">:</span> <span class="mi">3047</span>
-</span><span class='line'><span class="n">child</span> <span class="n">says</span> <span class="n">it</span><span class="s1">&#39;s pid is: 3047</span>
-</span><span class='line'><span class="s1">sub pid 3047 Control-C</span>
-</span><span class='line'><span class="s1">child&#39;</span><span class="n">s</span> <span class="nb">exit</span> <span class="ss">code</span><span class="p">:</span> <span class="mi">2</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h6>参考文献</h6>
-
-<p><a href="http://blog.robseaman.com/2008/12/12/sending-ctrl-c-to-a-subprocess-with-ruby">sending ctrl c to a subprocess with ruby</a></p>
 ]]></content>
   </entry>
   

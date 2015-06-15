@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-12T16:06:54+09:00</updated>
+  <updated>2015-06-15T20:40:41+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,22 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Successful Mobile App Entrepreneurs]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs/"/>
+    <updated>2015-06-12T19:13:36+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs</id>
+    <content type="html"><![CDATA[<p>Source:  <br/>
+<a href="http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/">http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/</a></p>
+
+<p>Summary:
+要做好mobile app entrepreneurs，应该做的9件事儿。
+有启发的两件事儿是：<br/>
+1.研究App Store，研究好的APP好在哪儿，不好的地方哪儿可以提高的，熟悉App Store的算法是如何工作的。
+2.跟不好的APP学习。找出一些共同的patten，自己要避免。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method]]></title>

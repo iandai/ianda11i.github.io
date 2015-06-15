@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Growthhacking | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/growthhacking/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-12T16:06:54+09:00</updated>
+  <updated>2015-06-15T20:40:41+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -14,38 +14,94 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Average Reteion for Google Play Apps]]></title>
-    <link href="http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/"/>
-    <updated>2015-06-12T15:41:08+09:00</updated>
-    <id>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps</id>
-    <content type="html"><![CDATA[<p>原链接
-<a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
+    <title type="html"><![CDATA[A/B Testing: Why, What, When, How by Mike Greenfield]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:22:05+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield">http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield</a></p>
 
-<p>Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
-题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
-作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
-另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
+<p>Summary:<br/>
+回答why, what, when, how和经验。<br/>
+why因为有了数据才能衡量任何东西。<br/>
+what 不要测试不能影响全局的细小因素。<br/>
+when 只测试能够带来business significant的内容，经验是1万到10万人才值得做AB测试。<br/>
+How 建自己的framework，这样才更佳自由。</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Facebook Growth VP Alex Schultz's Talk on Growth]]></title>
-    <link href="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/"/>
-    <updated>2015-02-15T12:08:39+09:00</updated>
-    <id>http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth</id>
-    <content type="html"><![CDATA[<p><div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div></p>
+    <title type="html"><![CDATA[A/B Testing: When to Do A/B Testing by Mike Greenfield.]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:14:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/">http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/</a></p>
 
-<p>Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
-Alex Schultz认为对于growth来说什么最重要：retention。<br/>
-然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
-具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
-另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
-然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
-再之后，讲了一些具体策略。介绍个facebook,hotmail,paypal等公司实现增长的一些策略。</p>
+<p>Summary:<br/>
+什么时候要做AB测试，非常靠谱的回答。<br/>
+对于signup和邀请好友。如果受到邀请的好友signup，只有邀请人的0.8%，那么不应该做AB Testing。<br/>
+对Email的Title和content做AB testing往往会有很好的效果。不过做之前，要想好会不会有大影响。如果email每天只有100个打开率，那么再优化，也不会有什么大影响。   <br/>
+Purchase funnel也非常值得做AB测试。</p>
 
-<h6>Source</h6>
+<pre><code> - Viral signup flows. If your current signup flow features 1000 signups inviting 3000 people, 900 of whom register for your product, you’re very close to being viral (K=0.9). A/B testing would be a good use of time. If your current flow features 1000 signups inviting 600 people, 80 of whom join (K=0.08), then you aren’t in the ballpark: optimizing button text is likely a waste of time. Go bigger.
+ - Email content. Subject lines and link text can have a huge impact on email clickthrough rates. One typical example: an email with the subject “5 Embarrassing Kid Moments” gets 2.5 times as many clicks as one with the subject “The Craziest Thing My Child Has Done.” But again, being close to “good” is key: if that 2.5x is the difference between 50 clicks a week and 125 clicks a week, does it matter? If it doesn’t matter (and good estimation is key), no point spending time A/B testing it.
+ - Purchase funnel. Much of Team Rankings‘ revenue comes from subscriptions, and some purchase funnels can be much more effective than others. Last year, for instance, our March Madness product, BracketBrains, generated 30% more sales when we prompted people to “Get 2011 Picks” than to “Get BracketBrains”. Same caveats apply here, though: test if and only if the differences are likely to matter for your business.
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Video: 10 Habits of High-Growth Startups by Sean Ellis]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/"/>
+    <updated>2015-06-15T19:25:06+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/">https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/</a></p>
 
-<p><a href="http://startupclass.samaltman.com/courses/lec06/">How to Start a Startup: Growth</a></p>
+<p>Summary:<br/>
+Video: 10 Habits of High-Growth Startups by Sean Ellis<br/>
+第一次提出Growth Hacker这个名字的人Sean Ellis的演讲：10个让创业公司快速成长的习惯<br/>
+1 Putting the first thing first. 意思是做一个好的产品是一切的基础，A product that worth growth<br/>
+2 Curious about Customers. 倾听你的customer，看他们是否觉得你提供的service有价值，是否一个must have的service<br/>
+3 Instrument Powerful Analytics<br/>
+4 Optimize Conversions<br/>
+5 Treat Growth as Team Sport 各个team之间，透明很重要。客服和工程师提出的想法的角度往往不同<br/>
+6 Experiment on Ideas 测试才能知道idea的效果，往往你觉得有用的没用，你觉得没用的反而有用<br/>
+7 Prioritize Resources for Growth   <br/>
+8 Execute at High Tempo 执行要快，并发执行实验<br/>
+9 Accontability for inputs 要有足够的输出，就要有足够的输入<br/>
+10 Double Down on Success  在已经有效果的channel上面，更加深入和精细，以求获得更好的效果</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linkedin Use Dark Pattern Design to Get New User]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/"/>
+    <updated>2015-06-15T19:19:41+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user</id>
+    <content type="html"><![CDATA[<p>Source: <br/>
+<a href="https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462">https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462</a></p>
+
+<p>Summary:<br/>
+Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或者疏忽，获取的用户的全部邮件好友列表。<br/>
+获取注册用户的好友，对于Linkedin来说是非常重要的。Linkedin通过设计，让你不经意间授权了他获取好友email列表，然后让你不经意间邀请那些不在Linkedin上的好友。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Average Reteion for Google Play Apps by Andrew Chen]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/"/>
+    <updated>2015-06-12T15:41:08+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
+
+<p>Summary:<br/>
+Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
+题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
+作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
+另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
 ]]></content>
   </entry>
   
