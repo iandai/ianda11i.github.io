@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-15T20:40:41+09:00</updated>
+  <updated>2015-06-17T20:40:46+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/"/>
+    <updated>2015-06-16T19:39:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</a></p>
+
+<p>Summary:<br/>
+Brain Balfour 讲为何retention为王。因为有了retention，其他的自然会来。<br/>
+Increase retention -> Increase LTV -> Afford Higher CPA<br/>
+Increase retention -> increase upgrade rates -> decrease payback period<br/>
+其中有一个重要的点在于，有时候因为有许多新用户的增加和短期retention较高的水平，导致盲目投入，最后眼睁睁看着用户都流失掉。<br/>
+所以retention最后要是一条水平线，而不能一直下垂。<br/>
+讲了实际案例，如何预防retention下降的趋势，如何想办法提高retention。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A/B Testing: Why, What, When, How by Mike Greenfield]]></title>
@@ -147,6 +165,21 @@ Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and 
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[The Simplest and Most Important Dashboard for Early Stage Startups]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups/"/>
+    <updated>2015-06-03T19:31:15+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://klinger.io/post/77712761215/the-simplest-and-most-important-dashboard-for">http://klinger.io/post/77712761215/the-simplest-and-most-important-dashboard-for</a></p>
+
+<p>Summary:<br/>
+early stage start up最重要的metrics是什么？<br/>
+1 retention<br/>
+2 活用活跃信息，一个一个联系用户获得反馈，把它们留在7天内活跃的范围内。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Ruby Hash Implementation]]></title>
     <link href="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/"/>
     <updated>2015-04-10T12:08:39+09:00</updated>
@@ -207,6 +240,69 @@ Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and 
 <p>Summary:<br/>
 文中提到的有趣的一点是： sample size。AB测试要进行多久，收集到多数数据才能得出统计显著的结论呢？
 具体的情况要具体分析。但是自己实现AB test的时候的优点在于，你不用担心多进行ab测试会花掉更多钱。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Video: Growth for Early]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/19/video-growth-for-early/"/>
+    <updated>2015-03-19T19:24:52+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/19/video-growth-for-early</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://www.youtube.com/watch?v=xY-CJNWsrso">https://www.youtube.com/watch?v=xY-CJNWsrso</a></p>
+
+<p>Summary:<br/>
+演讲者：Hiten Shah（KissMetrics），Nabeel Hyatt (Zynga, Spark Capital)，Joe Zadeh (AirBnB)</p>
+
+<p>Point1: 在grow之前，找到ah-ha moment。grow之前先做awesome experience。</p>
+
+<p>Point2: Does and Don&#8217;ts. Hiten KissMetrics: make data transaction. 不要覆盖更新数据，比如登陆数据。</p>
+
+<p>Point3: How long focus on one channel? -> As soon as possible. 如果很久没结果，可能你的方法不太对。(Joe)</p>
+
+<p>Point4: What is a good number?</p>
+
+<blockquote><p>Nabeel: 某个数据，怎么样算是好了，怎么样算是没做好？  （和别人共享数据）<br/>
+Hiten: 不要和别的公司做benchmark，设立自己的baseline。</p></blockquote>
+
+<p>Point5:</p>
+
+<blockquote><p>Nabeel:什么时候做push notification？  user打开他app的时候。<br/>
+Hiten:对于B2B来说，sales==growth</p></blockquote>
+
+<p>Point6:一个特别值得分享的经验</p>
+
+<blockquote><p>Hiten： First user signup moment is important: kissmetrics让用户在最开始的时候，就看到有几个option。对提高用户选择option有非常大的帮助。<br/>
+Joe：Dashboard。Put data as center, make data communicate with team.<br/>
+Joe：Airbnb把客户服务的信件解析成可量化的细节，然后用于分析，了解客户。</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Long-term Impact of Badging by John Egan]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/13/long-term-impact-of-badging-by-john-egan/"/>
+    <updated>2015-03-13T19:16:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/13/long-term-impact-of-badging-by-john-egan</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://jwegan.com/growth-hacking/long-term-impact-badging/">http://jwegan.com/growth-hacking/long-term-impact-badging/</a></p>
+
+<p>Summary:<br/>
+When it comes to growth, one potential pitfall is over optimizing for short-term wins. <br/>
+根据Pinterest的经验，长期使用badge，对用户活跃度的影响。1个月的测试，DAU有7%的提高，长期的测试显示有2.5%的提高。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Pitfalls With Google Analytics]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/24/a-slash-b-testing-pitfalls-with-google-analytics/"/>
+    <updated>2015-02-24T19:14:01+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/24/a-slash-b-testing-pitfalls-with-google-analytics</id>
+    <content type="html"><![CDATA[<p>Souce:<br/>
+<a href="http://ggtheory.com/2010/04/19/abtestpitfal/">http://ggtheory.com/2010/04/19/abtestpitfal/</a></p>
+
+<p>Summary:<br/>
+Google Adwords的AB测试可能不是平均展示的。结果解读的时候要注意：数据量是否充分。
+注意转化过程中的漏斗：结束AB测试之后，总点击率下降。可能原因是一部分用户喜欢A和B中被剔除的那个选项，导致总体点击率的减少。</p>
 ]]></content>
   </entry>
   
@@ -405,6 +501,20 @@ index on it instead.</li>
 <li><a href="http://robbin.iteye.com/blog/461382">MySQL InnoDB性能调整实践</a></li>
 </ul>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Calculating Customer Acquisition Costs]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/01/calculating-customer-acquisition-costs/"/>
+    <updated>2015-02-01T19:05:34+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/01/calculating-customer-acquisition-costs</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://segment.com/blog/calculating-customer-acquisition-costs/">https://segment.com/blog/calculating-customer-acquisition-costs/</a></p>
+
+<p>Summary:<br/>
+要降低客户获取成本，首先要能够回答三个问题：付费客户的life time value，注册用户中的付费比率，访问人数和注册用户比率。<br/>
+这样就能够计算Cost Per Acquisition。然后才可以优化渠道。</p>
 ]]></content>
   </entry>
   
@@ -825,502 +935,6 @@ Following Code will not work in a subview.</p>
 <li><a href="http://stackoverflow.com/questions/16706587/can-i-link-googlemaps-sdk-for-ios-with-a-linker-flag-other-than-objc">Other Linker Flags Conflict</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Cache Expiration]]></title>
-    <link href="http://iandai.github.io/blog/2014/07/08/cache-expiration/"/>
-    <updated>2014-07-08T18:46:10+09:00</updated>
-    <id>http://iandai.github.io/blog/2014/07/08/cache-expiration</id>
-    <content type="html"><![CDATA[<h2>Cache过期</h2>
-
-<ul>
-<li><p>Key Based Cache Expiration<br/>
-  优点：
-      降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。
-  缺点：
-      适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法）
-      每次查询，都需要首先查询update_at字段。</p></li>
-<li><p>ORM模型回调接口删除cache（after_save, before_destroy, etc)<br/>
-  优点：
-      快。
-  缺点：
-      增加一定的代码复杂度。
-      若不是ORM模型的代码，需要手动添加回调接口。</p></li>
-<li><p>在代码中增加删除cache的代码<br/>
-  优点：
-      无。
-  缺点：
-      增加代码复杂度。      <br/>
-      如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SQL Injection]]></title>
-    <link href="http://iandai.github.io/blog/2014/05/01/sql-injection/"/>
-    <updated>2014-05-01T18:41:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2014/05/01/sql-injection</id>
-    <content type="html"><![CDATA[<h2>SQL 注入方法</h2>
-
-<ul>
-<li><p>SQL 扫描工具<br/>
-  sqlmap  <a href="https://github.com/sqlmapproject/sqlmap/wiki/Screenshots">https://github.com/sqlmapproject/sqlmap/wiki/Screenshots</a></p></li>
-<li><p>SQL injection方法<br/>
-1 ‘ or 1 = 1 —<br/>
-2 select * from xxx where a = ‘123;  输入非法内容，看是否有sql error返回。</p></li>
-<li><p>利用漏洞<br/>
-ereg()有bug，无法检测到\0之后的内容，有可能将注入的内容隐藏在\0的后面。</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s2">&quot;123</span><span class="se">\0\0</span><span class="s2">abc&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;source=[</span><span class="si">$a</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/123/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/abc/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">/// ereg cannot detect &quot;abc&quot; after &quot;\0&quot;, so you must not use raw source string!</span>
-</span><span class='line'><span class="c1">/// and you should not use ereg(). instead of it, use preg_match().</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>SQL注入的对策</h2>
-
-<ul>
-<li><p>输入<br/>
-1 不要信任用户的输入，包括cookie。对用户的输入进行校验。如果是数字，就转化为数字，而不是字符类型的数字。<br/>
-2 不要使用动态拼装sql，可以使用参数化的sql或者直接使用存储过程进行数据查询存取。</p></li>
-<li><p>权限<br/>
-1 不要使用有超级用户或其它有权创建新用户的数据库帐号来连接数据库，攻击者可以在数据库中新建一个超级用户。为每个应用使用单独的权限有限的数据库连接。<br/>
-2 删除不再需要的存储过程，例如：master..Xp_cmdshell, xp_startmail, xp_sendmail, sp_makewebtask.</p></li>
-<li><p>其他<br/>
-1 不要把机密信息直接存放，加密或者hash掉密码和敏感的信息。<br/>
-2 应用的异常信息应该给出尽可能少的提示，最好使用自定义的错误信息对原始错误信息进行包装。</p></li>
-</ul>
-
-
-<h3>参考链接</h3>
-
-<p><a href="http://www.php.net/manual/zh/security.database.sql-injection.php">PHP官方手册对策</a><br/>
-<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet">OWASP的SQL注入防止CheatSheet</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CSS NOTES]]></title>
-    <link href="http://iandai.github.io/blog/2014/04/08/css-notes/"/>
-    <updated>2014-04-08T17:47:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2014/04/08/css-notes</id>
-    <content type="html"><![CDATA[<h4>Tips</h4>
-
-<p>zen coding快捷键<code>command+e</code><br/>
-CSS布局技术都依赖于三个基本概念：定位，浮动和空白边(margin).<br/>
-Link css: <code>&lt;link rel="stylesheet" href="…." /&gt;</code>, rel stands for relation.<br/>
-inline box 不响应垂直margin, width, height, max/min width/height 等属性声明；block box 则可以响应这些属性。</p>
-
-<h4>CSS使用原则</h4>
-
-<p>前端的素养：注意各个元素之间的对齐方式。<br/>
-html是用来标记这段内容是在做社么，而不是用来stlying的。<br/>
-所以，table tag不用来表示styling画方框，而只是用来显示数据表格。</p>
-
-<h4>font-family属性</h4>
-
-<p>font-family: Verdana, Arial，sans-serif<br/>
-浏览器会依次调用各个字体，直到系统装有该字体。 sans-serif为通用字体族，多数系统都装有该字体族中间的字体。<br/>
-sans-serif代表无衬线体，与中文的黑体相对应.<br/>
-Referance: <a href="http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.">http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.</a></p>
-
-<h4>图片格式</h4>
-
-<p>html使用的图片格式：普通图片使用jpeg，如果需要背景为透明，就必须使用png-24。</p>
-
-<h4>normalize.css</h4>
-
-<p>解决各种浏览器初始状态的不同和兼容问题<br/>
-<a href="https://github.com/necolas/normalize.css">https://github.com/necolas/normalize.css</a></p>
-
-<h4>HTML img标签的alt属性</h4>
-
-<p>alt属性是一个必需的属性，它规定在图像无法显示时的替代文本.<br/>
-alt stands for alternative text.</p>
-
-<h4>使得竖着的list变成横向的navigation list方法</h4>
-
-<p>添加display: inline;<br/>
-Referance: <a href="https://tutsplus.com/lesson/navigation-lists/">https://tutsplus.com/lesson/navigation-lists/</a></p>
-
-<h4>postion: relative和absolute定位 （相对定位和绝对定位）</h4>
-
-<p>相对定位是“相对于”元素在文档流中的初始位置，而绝对定位是“相对于”最近的已定位祖先元素，如果不存在已定位的祖先元素，那么是最初的包含块。<br/>
-相对定位在移动位置之后，不会影响其他文档流中元素的位置。<br/>
-绝对定位在移动位置之后，元素从文档流中抽取出来，原占有的位置被后面的对象顶替上来。</p>
-
-<p>position: absolute 会使得原来的inline元素变成block元素，从而能够使用width属性。</p>
-
-<h4>居中</h4>
-
-<p>水平居中(：margin和width同时使用的时候，才会有居中效果。<br/>
-垂直居中(1)：vertical-align:middle;<br/>
-line-height: 10px;   /<em> must define line-height to use vertical-align </em>/    <br/>
-line-height: 100%;   等于font-size的高度，而不是div的高度<br/>
-垂直居中(2)：padding:25px;  上下padding相等，则自动会垂直居中了</p>
-
-<h4>奇怪的inline-block</h4>
-
-<p>对li使用inline-block的时候，li之间存在space，即使把margin和padding都设置为0，依然无法消除。<br/>
-问题的本质是两个li之间的space问题。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;li&gt;1&lt;/li&gt;
-</span><span class='line'>&lt;li&gt;2&lt;/li&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>space占有4px的空间，所以无法被消除。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;li&gt;1&lt;/li&gt;&lt;li&gt;2&lt;/li&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>按照这种方式排列html，中间的space就会消失。<br/>
-另一种方法是将 ul tag 的字体大小设置为0，然后把li tag中的font-size设置回来。<br/>
-<a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">Referance</a></p>
-
-<h4>Margin的垂直collapse（Collapsing margins）</h4>
-
-<p>Horizontal margins never collapse.<br/>
-定义： the expression collapsing margins means that adjoining margins (no non-empty content, padding or border areas or clearance separate them) of two or more boxes (which may be next to one another or nested) combine to form a single margin.<br/>
-两种情况：<br/>
-1. 对于上下两个并列的div块而言，上面div的margin-bottom和下面div的margin-top会塌陷，也就是会取上下两者margin里最大值作为显示值。<br/>
-2. 对于有块级子元素的元素计算高度的方式,如果元素没有垂直边框和填充,那其高度就是其子元素顶部和底部边框边缘之间的距离。<br/>
-Referance<br/>
-<a href="http://blog.csdn.net/dclchj/article/details/9787481">CSS的margin塌陷（collapse）</a><br/>
-<a href="http://www.w3.org/TR/CSS2/box.html">Box model 8.3.1</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SSH Port Forward/Tunnel]]></title>
-    <link href="http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel/"/>
-    <updated>2014-03-18T13:38:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel</id>
-    <content type="html"><![CDATA[<h3>Agent Forwarding</h3>
-
-<p>A - B - C 在从A访问C过程中经过B，但是不用在B上安装私钥，叫做Agent Forwarding</p>
-
-<p>We have also seen another type of SSH forwarding, agent forwarding. [Section 6.3.5] This let us
-create SSH connections from one computer, through a second computer, and onto a third using
-public-key authentication, but without installing our private key on the second machine.</p>
-
-<h3>Port Forwarding, also names as tunneliing</h3>
-
-<p>A - B 之间使用例如TCP/IP这种不安全的协议的时候，在TCP/IP协议之中，增加一个安全的通道</p>
-
-<p>Port forwarding is sometimes called tunneling because the SSH connection provides a secure &ldquo;tunnel&rdquo; through which another TCP/IP connection may pass.
-SSH uses TCP/IP as its transport mechanism, usually TCP port 22 on the server machine, as it encrypts and decrypts the traffic passing over the connection.</p>
-
-<h3>Local Port Forwarding and Remote Port Forwarding</h3>
-
-<p>Local Port Forwarding—In most cases, local port forwarding is used to forward data securely from another
-client application running on the same computer as the Secure Shell client. The Secure Shell client is
-configured to redirect data from a specified local port (on the same computer as the Secure Shell client),
-through the secure tunnel to a specified destination host and port. You can configure any other client
-running on the same computer to connect to the forwarded port (rather than directly to the destination
-host and port). After the Secure Shell connection is established, the Secure Shell client listens on the
-specified port and redirects all data sent to that port through the secure tunnel to the Secure Shell
-server. The server decrypts the data, and then directs it to the destination host and port.</p>
-
-<p>Remote Port Forwarding—Remote port forwarding is used to forward data securely from any client
-application running on the same computer as the Secure Shell server. In this case, the client session
-requests that a specified remote port (on the same computer as the Secure Shell server) be used to
-redirect the data. You can configure any other client running on the same computer as the Secure Shell
-server to connect to the forwarded port (rather than directly to the destination host and port). After the
-Secure Shell connection is established, the Secure Shell server listens on the specified port and redirects
-all data sent to that port through the secure tunnel to the Secure Shell client. The client decrypts the
-data and then directs it to the destination host and port.</p>
-
-<h3>多阶段Port Forwarding/Tunnelling</h3>
-
-<p><a href="http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops">http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops</a></p>
-
-<h6>参考文献</h6>
-
-<p><a href="http://www.amazon.com/SSH-The-Secure-Shell-Definitive/dp/0596008953">SSH, The Secure Shell - The Definitive Guide | Chapter Port Forwarding and X Forwarding</a></br></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Rspec Test Principle - Test Only Your Own Code]]></title>
-    <link href="http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/"/>
-    <updated>2014-02-27T20:47:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code</id>
-    <content type="html"><![CDATA[<p>测试的时候，这一点常常被忘记，那就是———只测试自己的代码。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">S3Bucket</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">config_file</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;.....&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@config</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;access_key_id&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;secret_access_key&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;bucket_name&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;bucket_name&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">s3b</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">S3Bucket</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket with wrong access_key_id&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>    <span class="n">expect</span> <span class="p">{</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="n">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">&quot;AWS Access Key Id does not exist in our records.&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;upload file to s3&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">public_url</span> <span class="o">=</span> <span class="n">s3b</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span><span class="si">}</span><span class="s2">/s3.yml&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">public_url</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">URI</span><span class="o">::</span><span class="no">HTTPS</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面这段代码，测试上传文件到Amazon S3的代码。这段代码的问题是，它依赖于S3的服务是可行的，而且它其实更多的是在测试S3 SDK。
-比如它测试了access key id出错的时候，会抛出ArgumentError。但是抛出ArgumentError的是S3的SDK，而不是S3Bucket类中的代码，所以这个测试其实是不必要的。</p>
-
-<p>在测试这类测试的时候，可以使用rspec-mocks来进行测试。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">S3Bucket</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
-</span><span class='line'>    <span class="vi">@file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span><span class="si">}</span><span class="s2">/../../../test.txt&quot;</span>
-</span><span class='line'>    <span class="n">config_file</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;.....&#39;</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@config</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;access_key_id&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;secret_access_key&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;bucket_name&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;bucket_name&quot;</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>      
-</span><span class='line'>    <span class="c1"># AWS::S3 class should response to :new method</span>
-</span><span class='line'>    <span class="n">s3</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="p">)</span>
-</span><span class='line'>    <span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:new</span><span class="p">)</span><span class="o">.</span><span class="n">with</span><span class="p">(</span><span class="ss">:access_key_id</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:secret_access_key</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># build bucket object</span>
-</span><span class='line'>    <span class="n">bucket</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">Bucket</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">s3</span><span class="o">.</span><span class="n">stub_chain</span><span class="p">(</span><span class="ss">:buckets</span><span class="p">,</span> <span class="ss">:[]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1"># build s3 object with method upload and delete</span>
-</span><span class='line'>    <span class="n">s3_obj</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">S3Object</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">bucket</span><span class="o">.</span><span class="n">stub_chain</span><span class="p">(</span><span class="ss">:objects</span><span class="p">,</span> <span class="ss">:[]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">s3_obj</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">s3_obj</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:write</span><span class="p">)</span><span class="o">.</span><span class="n">with</span><span class="p">(</span><span class="ss">:file</span> <span class="o">=&gt;</span> <span class="vi">@file_path</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@test_url</span> <span class="o">=</span> <span class="no">URI</span><span class="o">::</span><span class="no">HTTPS</span><span class="o">.</span><span class="n">build</span><span class="p">({</span><span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s1">&#39;www.example.com&#39;</span><span class="p">,</span> <span class="ss">:path</span> <span class="o">=&gt;</span> <span class="s1">&#39;/foo/bar&#39;</span><span class="p">})</span>
-</span><span class='line'>    <span class="n">s3_obj</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:public_url</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="vi">@test_url</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket with &quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">s3b</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">S3Bucket</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;upload file to s3&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">public_url</span> <span class="o">=</span> <span class="n">s3b</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="vi">@file_path</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">public_url</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="vi">@test_url</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码，对访问S3的代码mock，从而不需要进行网络访问便测试了S3Bucket类中的代码。</p>
-
-<h6>参考</h6>
-
-<p><a href="https://github.com/rspec/rspec-expectations">Rspec Expectations</a></br>
-<a href="http://betterspecs.org/">BetterSpec</a></br></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Apache Server on MacOS Using .htaccess]]></title>
-    <link href="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-htaccess/"/>
-    <updated>2013-12-04T15:49:00+09:00</updated>
-    <id>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-htaccess</id>
-    <content type="html"><![CDATA[<h3>检测Apache是否支持mod_rewrite</h3>
-
-<p>在httpd.conf文件中的Loaded Modules，是否包含了mod_rewrite模块；如果没有的话，去除这部分的注释。</p>
-
-<h3>让apache服务器支持.htaccess</h3>
-
-<p>在httpd.conf中的DocumentRoot的Directory中，AllowOverride修改为All。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;Directory "/Library/WebServer/Documents"&gt;
-</span><span class='line'>    Options Indexes FollowSymLinks MultiViews
-</span><span class='line'>    AllowOverride None
-</span><span class='line'>    Order allow,deny
-</span><span class='line'>    Allow from all
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;Directory "/Library/WebServer/Documents"&gt;
-</span><span class='line'>    Options Indexes FollowSymLinks MultiViews
-</span><span class='line'>    AllowOverride All
-</span><span class='line'>    Order allow,deny
-</span><span class='line'>    Allow from all
-</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>在/Library/WebServer/Documents中建立.htaccess 文件</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>RewriteEngine on
-</span><span class='line'>RewriteRule ([a-zA-Z]{1,})-([0-9]{1,}).html$ index.php?action=$1&id=$2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>建立index.php文件</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="k">echo</span> <span class="nx">‘你的Action是：’</span> <span class="o">.</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="k">echo</span> <span class="nx">‘</span><span class="o">&lt;</span><span class="nx">br</span><span class="o">/&gt;</span><span class="nx">’</span><span class="p">;</span>
-</span><span class='line'><span class="k">echo</span> <span class="nx">‘你的ID是：’</span> <span class="o">.</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">];</span>
-</span><span class='line'><span class="cp">?&gt;</span><span class="x"></span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="nx">在浏览器中输入：localhost</span><span class="o">/</span><span class="nx">view</span><span class="o">-</span><span class="mf">12.</span><span class="nx">html</span>
-</span><span class='line'><span class="nx">输出的是：</span>
-</span><span class='line'><span class="nx">你的Action是：view</span>
-</span><span class='line'><span class="nx">你的ID是：12</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Referance</h3>
-
-<p><a href="http://httpd.apache.org/docs/current/howto/htaccess.html">Apache htaccess doc</a></br>
-<a href="http://blog.csdn.net/Yuhao818/article/details/4680075">Apache htaccess tutorial</a></br>
-<a href="http://httpd.apache.org/docs/current/mod/mod_rewrite.html">Apache mod_rewirte doc</a></p>
 ]]></content>
   </entry>
   

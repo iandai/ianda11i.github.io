@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Growthhacking | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/growthhacking/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-15T20:40:41+09:00</updated>
+  <updated>2015-06-17T20:40:46+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/"/>
+    <updated>2015-06-16T19:39:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</a></p>
+
+<p>Summary:<br/>
+Brain Balfour 讲为何retention为王。因为有了retention，其他的自然会来。<br/>
+Increase retention -> Increase LTV -> Afford Higher CPA<br/>
+Increase retention -> increase upgrade rates -> decrease payback period<br/>
+其中有一个重要的点在于，有时候因为有许多新用户的增加和短期retention较高的水平，导致盲目投入，最后眼睁睁看着用户都流失掉。<br/>
+所以retention最后要是一条水平线，而不能一直下垂。<br/>
+讲了实际案例，如何预防retention下降的趋势，如何想办法提高retention。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A/B Testing: Why, What, When, How by Mike Greenfield]]></title>
@@ -86,22 +104,6 @@ Video: 10 Habits of High-Growth Startups by Sean Ellis<br/>
 <p>Summary:<br/>
 Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或者疏忽，获取的用户的全部邮件好友列表。<br/>
 获取注册用户的好友，对于Linkedin来说是非常重要的。Linkedin通过设计，让你不经意间授权了他获取好友email列表，然后让你不经意间邀请那些不在Linkedin上的好友。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Average Reteion for Google Play Apps by Andrew Chen]]></title>
-    <link href="http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/"/>
-    <updated>2015-06-12T15:41:08+09:00</updated>
-    <id>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps</id>
-    <content type="html"><![CDATA[<p>Source:<br/>
-<a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
-
-<p>Summary:<br/>
-Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
-题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
-作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
-另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
 ]]></content>
   </entry>
   
