@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Growthhacking | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/growthhacking/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-17T20:40:46+09:00</updated>
+  <updated>2015-08-11T19:25:04+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Hamburger Menu Doesn't Work]]></title>
+    <link href="http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work/"/>
+    <updated>2015-08-11T19:23:06+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://deep.design/the-hamburger-menu/">http://deep.design/the-hamburger-menu/</a></p>
+
+<p>Summary:</p>
+
+<p>Facebook和New York Times也同样使用过Hambuerger Menu，但是结果显示不利于user engagement，后来都换回了tab。
+作者所给出的理由，最重要的一点是，用户使用app和网页的方式，是看那些会令自己感兴趣的文字，然后到处试一试。而hanburger menu不显得有任何有趣的地方。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour]]></title>
@@ -90,20 +105,6 @@ Video: 10 Habits of High-Growth Startups by Sean Ellis<br/>
 8 Execute at High Tempo 执行要快，并发执行实验<br/>
 9 Accontability for inputs 要有足够的输出，就要有足够的输入<br/>
 10 Double Down on Success  在已经有效果的channel上面，更加深入和精细，以求获得更好的效果</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linkedin Use Dark Pattern Design to Get New User]]></title>
-    <link href="http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/"/>
-    <updated>2015-06-15T19:19:41+09:00</updated>
-    <id>http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user</id>
-    <content type="html"><![CDATA[<p>Source: <br/>
-<a href="https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462">https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462</a></p>
-
-<p>Summary:<br/>
-Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或者疏忽，获取的用户的全部邮件好友列表。<br/>
-获取注册用户的好友，对于Linkedin来说是非常重要的。Linkedin通过设计，让你不经意间授权了他获取好友email列表，然后让你不经意间邀请那些不在Linkedin上的好友。</p>
 ]]></content>
   </entry>
   

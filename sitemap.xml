@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work/</loc>
+    <lastmod>2015-08-11T19:23:06+09:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/</loc>
+    <lastmod>2015-07-09T19:52:09+09:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</loc>
     <lastmod>2015-06-16T19:39:00+09:00</lastmod>
     <priority>0.8</priority>
@@ -172,13 +182,13 @@
   </url>
   <url>
     <loc>http://iandai.github.io/blog/archives/</loc>
-    <lastmod>2015-06-17T20:40:46+09:00</lastmod>
+    <lastmod>2015-08-11T19:25:04+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/</loc>
-    <lastmod>2015-06-17T20:40:46+09:00</lastmod>
+    <lastmod>2015-08-11T19:25:04+09:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

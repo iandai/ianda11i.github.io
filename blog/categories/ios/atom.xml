@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-17T20:40:46+09:00</updated>
+  <updated>2015-08-11T19:25:04+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,74 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CLLocationManager Notes]]></title>
+    <link href="http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/"/>
+    <updated>2015-07-09T19:52:09+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>-(void)locationManager:(CLLocationManager <em>)manager didUpdateLocations:(NSArray </em>)locations
+声名locationManager变量为局部变量会导致delegate不会被call，因为locationManager变量被释放了。
+<code>
+Create an instance of the CLLocationManager class and store a strong reference to it somewhere in your app.
+</code></p></li>
+<li><p>提高location结果精度，并且在使用结束后停止updatelocation.
+参考apple官方LocateMe sample：<a href="https://developer.apple.com/library/ios/samplecode/LocateMe/Introduction/Intro.html">https://developer.apple.com/library/ios/samplecode/LocateMe/Introduction/Intro.html</a>
+&#8220;`</p></li>
+<li><p>(void)locationManager:(CLLocationManager <em>)manager didUpdateToLocation:(CLLocation </em>)newLocation fromLocation:(CLLocation *)oldLocation
+{
+  // test the age of the location measurement to determine if the measurement is cached
+  // in most cases you will not want to rely on cached measurements
+  NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
+  if (locationAge > 5.0) return;</p>
+
+<p>  // test that the horizontal accuracy does not indicate an invalid measurement
+  if (newLocation.horizontalAccuracy &lt; 0) return;</p>
+
+<p>  // test the measurement to see if it is more accurate than the previous measurement
+  if (self.bestEffortAtLocation == nil || self.bestEffortAtLocation.horizontalAccuracy > newLocation.horizontalAccuracy)
+  {
+      // store the location as the &ldquo;best effort&rdquo;
+      self.bestEffortAtLocation = newLocation;</p>
+
+<pre><code>  // test the measurement to see if it meets the desired accuracy
+  //
+  // IMPORTANT!!! kCLLocationAccuracyBest should not be used for comparison with location coordinate or altitidue 
+  // accuracy because it is a negative value. Instead, compare against some predetermined "real" measure of 
+  // acceptable accuracy, or depend on the timeout to stop updating. This sample depends on the timeout.
+  //
+  if (newLocation.horizontalAccuracy &lt;= locationManager.desiredAccuracy) {
+      // we have a measurement that meets our requirements, so we can stop updating the location
+      // 
+      // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
+      //
+      [self stopUpdatingLocation:NSLocalizedString(@"Acquired Location", @"Acquired Location")];
+  }
+</code></pre>
+
+<p>  }
+}
+&#8220;`</p></li>
+<li><p>iPhone进入飞行模式并不会立刻停止接受GPS数据。
+Location manager获取实时的location需要花费几秒钟，所以location manager会先返回cached location data，然后再返回更新过的数据，所以一定要check location对象的timestamp。
+这也解释了，为何在执行<code>[self.locationManager stopUpdatingLocation];</code>之后，<code>- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error</code>还是会被call，应该是因为执行stopUpdatingLocation之后，实际上进行数据更新的线程还在运行，发现无法获取数据了，导致又被失败delegate被call了一次。</p></li>
+</ol>
+
+
+<pre><code>Regardless of which location service you use, location data is reported to your app via the location manager’s associated delegate object. Because it can take several seconds to return an initial location, the location manager typically delivers the previously cached location data immediately and then delivers more up-to-date location data as it becomes available. Therefore it is always a good idea to check the timestamp of any location object before taking any actions. If both location services are enabled simultaneously, they deliver events using the same set of delegate methods.
+</code></pre>
+
+<ol>
+<li>Deferring updates省电
+<code>
+It is recommended that you use this feature in situations where your app could process the data later without any problems.
+An app that tracks the user’s location on a hiking trail could defer updates until the user hikes a certain distance and then process the points all at once.
+</code></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Successful Mobile App Entrepreneurs]]></title>

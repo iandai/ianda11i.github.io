@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Security | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/security/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-06-17T20:40:46+09:00</updated>
+  <updated>2015-08-11T19:25:04+09:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -28,43 +28,26 @@
 2 select * from xxx where a = ‘123;  输入非法内容，看是否有sql error返回。</p></li>
 <li><p>利用漏洞<br/>
 ereg()有bug，无法检测到\0之后的内容，有可能将注入的内容隐藏在\0的后面。
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&amp;</span><span class="nx">lt</span><span class="p">;</span><span class="o">?</span><span class="nx">php</span>
-</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="mi">123</span><span class="nx">\0\0abc</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
-</span><span class='line'><span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">source</span><span class="o">=</span><span class="p">[</span><span class="nv">$a</span><span class="p">]</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;&lt;/</span><span class="nx">li</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="nx">ul</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">/</span><span class="mi">123</span><span class="o">/&amp;</span><span class="nx">rdquo</span><span class="p">;,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">match</span><span class="o">=</span><span class="p">[</span><span class="nv">$r</span><span class="p">]</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="o">/</span><span class="nx">abc</span><span class="o">/&amp;</span><span class="nx">rdquo</span><span class="p">;,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">match</span><span class="o">=</span><span class="p">[</span><span class="nv">$r</span><span class="p">]</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="mi">123</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">match</span><span class="o">=</span><span class="p">[</span><span class="nv">$r</span><span class="p">]</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
-</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">abc</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span> <span class="nv">$a</span><span class="p">);</span>
-</span><span class='line'><span class="k">echo</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">match</span><span class="o">=</span><span class="p">[</span><span class="nv">$r</span><span class="p">]</span><span class="nx">\n</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;/</span><span class="nx">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;///</span> <span class="nb">ereg</span> <span class="nx">cannot</span> <span class="nx">detect</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">abc</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span> <span class="nx">after</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">\0</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span> <span class="nx">so</span> <span class="nx">you</span> <span class="nx">must</span> <span class="k">not</span> <span class="k">use</span> <span class="nx">raw</span> <span class="nx">source</span> <span class="nx">string</span><span class="o">!</span>
-</span><span class='line'><span class="c1">/// and you should not use ereg(). instead of it, use preg_match().</span>
-</span></code></pre></td></tr></table></div></figure></p>
+&#8220;`php
+&lt;?php
+$a = &ldquo;123\0\0abc&rdquo;;
+echo &ldquo;source=[$a]\n&rdquo;;</p></li>
+</ul>
+
+
+<p>$r = preg_match(&ldquo;/123/&rdquo;, $a);
+echo &ldquo;match=[$r]\n&rdquo;;
+$r = preg_match(&ldquo;/abc/&rdquo;, $a);
+echo &ldquo;match=[$r]\n&rdquo;;</p>
+
+<p>$r = ereg(&ldquo;123&rdquo;, $a);
+echo &ldquo;match=[$r]\n&rdquo;;
+$r = ereg(&ldquo;abc&rdquo;, $a);
+echo &ldquo;match=[$r]\n&rdquo;;</p>
+
+<p>/// ereg cannot detect &ldquo;abc&rdquo; after &ldquo;\0&rdquo;, so you must not use raw source string!
+/// and you should not use ereg(). instead of it, use preg_match().
+&#8220;`</p>
 
 <h2>SQL注入的对策</h2>
 
