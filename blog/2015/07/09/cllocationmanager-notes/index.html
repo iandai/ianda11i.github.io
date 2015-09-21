@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Ian&#8217;s Tech Note</title>
+  <title>CLLocationManager Notes - Ian&#8217;s Tech Note</title>
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Crash Without Detailed Info 解决方法： 添加All Exception Breakpoint
-在Breakpoint navigator，点+号，选择Add Exception Breakpoint，在Option选项选择默认的All。 &hellip;">
+  <meta name="description" content="-(void)locationManager:(CLLocationManager )manager didUpdateLocations:(NSArray )locations
+声名locationManager变量为局部变量会导致delegate不会被call， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://iandai.github.io/">
+  <link rel="canonical" href="http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
@@ -67,154 +67,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-20T16:08:33+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:08 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Crash Without Detailed Info</h3>
-
-<h4>解决方法：</h4>
-
-<ul>
-<li>添加All Exception Breakpoint
-在Breakpoint navigator，点+号，选择Add Exception Breakpoint，在Option选项选择默认的All。这样每次crash的时候仍然可以看到线程栈，调试起来就会方便很多，不用猜测到底哪里出了问题。</li>
-<li>在lldb里面输入<code>po $arg1</code>
-有时候crash的时候，线程栈是在UIApplicationMain，或者Main之类的地方，看不出来真正的crash的原因。这时候输入<code>po $arg1</code>有时候可以看到真正的crash原因。（不理解具体原理是什么, somehow it works）。</li>
-</ul>
-
-
-<h3>Debug after force quit app</h3>
-
-<h4>解决方法：</h4>
-
-<ul>
-<li>Attach to Process
-有时候需要Debug用户force quit一个App之后，在重新打开App之后的表现。可以在Debug的Attach to Process中,重新把App和Xcode连接起来，继续debug。</li>
-</ul>
-
-
-<h3>Debug View</h3>
-
-<h4>解决方法：</h4>
-
-<ul>
-<li>在lldb中<code>po [[UIWindow keyWindow] recursiveDescription]</code></li>
-<li>按cmd + 6进入Debug navigator，在该栏右上角的Process View option按钮中选择View UI Hierarchy。或者点击Debug View Hierarchy按钮。</li>
-</ul>
-
-
-<h3>Simulator shortcuts</h3>
-
-<ul>
-<li>回到Home：Command-Shift-H</li>
-<li>关闭App： Command-Shift-H按两次</li>
-<li>关闭网络： 关闭系统的网络</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-08-12T17:59:19+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:59 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
-<li>Jet.com用10万股票吸引人，帮助自己获得内测用户。带来最多的内测用户的人，可以获得10万股票，按照融资估值，约等于2000万美元。
-第一Jet获得了注册用户，除了获得第一的人，其他人也在比赛中带来了注册用户
-第二Jet付出的是股票，可以节约现金
-第三Jet根据这个，做了一个事件营销，让自己变得有名
-<a href="http://fusion.net/story/54990/guy-got-rich-using-jet/">http://fusion.net/story/54990/guy-got-rich-using-jet/</a></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-08-11T19:23:06+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:23 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="http://deep.design/the-hamburger-menu/">http://deep.design/the-hamburger-menu/</a></p>
-
-<p>Summary:</p>
-
-<p>Facebook和New York Times也同样使用过Hambuerger Menu，但是结果显示不利于user engagement，后来都换回了tab。
-作者所给出的理由，最重要的一点是，用户使用app和网页的方式，是看那些会令自己感兴趣的文字，然后到处试一试。而hanburger menu不显得有任何有趣的地方。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a></h1>
+      <h1 class="entry-title">CLLocationManager Notes</h1>
     
     
       <p class="meta">
@@ -230,7 +88,7 @@
   </header>
 
 
-  <div class="entry-content"><ol>
+<div class="entry-content"><ol>
 <li><p>-(void)locationManager:(CLLocationManager <em>)manager didUpdateLocations:(NSArray </em>)locations
 声名locationManager变量为局部变量会导致delegate不会被call，因为locationManager变量被释放了。</p></li>
 </ol>
@@ -337,255 +195,54 @@ Location manager获取实时的location需要花费几秒钟，所以location ma
 
 
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-16T19:39:00+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:39 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</a></p>
-
-<p>Summary:<br/>
-Brain Balfour 讲为何retention为王。因为有了retention，其他的自然会来。<br/>
-Increase retention -> Increase LTV -> Afford Higher CPA<br/>
-Increase retention -> increase upgrade rates -> decrease payback period<br/>
-其中有一个重要的点在于，有时候因为有许多新用户的增加和短期retention较高的水平，导致盲目投入，最后眼睁睁看着用户都流失掉。<br/>
-所以retention最后要是一条水平线，而不能一直下垂。<br/>
-讲了实际案例，如何预防retention下降的趋势，如何想办法提高retention。</p>
-</div>
-  
   
 
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/">A/B Testing: Why, What, When, How by Mike Greenfield</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
 
-<time class='entry-date' datetime='2015-06-15T20:22:05+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield">http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield</a></p>
-
-<p>Summary:<br/>
-回答why, what, when, how和经验。<br/>
-why因为有了数据才能衡量任何东西。<br/>
-what 不要测试不能影响全局的细小因素。<br/>
-when 只测试能够带来business significant的内容，经验是1万到10万人才值得做AB测试。<br/>
-How 建自己的framework，这样才更佳自由。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+<time class='entry-date' datetime='2015-07-09T19:52:09+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:52 pm</span></time>
       
-  <header>
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/">A/B Testing: When to Do A/B Testing by Mike Greenfield.</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T20:14:39+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:14 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/">http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/</a></p>
-
-<p>Summary:<br/>
-什么时候要做AB测试，非常靠谱的回答。<br/>
-对于signup和邀请好友。如果受到邀请的好友signup，只有邀请人的0.8%，那么不应该做AB Testing。<br/>
-对Email的Title和content做AB testing往往会有很好的效果。不过做之前，要想好会不会有大影响。如果email每天只有100个打开率，那么再优化，也不会有什么大影响。   <br/>
-Purchase funnel也非常值得做AB测试。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> - Viral signup flows. If your current signup flow features 1000 signups inviting 3000 people, 900 of whom register for your product, you’re very close to being viral (K=0.9). A/B testing would be a good use of time. If your current flow features 1000 signups inviting 600 people, 80 of whom join (K=0.08), then you aren’t in the ballpark: optimizing button text is likely a waste of time. Go bigger.
-</span><span class='line'> - Email content. Subject lines and link text can have a huge impact on email clickthrough rates. One typical example: an email with the subject “5 Embarrassing Kid Moments” gets 2.5 times as many clicks as one with the subject “The Craziest Thing My Child Has Done.” But again, being close to “good” is key: if that 2.5x is the difference between 50 clicks a week and 125 clicks a week, does it matter? If it doesn’t matter (and good estimation is key), no point spending time A/B testing it.
-</span><span class='line'> - Purchase funnel. Much of Team Rankings‘ revenue comes from subscriptions, and some purchase funnels can be much more effective than others. Last year, for instance, our March Madness product, BracketBrains, generated 30% more sales when we prompted people to “Get 2011 Picks” than to “Get BracketBrains”. Same caveats apply here, though: test if and only if the differences are likely to matter for your business.</span></code></pre></td></tr></table></div></figure>
-
-
-
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/" data-via="" data-counturl="http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/">Video: 10 Habits of High-Growth Startups by Sean Ellis</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T19:25:06+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:25 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/">https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/</a></p>
-
-<p>Summary:<br/>
-Video: 10 Habits of High-Growth Startups by Sean Ellis<br/>
-第一次提出Growth Hacker这个名字的人Sean Ellis的演讲：10个让创业公司快速成长的习惯<br/>
-1 Putting the first thing first. 意思是做一个好的产品是一切的基础，A product that worth growth<br/>
-2 Curious about Customers. 倾听你的customer，看他们是否觉得你提供的service有价值，是否一个must have的service<br/>
-3 Instrument Powerful Analytics<br/>
-4 Optimize Conversions<br/>
-5 Treat Growth as Team Sport 各个team之间，透明很重要。客服和工程师提出的想法的角度往往不同<br/>
-6 Experiment on Ideas 测试才能知道idea的效果，往往你觉得有用的没用，你觉得没用的反而有用<br/>
-7 Prioritize Resources for Growth   <br/>
-8 Execute at High Tempo 执行要快，并发执行实验<br/>
-9 Accontability for inputs 要有足够的输出，就要有足够的输入<br/>
-10 Double Down on Success  在已经有效果的channel上面，更加深入和精细，以求获得更好的效果</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
+        <a class="basic-alignment left" href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/" title="Previous Post: video: growth is good but retention is 4ever at wmd conference by brian balfour">&laquo; video: growth is good but retention is 4ever at wmd conference by brian balfour</a>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/">Linkedin Use Dark Pattern Design to Get New User</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T19:19:41+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:19 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source: <br/>
-<a href="https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462">https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462</a></p>
-
-<p>Summary:<br/>
-Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或者疏忽，获取的用户的全部邮件好友列表。<br/>
-获取注册用户的好友，对于Linkedin来说是非常重要的。Linkedin通过设计，让你不经意间授权了他获取好友email列表，然后让你不经意间邀请那些不在Linkedin上的好友。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/12/successful-mobile-app-entrepreneurs/">Successful Mobile App Entrepreneurs</a></h1>
-    
-    
-      <p class="meta">
-        
+        <a class="basic-alignment right" href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/" title="Next Post: The Hamburger Menu Doesn't Work">The Hamburger Menu Doesn&#8217;t Work &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
 
-
-
-
-<time class='entry-date' datetime='2015-06-12T19:13:36+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:13 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:  <br/>
-<a href="http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/">http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/</a></p>
-
-<p>Summary:
-要做好mobile app entrepreneurs，应该做的9件事儿。
-有启发的两件事儿是：<br/>
-1.研究App Store，研究好的APP好在哪儿，不好的地方哪儿可以提高的，熟悉App Store的算法是如何工作的。
-2.跟不好的APP学习。找出一些共同的patten，自己要避免。</p>
 </div>
-  
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/posts/2">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -627,6 +284,7 @@ Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或
 
   
 </aside>
+
 
     </div>
   </div>

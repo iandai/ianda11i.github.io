@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Useful iOS Debug Tricks - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="Crash Without Detailed Info 解决方法： 添加All Exception Breakpoint
+在Breakpoint navigator，点+号，选择Add Exception Breakpoint，在Option选项选择默认的All。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Useful iOS Debug Tricks</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-20T16:08:33+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Crash Without Detailed Info</h3>
+
+<h4>解决方法：</h4>
+
+<ul>
+<li>添加All Exception Breakpoint
+在Breakpoint navigator，点+号，选择Add Exception Breakpoint，在Option选项选择默认的All。这样每次crash的时候仍然可以看到线程栈，调试起来就会方便很多，不用猜测到底哪里出了问题。</li>
+<li>在lldb里面输入<code>po $arg1</code>
+有时候crash的时候，线程栈是在UIApplicationMain，或者Main之类的地方，看不出来真正的crash的原因。这时候输入<code>po $arg1</code>有时候可以看到真正的crash原因。（不理解具体原理是什么, somehow it works）。</li>
+</ul>
+
+
+<h3>Debug after force quit app</h3>
+
+<h4>解决方法：</h4>
+
+<ul>
+<li>Attach to Process
+有时候需要Debug用户force quit一个App之后，在重新打开App之后的表现。可以在Debug的Attach to Process中,重新把App和Xcode连接起来，继续debug。</li>
+</ul>
+
+
+<h3>Debug View</h3>
+
+<h4>解决方法：</h4>
+
+<ul>
+<li>在lldb中<code>po [[UIWindow keyWindow] recursiveDescription]</code></li>
+<li>按cmd + 6进入Debug navigator，在该栏右上角的Process View option按钮中选择View UI Hierarchy。或者点击Debug View Hierarchy按钮。</li>
+</ul>
+
+
+<h3>Simulator shortcuts</h3>
+
+<ul>
+<li>回到Home：Command-Shift-H</li>
+<li>关闭App： Command-Shift-H按两次</li>
+<li>关闭网络： 关闭系统的网络</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-09-20T16:08:33+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:08 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks/" data-via="" data-counturl="http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/08/12/growth-tatics/" title="Previous Post: Growth Tactics Example">&laquo; Growth Tactics Example</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

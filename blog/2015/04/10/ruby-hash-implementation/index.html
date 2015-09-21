@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ruby Hash Implementation - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。 1
+murmur_hash(key) % M hash collision的处理方法 当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ruby Hash Implementation</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-10T12:08:39+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+<li>murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>murmur_hash(key) % M</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>hash collision的处理方法
+
+<ul>
+<li>当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小，全部重新计算所有的hash数值（因为当单个位置不停增长的话，就又变回O(n)的复杂度了）。</li>
+<li>质数的选取2的指数附近的数字</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>private static final int MRI_PRIMES[] = {8 + 3, 16 + 3, 32 + 5, 64 + 3, 128 + 3, 256 + 27, ....};</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-04-10T12:08:39+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:08 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/" data-via="" data-counturl="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/25/avoid-repeated-significance-testing-errors/" title="Previous Post: A/B testing: avoid repeated significance testing errors">&laquo; A/B testing: avoid repeated significance testing errors</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups/" title="Next Post: The simplest and most important dashboard for early stage startups">The simplest and most important dashboard for early stage startups &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

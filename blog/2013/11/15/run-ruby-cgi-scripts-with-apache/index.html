@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Run Ruby CGI Scripts With Apache - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="CGI Scripts on server 启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。 1
+2
+3 #!/bin/env ruby print "Content-type: text/html\r\n\r\n" &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Run Ruby CGI Scripts With Apache</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-15T19:34:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:34 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>CGI Scripts on server</h2>
+
+<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> #!/bin/env ruby
+</span><span class='line'> print "Content-type: text/html\r\n\r\n"
+</span><span class='line'> print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
+
+<p>CGI 设置的要点：<br/>
+The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
+The MIME media type must be the first output of your CGI script.<br/>
+A blank line follows the MIME media type.<br/>
+The CGI script must have the correct permissions.</p>
+
+<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
+<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
+
+<h2>Config apache to support running CGI</h2>
+
+<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
+
+<h2>Send parameters with get and post in ruby on client</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;….&quot;</span>       <span class="c1">#*******.ap-northeast-1.compute.amazonaws.com</span>
+</span><span class='line'><span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">version_1_2</span>
+</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Get request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">net</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+</span><span class='line'><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris&#39;</span><span class="p">,</span> <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris@foo.com&#39;</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># Create HTTP request</span>
+</span><span class='line'><span class="n">req</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="s1">&#39;/cgi-bin/ruby.cgi&#39;</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span>
+</span><span class='line'><span class="n">req</span><span class="o">.</span><span class="n">set_form_data</span> <span class="n">params</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># Send request</span>
+</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">read_timeout</span> <span class="o">=</span> <span class="mi">5600</span>
+</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="n">req</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Post request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-11-15T19:34:00+09:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:34 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cgi/'>cgi</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/" data-via="" data-counturl="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/11/15/ruby-file-flock/" title="Previous Post: ruby file flock">&laquo; ruby file flock</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/12/04/apache-server-on-macos-using-alias/" title="Next Post: Apache server on MacOS using Alias">Apache server on MacOS using Alias &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

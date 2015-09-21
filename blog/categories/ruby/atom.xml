@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-09-21T20:28:03+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby Hash Implementation]]></title>
+    <link href="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/"/>
+    <updated>2015-04-10T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。
+<code>
+murmur_hash(key) % M
+</code></p></li>
+<li><p>hash collision的处理方法</p>
+
+<ul>
+<li>当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小，全部重新计算所有的hash数值（因为当单个位置不停增长的话，就又变回O(n)的复杂度了）。</li>
+<li>质数的选取2的指数附近的数字
+<code>
+private static final int MRI_PRIMES[] = {8 + 3, 16 + 3, 32 + 5, 64 + 3, 128 + 3, 256 + 27, ....};
+</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Rails Source Code: Fragement Caching]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching/"/>
+    <updated>2015-02-01T02:07:59+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching</id>
+    <content type="html"><![CDATA[<p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
+
+<p>Rails fragment caching code:</p>
+
+<pre><code class="ruby">  &lt;% cache do %&gt;
+  &lt;% end %&gt;
+</code></pre>
+
+<p>Simple.<br/>
+But where is <code>cache</code> from?</p>
+
+<p>With a search of Rails api, We can find that it is a helper from ActionView::Helpers::CacheHelper.</p>
+
+<p>Reading the api, we still have no clue about how does this <code>cache</code> helper method calls the memcached store.
+So let&rsquo;s started to read source.</p>
+
+<p>First, open file actionview/lib/action_view/helpers/cache_helper.rb. We can find following cache method.</p>
+
+<pre><code class="ruby">  def cache(name = {}, options = nil, &amp;block)
+    if controller.perform_caching
+      safe_concat(fragment_for(cache_fragment_name(name, options), options, &amp;block))
+    else
+      yield
+    end
+
+    nil
+  end
+</code></pre>
+
+<p>We notice there is a <code>fragment_for</code> method, let&rsquo;s see where it leads us.</p>
+
+<pre><code class="ruby">    def fragment_for(name = {}, options = nil, &amp;block) #:nodoc:
+      read_fragment_for(name, options) || write_fragment_for(name, options, &amp;block)
+    end
+</code></pre>
+
+<p>What does <code>read_fragment_for</code> method do?</p>
+
+<pre><code class="ruby">    def fragment_for(name = {}, options = nil, &amp;block) #:nodoc:
+      read_fragment_for(name, options) || write_fragment_for(name, options, &amp;block)
+    end
+
+    def read_fragment_for(name, options) #:nodoc:
+      controller.read_fragment(name, options)
+    end
+</code></pre>
+
+<p>So <code>read_fragment_for</code> method leads us to a <code>read_fragment</code> method belongs to an object called <code>controller</code>.<br/>
+Where does this <code>controller</code> object comes from?<br/>
+It is actually an attribute reader and writer backed by an internally-named instance variable.<br/>
+It is define in actionview/lib/action_view/helpers/controller_helper.rb file.<br/>
+And it is initiated in actionview/lib/action_view/base.rb file.</p>
+
+<pre><code class="ruby">  module ActionView
+    module Helpers
+      module ControllerHelper
+        attr_internal :controller, :request
+
+        def assign_controller(controller)
+          if @_controller = controller
+            @_request = controller.request if controller.respond_to?(:request)
+            @_config  = controller.config.inheritable_copy if controller.respond_to?(:config)
+          end
+        end
+      end
+    end
+  end
+</code></pre>
+
+<p>Let&rsquo;s come back to <code>read_fragment</code> method.
+In actionpack/lib/action_controller/caching/fragments.rb file, we find this method.</p>
+
+<pre><code class="ruby">  module ActionController
+    module Caching
+      module Fragments
+        def read_fragment(key, options = nil)
+          return unless cache_configured?
+          key = fragment_cache_key(key)
+          instrument_fragment_cache :read_fragment, key do
+            result = cache_store.read(key, options)
+            result.respond_to?(:html_safe) ? result.html_safe : result
+          end
+        end
+      end
+    end
+  end
+</code></pre>
+
+<p>We are closer, because we see this line.</p>
+
+<pre><code class="ruby">        result = cache_store.read(key, options)
+</code></pre>
+
+<p>Where is <code>cache_store</code> defined? We can find following code in actionpack/lib/action_controller/caching.rb file.</p>
+
+<pre><code class="ruby">  def cache_store
+    config.cache_store
+  end
+
+  def cache_store=(store)
+    config.cache_store = ActiveSupport::Cache.lookup_store(store)
+  end
+</code></pre>
+
+<p>Finally, in activesupport/lib/active_support/cache.rb filem, we find <code>lookup_store</code> method.</p>
+
+<pre><code class="ruby">  def lookup_store(*store_option)
+    store, *parameters = *Array.wrap(store_option).flatten
+
+    case store
+    when Symbol
+      retrieve_store_class(store).new(*parameters)
+    when nil
+      ActiveSupport::Cache::MemoryStore.new
+    else
+      store
+    end
+  end
+</code></pre>
+
+<p>An abstract cache store class alse defined in same file.</p>
+
+<pre><code class="ruby">  class Store
+        ...
+    def read(name, options = nil)
+      options = merged_options(options)
+      key = namespaced_key(name, options)
+      instrument(:read, name, options) do |payload|
+        entry = read_entry(key, options)
+        if entry
+          if entry.expired?
+            delete_entry(key, options)
+            payload[:hit] = false if payload
+            nil
+          else
+            payload[:hit] = true if payload
+            entry.value
+          end
+        else
+          payload[:hit] = false if payload
+          nil
+        end
+      end
+    end
+        ...
+    end
+</code></pre>
+
+<p>In activesupport/lib/active_support/cache/mem_cache_store.rb file, <code>read_entry</code> is implemented.</p>
+
+<pre><code class="ruby">  def read_entry(key, options) # :nodoc:
+    deserialize_entry(@data.get(escape_key(key), options))
+  rescue Dalli::DalliError =&gt; e
+    logger.error("DalliError (#{e}): #{e.message}") if logger
+    nil
+  end
+</code></pre>
+
+<p>This is how fragment cache works in rails.</p>
+
+<p>(完)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Rspec Test Principle - Test Only Your Own Code]]></title>
+    <link href="http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/"/>
+    <updated>2014-02-27T20:47:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code</id>
+    <content type="html"><![CDATA[<p>测试的时候，这一点常常被忘记，那就是———只测试自己的代码。</p>
+
+<pre><code class="ruby">
+describe S3Bucket do
+
+  before(:each) do
+    config_file = YAML.load_file('.....')
+    @config = {
+      "access_key_id" =&gt; config_file["s3"]["access_key_id"], 
+      "secret_access_key" =&gt; config_file["s3"]["secret_access_key"],
+      "bucket_name" =&gt; config_file["s3"]["bucket_name"],
+    }
+  end
+
+  it "initialize s3 bucket" do
+    s3b = S3Bucket.new(@config)
+    expect(s3b).to be_an_instance_of(S3Bucket)
+  end
+
+  it "initialize s3 bucket with wrong access_key_id" do
+    @config["access_key_id"] = @config["access_key_id"] + "1"
+    expect { S3Bucket.new(@config) }.to raise_error(ArgumentError, "AWS Access Key Id does not exist in our records.")
+  end
+
+  it "upload file to s3" do
+    s3b = S3Bucket.new(@config)
+    public_url = s3b.upload("#{File.dirname(__FILE__)}/s3.yml")
+    expect(public_url).to be_an_instance_of(URI::HTTPS)
+  end
+
+end
+</code></pre>
+
+<p>上面这段代码，测试上传文件到Amazon S3的代码。这段代码的问题是，它依赖于S3的服务是可行的，而且它其实更多的是在测试S3 SDK。
+比如它测试了access key id出错的时候，会抛出ArgumentError。但是抛出ArgumentError的是S3的SDK，而不是S3Bucket类中的代码，所以这个测试其实是不必要的。</p>
+
+<p>在测试这类测试的时候，可以使用rspec-mocks来进行测试。</p>
+
+<pre><code class="ruby">describe S3Bucket do
+
+  before(:each) do
+    @file_path = "#{File.dirname(__FILE__)}/../../../test.txt"
+    config_file = YAML.load_file('.....')
+    @config = {
+      "access_key_id" =&gt; config_file["s3"]["access_key_id"], 
+      "secret_access_key" =&gt; config_file["s3"]["secret_access_key"],
+      "bucket_name" =&gt; config_file["s3"]["bucket_name"],
+    }
+
+    # AWS::S3 class should response to :new method
+    s3 = an_instance_of(AWS::S3)
+    AWS::S3.stub(:new).with(:access_key_id =&gt; @config["access_key_id"], :secret_access_key =&gt; @config["secret_access_key"]).and_return(s3)
+
+    # build bucket object
+    bucket = an_instance_of(AWS::S3::Bucket)
+    s3.stub_chain(:buckets, :[]).and_return(bucket)
+
+    # build s3 object with method upload and delete
+    s3_obj = an_instance_of(AWS::S3::S3Object)
+    bucket.stub_chain(:objects, :[]).and_return(s3_obj)
+    s3_obj.stub(:write).with(:file =&gt; @file_path)   
+    @test_url = URI::HTTPS.build({:host =&gt; 'www.example.com', :path =&gt; '/foo/bar'})
+    s3_obj.stub(:public_url).and_return(@test_url)
+  end
+
+  it "initialize s3 bucket with " do
+    s3b = S3Bucket.new(@config)
+    expect(s3b).to be_an_instance_of(S3Bucket)
+  end
+
+  it "upload file to s3" do
+    s3b = S3Bucket.new(@config)
+    public_url = s3b.upload(@file_path)
+    expect(public_url).to eq(@test_url)
+  end
+
+end
+</code></pre>
+
+<p>上面的代码，对访问S3的代码mock，从而不需要进行网络访问便测试了S3Bucket类中的代码。</p>
+
+<h6>参考</h6>
+
+<p><a href="https://github.com/rspec/rspec-expectations">Rspec Expectations</a></br>
+<a href="http://betterspecs.org/">BetterSpec</a></br></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Run Ruby CGI Scripts With Apache]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/"/>
+    <updated>2013-11-15T19:34:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache</id>
+    <content type="html"><![CDATA[<h2>CGI Scripts on server</h2>
+
+<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
+
+<pre><code> #!/bin/env ruby
+ print "Content-type: text/html\r\n\r\n"
+ print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"
+</code></pre>
+
+<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
+
+<p>CGI 设置的要点：<br/>
+The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
+The MIME media type must be the first output of your CGI script.<br/>
+A blank line follows the MIME media type.<br/>
+The CGI script must have the correct permissions.</p>
+
+<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
+<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
+
+<h2>Config apache to support running CGI</h2>
+
+<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
+
+<h2>Send parameters with get and post in ruby on client</h2>
+
+<pre><code class="ruby">require 'net/http'
+
+host = "…."       #*******.ap-northeast-1.compute.amazonaws.com
+port = 80
+
+Net::HTTP.version_1_2
+Net::HTTP.start(host, port) do |http|
+  response = http.get("/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI")
+  puts "Get request's parameters: #{response.body} "
+end
+</code></pre>
+
+<pre><code class="ruby">net = Net::HTTP.new(host, port)
+params = {:name =&gt; 'doris', :email =&gt; 'doris@foo.com'}
+
+ # Create HTTP request
+req = Net::HTTP::Post.new( '/cgi-bin/ruby.cgi', {} )
+req.set_form_data params
+
+ # Send request
+response = net.start do |http|
+  http.read_timeout = 5600
+  http.request req
+end
+
+puts "Post request's parameters: #{response.body} "
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby File Flock]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/15/ruby-file-flock/"/>
+    <updated>2013-11-15T19:25:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/15/ruby-file-flock</id>
+    <content type="html"><![CDATA[<ul>
+<li>在多线程的环境中，flock可lock文件独占使用。</li>
+</ul>
+
+
+<p>运行前文件1.txt:
+<code>
+a
+b
+</code></p>
+
+<pre><code class="ruby">File.open("1.txt", 'r+') do |fp|
+    fp.flock(File::LOCK_EX)
+
+    file_str = fp.read
+    arr = file_str.split("\n") if file_str    
+    arr[0] = "b"
+    puts arr.inspect
+    file_str = arr.join("\n")
+    fp.rewind
+    fp.write(file_str)
+    fp.flush
+
+    fp.flock(File::LOCK_UN)
+end
+</code></pre>
+
+<p>运行后文件1.txt
+<code>
+b
+b
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

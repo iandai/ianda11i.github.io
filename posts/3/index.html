@@ -1,0 +1,1466 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="查看mysql运行状况 SHOW STATUS是查看MySQL运行情况
+SHOW VARIABLES是查看MySQL的配置参数，可以使用类似SHOW VARIABLES LIKE &lsquo;Key%&rsquo;
+SHOW PROCESSLIST是查看当前正在进行的进程 Mysql &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/posts/3/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/06/mysql-performance-tuning/">Mysql Performance Tuning</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-06T14:57:02+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>查看mysql运行状况</h2>
+
+<ul>
+<li>SHOW STATUS是查看MySQL运行情况</li>
+<li>SHOW VARIABLES是查看MySQL的配置参数，可以使用类似SHOW VARIABLES LIKE &lsquo;Key%&rsquo;</li>
+<li>SHOW PROCESSLIST是查看当前正在进行的进程</li>
+</ul>
+
+
+<h2>Mysql tunning</h2>
+
+<h3>（1） Rule: 一次只修改一个参数！</h3>
+
+<h3>（2）查看各种指标，寻找Bottle neck：</h3>
+
+<ul>
+<li>如果 Unix top显示服务的 CPU 占用率小于 70%，系统瓶颈可能在磁盘读写上。</li>
+<li><code>iostat -d -x -k 1 10</code>查看设备使用率（%util）、响应时间（await）。Disk I/O 如果高的话，打开Innodb_buffer_pool_size可以提高速度，因为mysql可以把许多东西放在内存，而不用频繁的去读磁盘数据，进行DISK I/O.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>SHOW GLOBAL VARIABLES LIKE 'innodb_buffer_pool_size’;
+</span><span class='line'>
+</span><span class='line'>决定innodb-buffer-pool-size方法：
+</span><span class='line'>mysql&gt;     SELECT CEILING(Total_InnoDB_Bytes*1.6/POWER(1024,3)) RIBPS FROM
+</span><span class='line'>(SELECT SUM(data_length+index_length) Total_InnoDB_Bytes
+</span><span class='line'>FROM information_schema.tables WHERE engine='InnoDB') A;
+</span><span class='line'>mysql&gt;     SELECT (PagesData*PageSize)/POWER(1024,3) DataGB FROM
+</span><span class='line'>(SELECT variable_value PagesData
+</span><span class='line'>FROM information_schema.global_status
+</span><span class='line'>WHERE variable_name='Innodb_buffer_pool_pages_data') A,
+</span><span class='line'>(SELECT variable_value PageSize
+</span><span class='line'>FROM information_schema.global_status
+</span><span class='line'>WHERE variable_name='Innodb_page_size') B;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>innodb_flush_log_at_trx_commit  （这个很管用）</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>默认值1的意思是每一次事务提交或事务外的指令都需要把日志写入（flush）硬盘，这是很费时的。特别是使用电 池供电缓存（Battery backed up cache）时。设成2对于很多运用，特别是从MyISAM表转过来的是可以的，它的意思是不写入硬盘而是写入系统缓存。日志仍然会每秒flush到硬 盘，所以你一般不会丢失超过1-2秒的更新。设成0会更快一点，但安全方面比较差，即使MySQL挂了也可能会丢失事务的数据。而值2只会在整个操作系统 挂了时才可能丢数据。 </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Query tuning</h2>
+
+<h3>(1) Slow query log</h3>
+
+<ul>
+<li>打开slow_query_log和log_queries_not_using_indexes</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>long_query_time    ：  设定慢查询的阀值，超出次设定值的SQL即被记录到慢查询日志，缺省值为10s
+</span><span class='line'>slow_query_log      ：  指定是否开启慢查询日志
+</span><span class='line'>log_slow_queries    ：  指定是否开启慢查询日志(该参数要被slow_query_log取代，做兼容性保留)
+</span><span class='line'>slow_query_log_file ：  指定慢日志文件存放位置，可以为空，系统会给一个缺省的文件host_name-slow.log
+</span><span class='line'>min_examined_row_limit：查询检查返回少于该参数指定行的SQL不被记录到慢查询日志
+</span><span class='line'>log_queries_not_using_indexes: 不使用索引的慢查询日志是否记录到索引
+</span><span class='line'>
+</span><span class='line'>show global  variables like '%slow%';
+</span><span class='line'>set global log_slow_queries=1;
+</span><span class='line'>set global long_query_time=1;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>使用<code>mysqldumpslow -s c -t 10 /database/mysql/slow-log</code>来查看slow log</li>
+</ul>
+
+
+<h3>(2) Optimize query</h3>
+
+<ul>
+<li>Use Explain</li>
+<li>Use Select_scan
+
+<ul>
+<li>show status like &lsquo;Select_scan&rsquo;;   Select_scan/总查询数量商应该是常数。该值持续增长，说明需要优化。</li>
+</ul>
+</li>
+<li>Use Select_full_join
+
+<ul>
+<li>没有主键（key）联合（Join）的执行。</li>
+</ul>
+</li>
+<li>Use MySQL Query Analyzer（or alternative）</li>
+<li>Tips:
+
+<ul>
+<li>The IN clause in MySQL is very fast, much faster than a join.</li>
+<li>Avoid % at the start of LIKE on an index</li>
+<li>Use UNION ALL when appropriate; default is UNION DISTINCT!</li>
+<li>Understand left/right joins and use only when needed</li>
+<li>使用memlock可以避免MySQL内存进入swap</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>(3) insert/update</h3>
+
+<ul>
+<li>Use batch insert</li>
+<li>在向 InnoDB 导入数据时，确认MySQL没有打开 autocommit=1 。否则每个插入语句都要将 log 刷新到磁盘。在你的 SQL 导入文件的第一行加入<code>set autocommit=0;</code>,并在最后一行加入<code>commit</code>;</li>
+</ul>
+
+
+<h3>(4) index</h3>
+
+<ul>
+<li>For large strings that need to be indexed, i.e. URLs, consider using a separate column using the MySQL MD5 to create a hash key and
+index on it instead.</li>
+<li>使用多列索引，multiple column index （force index）</li>
+<li>Use prefix indexes on large keys</li>
+</ul>
+
+
+<h2>Schemas</h2>
+
+<ul>
+<li>Do not automatically use 255 for VARCHAR</li>
+<li>如果要存储变长的字符串或字段可能会包含大量的 NULLs，请使用 VARCHAR 型字段代替 CHAR 。一个 CHAR(n) 字段总是使用 n bytes 来存储数据，即使这个字符串很短或是一个 NULL 值。较小的表更加适合缓冲池同时能够减少磁盘 I/O 。</li>
+<li>Use procedue analyse to get recommedataion
+
+<ul>
+<li>SELECT * FROM sprocket_engine_execute_log PROCEDURE ANALYSE();</li>
+</ul>
+</li>
+<li>Consider use enum, set types</li>
+</ul>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://dba.stackexchange.com/questions/27328/how-large-should-be-mysql-innodb-buffer-pool-size">调节innodb-buffer-pool-size</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-measure-mysql-query-performance-with-mysqlslap">mysqlslap</a></li>
+<li><a href="http://downloads.mysql.com/presentations/MySQL_Perfornance__Tuning_Overview_jp.pdf">MySQL Performance &amp; Tuning</a></li>
+<li><a href="http://man.chinaunix.net/database/mysql/inonodb_zh/9.htm">InnoDB性能调整技巧</a></li>
+<li><a href="http://robbin.iteye.com/blog/461382">MySQL InnoDB性能调整实践</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/01/calculating-customer-acquisition-costs/">Calculating Customer Acquisition Costs</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-01T19:05:34+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>7:05 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Source:<br/>
+<a href="https://segment.com/blog/calculating-customer-acquisition-costs/">https://segment.com/blog/calculating-customer-acquisition-costs/</a></p>
+
+<p>Summary:<br/>
+要降低客户获取成本，首先要能够回答三个问题：付费客户的life time value，注册用户中的付费比率，访问人数和注册用户比率。<br/>
+这样就能够计算Cost Per Acquisition。然后才可以优化渠道。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/01/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-01T02:07:59+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>2:07 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
+
+<p>Rails fragment caching code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="o">&lt;</span><span class="sx">% cache </span><span class="k">do</span> <span class="sx">%&gt;</span>
+</span><span class='line'><span class="sx">  &lt;% end %&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple.<br/>
+But where is <code>cache</code> from?</p>
+
+<p>With a search of Rails api, We can find that it is a helper from ActionView::Helpers::CacheHelper.</p>
+
+<p>Reading the api, we still have no clue about how does this <code>cache</code> helper method calls the memcached store.
+So let&rsquo;s started to read source.</p>
+
+<p>First, open file actionview/lib/action_view/helpers/cache_helper.rb. We can find following cache method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">perform_caching</span>
+</span><span class='line'>      <span class="n">safe_concat</span><span class="p">(</span><span class="n">fragment_for</span><span class="p">(</span><span class="n">cache_fragment_name</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">),</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">yield</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We notice there is a <code>fragment_for</code> method, let&rsquo;s see where it leads us.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What does <code>read_fragment_for</code> method do?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">controller</span><span class="o">.</span><span class="n">read_fragment</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So <code>read_fragment_for</code> method leads us to a <code>read_fragment</code> method belongs to an object called <code>controller</code>.<br/>
+Where does this <code>controller</code> object comes from?<br/>
+It is actually an attribute reader and writer backed by an internally-named instance variable.<br/>
+It is define in actionview/lib/action_view/helpers/controller_helper.rb file.<br/>
+And it is initiated in actionview/lib/action_view/base.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionView</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Helpers</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">ControllerHelper</span>
+</span><span class='line'>        <span class="n">attr_internal</span> <span class="ss">:controller</span><span class="p">,</span> <span class="ss">:request</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">assign_controller</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="vi">@_controller</span> <span class="o">=</span> <span class="n">controller</span>
+</span><span class='line'>            <span class="vi">@_request</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">request</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:request</span><span class="p">)</span>
+</span><span class='line'>            <span class="vi">@_config</span>  <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inheritable_copy</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:config</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s come back to <code>read_fragment</code> method.
+In actionpack/lib/action_controller/caching/fragments.rb file, we find this method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionController</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Caching</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">Fragments</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">read_fragment</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">unless</span> <span class="n">cache_configured?</span>
+</span><span class='line'>          <span class="n">key</span> <span class="o">=</span> <span class="n">fragment_cache_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">instrument_fragment_cache</span> <span class="ss">:read_fragment</span><span class="p">,</span> <span class="n">key</span> <span class="k">do</span>
+</span><span class='line'>            <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">result</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:html_safe</span><span class="p">)</span> <span class="p">?</span> <span class="n">result</span><span class="o">.</span><span class="n">html_safe</span> <span class="p">:</span> <span class="n">result</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We are closer, because we see this line.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where is <code>cache_store</code> defined? We can find following code in actionpack/lib/action_controller/caching.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span><span class="o">=</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span> <span class="o">=</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">.</span><span class="n">lookup_store</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, in activesupport/lib/active_support/cache.rb filem, we find <code>lookup_store</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">lookup_store</span><span class="p">(</span><span class="o">*</span><span class="n">store_option</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">store</span><span class="p">,</span> <span class="o">*</span><span class="n">parameters</span> <span class="o">=</span> <span class="o">*</span><span class="nb">Array</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">store_option</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">case</span> <span class="n">store</span>
+</span><span class='line'>    <span class="k">when</span> <span class="no">Symbol</span>
+</span><span class='line'>      <span class="n">retrieve_store_class</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">*</span><span class="n">parameters</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">when</span> <span class="kp">nil</span>
+</span><span class='line'>      <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">::</span><span class="no">MemoryStore</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">store</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>An abstract cache store class alse defined in same file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">class</span> <span class="nc">Store</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">options</span> <span class="o">=</span> <span class="n">merged_options</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">key</span> <span class="o">=</span> <span class="n">namespaced_key</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">instrument</span><span class="p">(</span><span class="ss">:read</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">payload</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">entry</span> <span class="o">=</span> <span class="n">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">entry</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">expired?</span>
+</span><span class='line'>            <span class="n">delete_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="kp">nil</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="n">entry</span><span class="o">.</span><span class="n">value</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>          <span class="kp">nil</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In activesupport/lib/active_support/cache/mem_cache_store.rb file, <code>read_entry</code> is implemented.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1"># :nodoc:</span>
+</span><span class='line'>    <span class="n">deserialize_entry</span><span class="p">(</span><span class="vi">@data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">escape_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">options</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Dalli</span><span class="o">::</span><span class="no">DalliError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;DalliError (</span><span class="si">#{</span><span class="n">e</span><span class="si">}</span><span class="s2">): </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">logger</span>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is how fragment cache works in rails.</p>
+
+<p>(完)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-22T20:10:37+09:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>8:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Steps</h2>
+
+<ol>
+<li> Apply Google Map Api Key</li>
+<li> Import GoogleMaps.bundle in GoogleMaps.framework</li>
+<li> In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
+<li> In <code>AppDelegate</code></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="bp">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">GMSServices</span> <span class="nl">provideAPIKey</span><span class="p">:</span><span class="s">@&quot;API_KEY&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Possible issues</h2>
+
+<p>1.In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework.</p>
+
+<p>2.In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-force_load <span class="k">$(</span>PROJECT_DIR<span class="k">)</span>/GoogleMaps.framework/GoogleMaps
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3.Use google maps in a subview.<br/>
+Following Code will not work in a subview.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;YourViewController.h&quot;</span>
+</span><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">YourViewController</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Create a GMSCameraPosition that tells the map to display the</span>
+</span><span class='line'>    <span class="c1">// coordinate -33.86,151.20 at zoom level 6.</span>
+</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="o">-</span><span class="mf">33.86</span>
+</span><span class='line'>                                                      <span class="nl">longitude</span><span class="p">:</span><span class="mf">151.20</span>
+</span><span class='line'>                                                           <span class="nl">zoom</span><span class="p">:</span><span class="mi">6</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSMapView</span> <span class="nl">mapWithFrame</span><span class="p">:</span><span class="n">CGRectZero</span> <span class="nl">camera</span><span class="p">:</span><span class="n">camera</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span><span class="p">.</span><span class="n">myLocationEnabled</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Creates a marker in the center of the map.</span>
+</span><span class='line'>    <span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Chnage the existing Xib&rsquo;s class into GSMMapView will solve the problem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">weak</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">)</span> <span class="kt">IBOutlet</span> <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
+</span><span class='line'><span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
+</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
+</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">icon</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;map_pin_icon&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15417811/cannot-put-a-google-maps-gmsmapview-in-a-subview-of-main-main-view">Add google maps in a subview</a></li>
+<li><a href="http://dev.classmethod.jp/smartphone/iphone/ios-map-programming-series-1/">Customise GMSMarker</a></li>
+<li><a href="http://stackoverflow.com/questions/16706587/can-i-link-googlemaps-sdk-for-ios-with-a-linker-flag-other-than-objc">Other Linker Flags Conflict</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-07-08T18:46:10+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>6:46 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Cache过期</h2>
+
+<ul>
+<li><p>Key Based Cache Expiration<br/>
+  优点：
+      降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。
+  缺点：
+      适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法）
+      每次查询，都需要首先查询update_at字段。</p></li>
+<li><p>ORM模型回调接口删除cache（after_save, before_destroy, etc)<br/>
+  优点：
+      快。
+  缺点：
+      增加一定的代码复杂度。
+      若不是ORM模型的代码，需要手动添加回调接口。</p></li>
+<li><p>在代码中增加删除cache的代码<br/>
+  优点：
+      无。
+  缺点：
+      增加代码复杂度。      <br/>
+      如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/20/use-uiview-category-detect-which-uiview-was-tapped/">Use UIView Category Detect Which UIView Was Tapped</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-05-20T19:08:18+09:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>7:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>测试界面上哪个View被点击</h3>
+
+<p>开发的时候，遇到一个bug，iOS6的其中一个Button的上边缘，点击了没有反应。<br/>
+在相关的view里追加了<code>- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event</code>方法，没捕捉到到底是哪个view被点击了。<br/>
+使用<code>po [[UIWindow keyWindow] recursiveDescription]</code>看view的整理结构，也还是难以确定问题所在。</p>
+
+<p>下面的代码模拟了view被点击之后，系统是如何确定哪个view被点击的。使用下面的代码，就可以找到到底是哪个view被点击了。</p>
+
+<p>注意这段代码只能用于测试，找到了之后，要移除这段代码。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;UIKit/UIKit.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@interface</span> <span class="bp">UIView</span> <span class="nl">(TouchDetect)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;UIView+TouchDetect.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="bp">UIView</span> <span class="nl">(TouchDetect)</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">UIView</span> <span class="o">*</span><span class="p">)</span><span class="nf">hitTest:</span><span class="p">(</span><span class="bp">CGPoint</span><span class="p">)</span><span class="nv">point</span> <span class="nf">withEvent:</span><span class="p">(</span><span class="bp">UIEvent</span> <span class="o">*</span><span class="p">)</span><span class="nv">event</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">self</span><span class="p">.</span><span class="n">isUserInteractionEnabled</span> <span class="o">||</span> <span class="nb">self</span><span class="p">.</span><span class="n">isHidden</span> <span class="o">||</span> <span class="nb">self</span><span class="p">.</span><span class="n">alpha</span> <span class="o">&lt;=</span> <span class="mf">0.01</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="nb">self</span> <span class="nl">pointInside</span><span class="p">:</span><span class="n">point</span> <span class="nl">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="bp">UIView</span> <span class="o">*</span><span class="n">subview</span> <span class="k">in</span> <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">subviews</span> <span class="n">reverseObjectEnumerator</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>            <span class="bp">CGPoint</span> <span class="n">convertedPoint</span> <span class="o">=</span> <span class="p">[</span><span class="n">subview</span> <span class="nl">convertPoint</span><span class="p">:</span><span class="n">point</span> <span class="nl">fromView</span><span class="p">:</span><span class="nb">self</span><span class="p">];</span>
+</span><span class='line'>            <span class="bp">UIView</span> <span class="o">*</span><span class="n">hitTestView</span> <span class="o">=</span> <span class="p">[</span><span class="n">subview</span> <span class="nl">hitTest</span><span class="p">:</span><span class="n">convertedPoint</span> <span class="nl">withEvent</span><span class="p">:</span><span class="n">event</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">hitTestView</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">hitTestView</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">hitTestView</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">self</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>参考文献</h5>
+
+<p><a href="http://smnh.me/hit-testing-in-ios/">Hit Testing in iOS</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/01/sql-injection/">SQL Injection</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-05-01T18:41:00+09:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>6:41 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>SQL 注入方法</h2>
+
+<ul>
+<li><p>SQL 扫描工具<br/>
+  sqlmap  <a href="https://github.com/sqlmapproject/sqlmap/wiki/Screenshots">https://github.com/sqlmapproject/sqlmap/wiki/Screenshots</a></p></li>
+<li><p>SQL injection方法<br/>
+1 ‘ or 1 = 1 —<br/>
+2 select * from xxx where a = ‘123;  输入非法内容，看是否有sql error返回。</p></li>
+<li><p>利用漏洞<br/>
+ereg()有bug，无法检测到\0之后的内容，有可能将注入的内容隐藏在\0的后面。</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class='line'><span class="nv">$a</span> <span class="o">=</span> <span class="s2">&quot;123</span><span class="se">\0\0</span><span class="s2">abc&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;source=[</span><span class="si">$a</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/123/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s2">&quot;/abc/&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;123&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$r</span> <span class="o">=</span> <span class="nb">ereg</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="nv">$a</span><span class="p">);</span>
+</span><span class='line'><span class="k">echo</span> <span class="s2">&quot;match=[</span><span class="si">$r</span><span class="s2">]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">/// ereg cannot detect &quot;abc&quot; after &quot;\0&quot;, so you must not use raw source string!</span>
+</span><span class='line'><span class="c1">/// and you should not use ereg(). instead of it, use preg_match().</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>SQL注入的对策</h2>
+
+<ul>
+<li><p>输入<br/>
+1 不要信任用户的输入，包括cookie。对用户的输入进行校验。如果是数字，就转化为数字，而不是字符类型的数字。<br/>
+2 不要使用动态拼装sql，可以使用参数化的sql或者直接使用存储过程进行数据查询存取。</p></li>
+<li><p>权限<br/>
+1 不要使用有超级用户或其它有权创建新用户的数据库帐号来连接数据库，攻击者可以在数据库中新建一个超级用户。为每个应用使用单独的权限有限的数据库连接。<br/>
+2 删除不再需要的存储过程，例如：master..Xp_cmdshell, xp_startmail, xp_sendmail, sp_makewebtask.</p></li>
+<li><p>其他<br/>
+1 不要把机密信息直接存放，加密或者hash掉密码和敏感的信息。<br/>
+2 应用的异常信息应该给出尽可能少的提示，最好使用自定义的错误信息对原始错误信息进行包装。</p></li>
+</ul>
+
+
+<h3>参考链接</h3>
+
+<p><a href="http://www.php.net/manual/zh/security.database.sql-injection.php">PHP官方手册对策</a><br/>
+<a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet">OWASP的SQL注入防止CheatSheet</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/08/css-notes/">CSS NOTES</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-04-08T17:47:00+09:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:47 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>Tips</h4>
+
+<p>zen coding快捷键<code>command+e</code><br/>
+CSS布局技术都依赖于三个基本概念：定位，浮动和空白边(margin).<br/>
+Link css: <code>&lt;link rel="stylesheet" href="…." /&gt;</code>, rel stands for relation.<br/>
+inline box 不响应垂直margin, width, height, max/min width/height 等属性声明；block box 则可以响应这些属性。</p>
+
+<h4>CSS使用原则</h4>
+
+<p>前端的素养：注意各个元素之间的对齐方式。<br/>
+html是用来标记这段内容是在做社么，而不是用来stlying的。<br/>
+所以，table tag不用来表示styling画方框，而只是用来显示数据表格。</p>
+
+<h4>font-family属性</h4>
+
+<p>font-family: Verdana, Arial，sans-serif<br/>
+浏览器会依次调用各个字体，直到系统装有该字体。 sans-serif为通用字体族，多数系统都装有该字体族中间的字体。<br/>
+sans-serif代表无衬线体，与中文的黑体相对应.<br/>
+Referance: <a href="http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.">http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.</a></p>
+
+<h4>图片格式</h4>
+
+<p>html使用的图片格式：普通图片使用jpeg，如果需要背景为透明，就必须使用png-24。</p>
+
+<h4>normalize.css</h4>
+
+<p>解决各种浏览器初始状态的不同和兼容问题<br/>
+<a href="https://github.com/necolas/normalize.css">https://github.com/necolas/normalize.css</a></p>
+
+<h4>HTML img标签的alt属性</h4>
+
+<p>alt属性是一个必需的属性，它规定在图像无法显示时的替代文本.<br/>
+alt stands for alternative text.</p>
+
+<h4>使得竖着的list变成横向的navigation list方法</h4>
+
+<p>添加display: inline;<br/>
+Referance: <a href="https://tutsplus.com/lesson/navigation-lists/">https://tutsplus.com/lesson/navigation-lists/</a></p>
+
+<h4>postion: relative和absolute定位 （相对定位和绝对定位）</h4>
+
+<p>相对定位是“相对于”元素在文档流中的初始位置，而绝对定位是“相对于”最近的已定位祖先元素，如果不存在已定位的祖先元素，那么是最初的包含块。<br/>
+相对定位在移动位置之后，不会影响其他文档流中元素的位置。<br/>
+绝对定位在移动位置之后，元素从文档流中抽取出来，原占有的位置被后面的对象顶替上来。</p>
+
+<p>position: absolute 会使得原来的inline元素变成block元素，从而能够使用width属性。</p>
+
+<h4>居中</h4>
+
+<p>水平居中(：margin和width同时使用的时候，才会有居中效果。<br/>
+垂直居中(1)：vertical-align:middle;<br/>
+line-height: 10px;   /<em> must define line-height to use vertical-align </em>/    <br/>
+line-height: 100%;   等于font-size的高度，而不是div的高度<br/>
+垂直居中(2)：padding:25px;  上下padding相等，则自动会垂直居中了</p>
+
+<h4>奇怪的inline-block</h4>
+
+<p>对li使用inline-block的时候，li之间存在space，即使把margin和padding都设置为0，依然无法消除。<br/>
+问题的本质是两个li之间的space问题。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;li&gt;1&lt;/li&gt;
+</span><span class='line'>&lt;li&gt;2&lt;/li&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>space占有4px的空间，所以无法被消除。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;li&gt;1&lt;/li&gt;&lt;li&gt;2&lt;/li&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按照这种方式排列html，中间的space就会消失。<br/>
+另一种方法是将 ul tag 的字体大小设置为0，然后把li tag中的font-size设置回来。<br/>
+<a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">Referance</a></p>
+
+<h4>Margin的垂直collapse（Collapsing margins）</h4>
+
+<p>Horizontal margins never collapse.<br/>
+定义： the expression collapsing margins means that adjoining margins (no non-empty content, padding or border areas or clearance separate them) of two or more boxes (which may be next to one another or nested) combine to form a single margin.<br/>
+两种情况：<br/>
+1. 对于上下两个并列的div块而言，上面div的margin-bottom和下面div的margin-top会塌陷，也就是会取上下两者margin里最大值作为显示值。<br/>
+2. 对于有块级子元素的元素计算高度的方式,如果元素没有垂直边框和填充,那其高度就是其子元素顶部和底部边框边缘之间的距离。<br/>
+Referance<br/>
+<a href="http://blog.csdn.net/dclchj/article/details/9787481">CSS的margin塌陷（collapse）</a><br/>
+<a href="http://www.w3.org/TR/CSS2/box.html">Box model 8.3.1</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/18/port-forward-slash-tunnel/">SSH Port Forward/Tunnel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-03-18T13:38:00+09:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:38 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Agent Forwarding</h3>
+
+<p>A - B - C 在从A访问C过程中经过B，但是不用在B上安装私钥，叫做Agent Forwarding</p>
+
+<p>We have also seen another type of SSH forwarding, agent forwarding. [Section 6.3.5] This let us
+create SSH connections from one computer, through a second computer, and onto a third using
+public-key authentication, but without installing our private key on the second machine.</p>
+
+<h3>Port Forwarding, also names as tunneliing</h3>
+
+<p>A - B 之间使用例如TCP/IP这种不安全的协议的时候，在TCP/IP协议之中，增加一个安全的通道</p>
+
+<p>Port forwarding is sometimes called tunneling because the SSH connection provides a secure &ldquo;tunnel&rdquo; through which another TCP/IP connection may pass.
+SSH uses TCP/IP as its transport mechanism, usually TCP port 22 on the server machine, as it encrypts and decrypts the traffic passing over the connection.</p>
+
+<h3>Local Port Forwarding and Remote Port Forwarding</h3>
+
+<p>Local Port Forwarding—In most cases, local port forwarding is used to forward data securely from another
+client application running on the same computer as the Secure Shell client. The Secure Shell client is
+configured to redirect data from a specified local port (on the same computer as the Secure Shell client),
+through the secure tunnel to a specified destination host and port. You can configure any other client
+running on the same computer to connect to the forwarded port (rather than directly to the destination
+host and port). After the Secure Shell connection is established, the Secure Shell client listens on the
+specified port and redirects all data sent to that port through the secure tunnel to the Secure Shell
+server. The server decrypts the data, and then directs it to the destination host and port.</p>
+
+<p>Remote Port Forwarding—Remote port forwarding is used to forward data securely from any client
+application running on the same computer as the Secure Shell server. In this case, the client session
+requests that a specified remote port (on the same computer as the Secure Shell server) be used to
+redirect the data. You can configure any other client running on the same computer as the Secure Shell
+server to connect to the forwarded port (rather than directly to the destination host and port). After the
+Secure Shell connection is established, the Secure Shell server listens on the specified port and redirects
+all data sent to that port through the secure tunnel to the Secure Shell client. The client decrypts the
+data and then directs it to the destination host and port.</p>
+
+<h3>多阶段Port Forwarding/Tunnelling</h3>
+
+<p><a href="http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops">http://superuser.com/questions/96489/ssh-tunnel-via-multiple-hops</a></p>
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.amazon.com/SSH-The-Secure-Shell-Definitive/dp/0596008953">SSH, The Secure Shell - The Definitive Guide | Chapter Port Forwarding and X Forwarding</a></br></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/">Rspec Test Principle - Test Only Your Own Code</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-02-27T20:47:00+09:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:47 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>测试的时候，这一点常常被忘记，那就是———只测试自己的代码。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">S3Bucket</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">config_file</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;.....&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@config</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;access_key_id&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;secret_access_key&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;bucket_name&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;bucket_name&quot;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">s3b</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">S3Bucket</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket with wrong access_key_id&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span> <span class="o">+</span> <span class="s2">&quot;1&quot;</span>
+</span><span class='line'>    <span class="n">expect</span> <span class="p">{</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span> <span class="p">}</span><span class="o">.</span><span class="n">to</span> <span class="n">raise_error</span><span class="p">(</span><span class="no">ArgumentError</span><span class="p">,</span> <span class="s2">&quot;AWS Access Key Id does not exist in our records.&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;upload file to s3&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">public_url</span> <span class="o">=</span> <span class="n">s3b</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span><span class="si">}</span><span class="s2">/s3.yml&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">public_url</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">URI</span><span class="o">::</span><span class="no">HTTPS</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这段代码，测试上传文件到Amazon S3的代码。这段代码的问题是，它依赖于S3的服务是可行的，而且它其实更多的是在测试S3 SDK。
+比如它测试了access key id出错的时候，会抛出ArgumentError。但是抛出ArgumentError的是S3的SDK，而不是S3Bucket类中的代码，所以这个测试其实是不必要的。</p>
+
+<p>在测试这类测试的时候，可以使用rspec-mocks来进行测试。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">describe</span> <span class="no">S3Bucket</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">before</span><span class="p">(</span><span class="ss">:each</span><span class="p">)</span> <span class="k">do</span>
+</span><span class='line'>    <span class="vi">@file_path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span><span class="si">}</span><span class="s2">/../../../test.txt&quot;</span>
+</span><span class='line'>    <span class="n">config_file</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;.....&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@config</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;access_key_id&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;secret_access_key&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;bucket_name&quot;</span> <span class="o">=&gt;</span> <span class="n">config_file</span><span class="o">[</span><span class="s2">&quot;s3&quot;</span><span class="o">][</span><span class="s2">&quot;bucket_name&quot;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>    <span class="c1"># AWS::S3 class should response to :new method</span>
+</span><span class='line'>    <span class="n">s3</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:new</span><span class="p">)</span><span class="o">.</span><span class="n">with</span><span class="p">(</span><span class="ss">:access_key_id</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;access_key_id&quot;</span><span class="o">]</span><span class="p">,</span> <span class="ss">:secret_access_key</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="s2">&quot;secret_access_key&quot;</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">s3</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># build bucket object</span>
+</span><span class='line'>    <span class="n">bucket</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">Bucket</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">s3</span><span class="o">.</span><span class="n">stub_chain</span><span class="p">(</span><span class="ss">:buckets</span><span class="p">,</span> <span class="ss">:[]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># build s3 object with method upload and delete</span>
+</span><span class='line'>    <span class="n">s3_obj</span> <span class="o">=</span> <span class="n">an_instance_of</span><span class="p">(</span><span class="no">AWS</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">S3Object</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">bucket</span><span class="o">.</span><span class="n">stub_chain</span><span class="p">(</span><span class="ss">:objects</span><span class="p">,</span> <span class="ss">:[]</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="n">s3_obj</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">s3_obj</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:write</span><span class="p">)</span><span class="o">.</span><span class="n">with</span><span class="p">(</span><span class="ss">:file</span> <span class="o">=&gt;</span> <span class="vi">@file_path</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@test_url</span> <span class="o">=</span> <span class="no">URI</span><span class="o">::</span><span class="no">HTTPS</span><span class="o">.</span><span class="n">build</span><span class="p">({</span><span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s1">&#39;www.example.com&#39;</span><span class="p">,</span> <span class="ss">:path</span> <span class="o">=&gt;</span> <span class="s1">&#39;/foo/bar&#39;</span><span class="p">})</span>
+</span><span class='line'>    <span class="n">s3_obj</span><span class="o">.</span><span class="n">stub</span><span class="p">(</span><span class="ss">:public_url</span><span class="p">)</span><span class="o">.</span><span class="n">and_return</span><span class="p">(</span><span class="vi">@test_url</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;initialize s3 bucket with &quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">s3b</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">be_an_instance_of</span><span class="p">(</span><span class="no">S3Bucket</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s2">&quot;upload file to s3&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">s3b</span> <span class="o">=</span> <span class="no">S3Bucket</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@config</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">public_url</span> <span class="o">=</span> <span class="n">s3b</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="vi">@file_path</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">expect</span><span class="p">(</span><span class="n">public_url</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="vi">@test_url</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码，对访问S3的代码mock，从而不需要进行网络访问便测试了S3Bucket类中的代码。</p>
+
+<h6>参考</h6>
+
+<p><a href="https://github.com/rspec/rspec-expectations">Rspec Expectations</a></br>
+<a href="http://betterspecs.org/">BetterSpec</a></br></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/posts/4">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/posts/2">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

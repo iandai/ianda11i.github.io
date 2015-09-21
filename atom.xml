@@ -1,97 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>Ian&#8217;s Tech Note</title>
-  <meta name="author" content="Ian Dai">
-
-  
-  <meta name="description" content="Crash Without Detailed Info 解决方法： 添加All Exception Breakpoint
-在Breakpoint navigator，点+号，选择Add Exception Breakpoint，在Option选项选择默认的All。 &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://iandai.github.io/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
-  
-    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="https://www.google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="sitesearch" value="iandai.github.io">
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Home</a></li>
-  <li><a href="/blog/categories/ios">iOS</a></li>
-  <li><a href="/blog/categories/ruby">Ruby</a></li>  
-  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-09-21T20:28:03+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a></h1>
-    
-    
-      <p class="meta">
-        
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
-
-
-
-<time class='entry-date' datetime='2015-09-20T16:08:33+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:08 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Crash Without Detailed Info</h3>
+  
+  <entry>
+    <title type="html"><![CDATA[Useful iOS Debug Tricks]]></title>
+    <link href="http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks/"/>
+    <updated>2015-09-20T16:08:33+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks</id>
+    <content type="html"><![CDATA[<h3>Crash Without Detailed Info</h3>
 
 <h4>解决方法：</h4>
 
@@ -131,35 +58,15 @@
 <li>关闭网络： 关闭系统的网络</li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-08-12T17:59:19+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:59 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
+  <entry>
+    <title type="html"><![CDATA[Growth Tactics Example]]></title>
+    <link href="http://iandai.github.io/blog/2015/08/12/growth-tatics/"/>
+    <updated>2015-08-12T17:59:19+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/08/12/growth-tatics</id>
+    <content type="html"><![CDATA[<ol>
 <li>Jet.com用10万股票吸引人，帮助自己获得内测用户。带来最多的内测用户的人，可以获得10万股票，按照融资估值，约等于2000万美元。
 第一Jet获得了注册用户，除了获得第一的人，其他人也在比赛中带来了注册用户
 第二Jet付出的是股票，可以节约现金
@@ -167,70 +74,30 @@
 <a href="http://fusion.net/story/54990/guy-got-rich-using-jet/">http://fusion.net/story/54990/guy-got-rich-using-jet/</a></li>
 </ol>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-08-11T19:23:06+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:23 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
+  <entry>
+    <title type="html"><![CDATA[The Hamburger Menu Doesn't Work]]></title>
+    <link href="http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work/"/>
+    <updated>2015-08-11T19:23:06+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
 <a href="http://deep.design/the-hamburger-menu/">http://deep.design/the-hamburger-menu/</a></p>
 
 <p>Summary:</p>
 
 <p>Facebook和New York Times也同样使用过Hambuerger Menu，但是结果显示不利于user engagement，后来都换回了tab。
 作者所给出的理由，最重要的一点是，用户使用app和网页的方式，是看那些会令自己感兴趣的文字，然后到处试一试。而hanburger menu不显得有任何有趣的地方。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-09T19:52:09+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:52 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
+  <entry>
+    <title type="html"><![CDATA[CLLocationManager Notes]]></title>
+    <link href="http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/"/>
+    <updated>2015-07-09T19:52:09+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes</id>
+    <content type="html"><![CDATA[<ol>
 <li><p>-(void)locationManager:(CLLocationManager <em>)manager didUpdateLocations:(NSArray </em>)locations
 声名locationManager变量为局部变量会导致delegate不会被call，因为locationManager变量被释放了。</p></li>
 </ol>
@@ -336,35 +203,15 @@ Location manager获取实时的location需要花费几秒钟，所以location ma
 
 
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-16T19:39:00+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:39 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
+  <entry>
+    <title type="html"><![CDATA[Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/"/>
+    <updated>2015-06-16T19:39:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
 <a href="https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</a></p>
 
 <p>Summary:<br/>
@@ -374,35 +221,15 @@ Increase retention -> increase upgrade rates -> decrease payback period<br/>
 其中有一个重要的点在于，有时候因为有许多新用户的增加和短期retention较高的水平，导致盲目投入，最后眼睁睁看着用户都流失掉。<br/>
 所以retention最后要是一条水平线，而不能一直下垂。<br/>
 讲了实际案例，如何预防retention下降的趋势，如何想办法提高retention。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/">A/B Testing: Why, What, When, How by Mike Greenfield</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T20:22:05+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Why, What, When, How by Mike Greenfield]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:22:05+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
 <a href="http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield">http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield</a></p>
 
 <p>Summary:<br/>
@@ -411,35 +238,15 @@ why因为有了数据才能衡量任何东西。<br/>
 what 不要测试不能影响全局的细小因素。<br/>
 when 只测试能够带来business significant的内容，经验是1万到10万人才值得做AB测试。<br/>
 How 建自己的framework，这样才更佳自由。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/">A/B Testing: When to Do A/B Testing by Mike Greenfield.</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T20:14:39+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:14 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: When to Do A/B Testing by Mike Greenfield.]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:14:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
 <a href="http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/">http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/</a></p>
 
 <p>Summary:<br/>
@@ -457,35 +264,15 @@ Purchase funnel也非常值得做AB测试。</p>
 
 
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/">Video: 10 Habits of High-Growth Startups by Sean Ellis</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T19:25:06+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:25 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
+  <entry>
+    <title type="html"><![CDATA[Video: 10 Habits of High-Growth Startups by Sean Ellis]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/"/>
+    <updated>2015-06-15T19:25:06+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
 <a href="https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/">https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/</a></p>
 
 <p>Summary:<br/>
@@ -501,69 +288,29 @@ Video: 10 Habits of High-Growth Startups by Sean Ellis<br/>
 8 Execute at High Tempo 执行要快，并发执行实验<br/>
 9 Accontability for inputs 要有足够的输出，就要有足够的输入<br/>
 10 Double Down on Success  在已经有效果的channel上面，更加深入和精细，以求获得更好的效果</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/">Linkedin Use Dark Pattern Design to Get New User</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T19:19:41+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:19 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source: <br/>
+  <entry>
+    <title type="html"><![CDATA[Linkedin Use Dark Pattern Design to Get New User]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/"/>
+    <updated>2015-06-15T19:19:41+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user</id>
+    <content type="html"><![CDATA[<p>Source: <br/>
 <a href="https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462">https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462</a></p>
 
 <p>Summary:<br/>
 Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或者疏忽，获取的用户的全部邮件好友列表。<br/>
 获取注册用户的好友，对于Linkedin来说是非常重要的。Linkedin通过设计，让你不经意间授权了他获取好友email列表，然后让你不经意间邀请那些不在Linkedin上的好友。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/12/successful-mobile-app-entrepreneurs/">Successful Mobile App Entrepreneurs</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-12T19:13:36+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:13 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:  <br/>
+  <entry>
+    <title type="html"><![CDATA[Successful Mobile App Entrepreneurs]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs/"/>
+    <updated>2015-06-12T19:13:36+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs</id>
+    <content type="html"><![CDATA[<p>Source:  <br/>
 <a href="http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/">http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/</a></p>
 
 <p>Summary:
@@ -571,92 +318,208 @@ Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或
 有启发的两件事儿是：<br/>
 1.研究App Store，研究好的APP好在哪儿，不好的地方哪儿可以提高的，熟悉App Store的算法是如何工作的。
 2.跟不好的APP学习。找出一些共同的patten，自己要避免。</p>
-</div>
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[Average Reteion for Google Play Apps by Andrew Chen]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/"/>
+    <updated>2015-06-12T15:41:08+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/">http://andrewchen.co/new-data-shows-why-losing-80-of-your-mobile-users-is-normal-and-that-the-best-apps-do-much-better/</a></p>
+
+<p>Summary:<br/>
+Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and why the best apps do better。<br/>
+题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
+作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
+另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/"/>
+    <updated>2015-06-09T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/09/call-super-viewdidload</id>
+    <content type="html"><![CDATA[<ul>
+<li>No, but it&rsquo;s good practise to call.</li>
+</ul>
 
 
-    </article>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>It's a good habit to get into, in case you change your inheritance structure and suddenly the class that used to inherit from UIViewController now inherits from something that does do something in the viewDidLoad method.</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
+]]></content>
+  </entry>
   
-  <div class="pagination">
-    
-      <a class="prev" href="/posts/2">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
+  <entry>
+    <title type="html"><![CDATA[The Simplest and Most Important Dashboard for Early Stage Startups]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups/"/>
+    <updated>2015-06-03T19:31:15+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://klinger.io/post/77712761215/the-simplest-and-most-important-dashboard-for">http://klinger.io/post/77712761215/the-simplest-and-most-important-dashboard-for</a></p>
+
+<p>Summary:<br/>
+early stage start up最重要的metrics是什么？<br/>
+1 retention<br/>
+2 活用活跃信息，一个一个联系用户获得反馈，把它们留在7天内活跃的范围内。</p>
+]]></content>
+  </entry>
   
-    <section>
-  <h1>About me</h1>
-  <div>A developer works in Japan.</div>
-  <div>Mainly about iOS and Ruby development.</div> 
-  <div>Interest in Growth Hacking.</div>  
-  <div>Find me at: iandaicsu#gmail.com</div> 
-</section><section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a>
-      </li>
-    
-  </ul>
-</section>
+  <entry>
+    <title type="html"><![CDATA[Ruby Hash Implementation]]></title>
+    <link href="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/"/>
+    <updated>2015-04-10T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation</id>
+    <content type="html"><![CDATA[<ul>
+<li>murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。</li>
+</ul>
 
 
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>murmur_hash(key) % M</span></code></pre></td></tr></table></div></figure>
 
 
+<ul>
+<li>hash collision的处理方法
 
+<ul>
+<li>当碰撞的某一个位置有超过5个value的时候（密度超过5），就要调整质数M的大小，全部重新计算所有的hash数值（因为当单个位置不停增长的话，就又变回O(n)的复杂度了）。</li>
+<li>质数的选取2的指数附近的数字</li>
+</ul>
+</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>private static final int MRI_PRIMES[] = {8 + 3, 16 + 3, 32 + 5, 64 + 3, 128 + 3, 256 + 27, ....};</span></code></pre></td></tr></table></div></figure>
+
+
+<h6>参考文献</h6>
+
+<p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+]]></content>
+  </entry>
   
-</aside>
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Avoid Repeated Significance Testing Errors]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors/"/>
+    <updated>2015-03-25T19:46:02+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://www.evanmiller.org/how-not-to-run-an-ab-test.html">http://www.evanmiller.org/how-not-to-run-an-ab-test.html</a></p>
 
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - Ian Dai -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
+<p>Summary:<br/>
+文章介绍了AB测试的常见统计错误：重复显著性测试错误（repeated significance testing errors）<br/>
+值得注意的地方是：作者指出，在实验没有结束的时候，不停的去看结果是否显著，是不可取的。你很可能发现结果的显著性达到了1%或者5%而停止AB测试。
+实际上这是人为的操纵了数据。显著性检验的前提条件是：你的样本大小sample size是固定的。</p>
+]]></content>
+  </entry>
   
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Use Third-party Solution or Build Own Solution?]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/24/a-slash-b-testing-use-third-party-solution-or-build-own-solution/"/>
+    <updated>2015-03-24T19:59:01+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/24/a-slash-b-testing-use-third-party-solution-or-build-own-solution</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://lukethomas.com/ab-testing-solution-should-i-use-rails-app/">http://lukethomas.com/ab-testing-solution-should-i-use-rails-app/</a></p>
+
+<p>Summary:<br/>
+文中提到的有趣的一点是： sample size。AB测试要进行多久，收集到多数数据才能得出统计显著的结论呢？
+具体的情况要具体分析。但是自己实现AB test的时候的优点在于，你不用担心多进行ab测试会花掉更多钱。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Video: Growth for Early]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/19/video-growth-for-early/"/>
+    <updated>2015-03-19T19:24:52+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/19/video-growth-for-early</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://www.youtube.com/watch?v=xY-CJNWsrso">https://www.youtube.com/watch?v=xY-CJNWsrso</a></p>
+
+<p>Summary:<br/>
+演讲者：Hiten Shah（KissMetrics），Nabeel Hyatt (Zynga, Spark Capital)，Joe Zadeh (AirBnB)</p>
+
+<p>Point1: 在grow之前，找到ah-ha moment。grow之前先做awesome experience。</p>
+
+<p>Point2: Does and Don&#8217;ts. Hiten KissMetrics: make data transaction. 不要覆盖更新数据，比如登陆数据。</p>
+
+<p>Point3: How long focus on one channel? -> As soon as possible. 如果很久没结果，可能你的方法不太对。(Joe)</p>
+
+<p>Point4: What is a good number?</p>
+
+<blockquote><p>Nabeel: 某个数据，怎么样算是好了，怎么样算是没做好？  （和别人共享数据）<br/>
+Hiten: 不要和别的公司做benchmark，设立自己的baseline。</p></blockquote>
+
+<p>Point5:</p>
+
+<blockquote><p>Nabeel:什么时候做push notification？  user打开他app的时候。<br/>
+Hiten:对于B2B来说，sales==growth</p></blockquote>
+
+<p>Point6:一个特别值得分享的经验</p>
+
+<blockquote><p>Hiten： First user signup moment is important: kissmetrics让用户在最开始的时候，就看到有几个option。对提高用户选择option有非常大的帮助。<br/>
+Joe：Dashboard。Put data as center, make data communicate with team.<br/>
+Joe：Airbnb把客户服务的信件解析成可量化的细节，然后用于分析，了解客户。</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Long-term Impact of Badging by John Egan]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/13/long-term-impact-of-badging-by-john-egan/"/>
+    <updated>2015-03-13T19:16:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/13/long-term-impact-of-badging-by-john-egan</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://jwegan.com/growth-hacking/long-term-impact-badging/">http://jwegan.com/growth-hacking/long-term-impact-badging/</a></p>
+
+<p>Summary:<br/>
+When it comes to growth, one potential pitfall is over optimizing for short-term wins. <br/>
+根据Pinterest的经验，长期使用badge，对用户活跃度的影响。1个月的测试，DAU有7%的提高，长期的测试显示有2.5%的提高。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Pitfalls With Google Analytics]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/24/a-slash-b-testing-pitfalls-with-google-analytics/"/>
+    <updated>2015-02-24T19:14:01+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/24/a-slash-b-testing-pitfalls-with-google-analytics</id>
+    <content type="html"><![CDATA[<p>Souce:<br/>
+<a href="http://ggtheory.com/2010/04/19/abtestpitfal/">http://ggtheory.com/2010/04/19/abtestpitfal/</a></p>
+
+<p>Summary:<br/>
+Google Adwords的AB测试可能不是平均展示的。结果解读的时候要注意：数据量是否充分。
+注意转化过程中的漏斗：结束AB测试之后，总点击率下降。可能原因是一部分用户喜欢A和B中被剔除的那个选项，导致总体点击率的减少。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Facebook Growth VP Alex Schultz's Talk on Growth]]></title>
+    <link href="http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/"/>
+    <updated>2015-02-15T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth</id>
+    <content type="html"><![CDATA[<div class="embed-video-container"><iframe src="//www.youtube.com/embed/n_yHZ_vKjno" allowfullscreen></iframe></div>
 
 
+<p>Source:
+How to Start a Startup: Growth
+<a href="http://startupclass.samaltman.com/courses/lec06/">http://startupclass.samaltman.com/courses/lec06/</a></p>
 
-
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+<p>Summuary:<br/>
+Facebook Growth Team VP Alex Schultz关于Growth的演讲。<br/>
+Alex Schultz认为对于growth来说什么最重要：retention。<br/>
+然后讲了什么才是好的retention。好的retention每个产品都不同。facebook有多于80%的retention，电商如果有20-30% active user retention就很不错。
+具体情况需要具体分析，要自己去搞清楚适合自己产品的好的retention。
+另外，growth需要一个north star。有很多数据，到底哪个最重要。Facebook的话就是14天内获得10个用户。
+然后呢，产品需要一个magic moment。airbnb就是那些看起来很酷很想住的房子，facebook就是看到你的朋友也在facebook。
+再之后，讲了一些具体策略。介绍个facebook，hotmail，paypal等公司实现增长的一些策略。</p>
+]]></content>
+  </entry>
+  
+</feed>

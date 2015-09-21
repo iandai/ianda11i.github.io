@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-09-21T20:28:03+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Useful iOS Debug Tricks]]></title>
+    <link href="http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks/"/>
+    <updated>2015-09-20T16:08:33+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks</id>
+    <content type="html"><![CDATA[<h3>Crash Without Detailed Info</h3>
+
+<h4>解决方法：</h4>
+
+<ul>
+<li>添加All Exception Breakpoint
+在Breakpoint navigator，点+号，选择Add Exception Breakpoint，在Option选项选择默认的All。这样每次crash的时候仍然可以看到线程栈，调试起来就会方便很多，不用猜测到底哪里出了问题。</li>
+<li>在lldb里面输入<code>po $arg1</code>
+有时候crash的时候，线程栈是在UIApplicationMain，或者Main之类的地方，看不出来真正的crash的原因。这时候输入<code>po $arg1</code>有时候可以看到真正的crash原因。（不理解具体原理是什么, somehow it works）。</li>
+</ul>
+
+
+<h3>Debug after force quit app</h3>
+
+<h4>解决方法：</h4>
+
+<ul>
+<li>Attach to Process
+有时候需要Debug用户force quit一个App之后，在重新打开App之后的表现。可以在Debug的Attach to Process中,重新把App和Xcode连接起来，继续debug。</li>
+</ul>
+
+
+<h3>Debug View</h3>
+
+<h4>解决方法：</h4>
+
+<ul>
+<li>在lldb中<code>po [[UIWindow keyWindow] recursiveDescription]</code></li>
+<li>按cmd + 6进入Debug navigator，在该栏右上角的Process View option按钮中选择View UI Hierarchy。或者点击Debug View Hierarchy按钮。</li>
+</ul>
+
+
+<h3>Simulator shortcuts</h3>
+
+<ul>
+<li>回到Home：Command-Shift-H</li>
+<li>关闭App： Command-Shift-H按两次</li>
+<li>关闭网络： 关闭系统的网络</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CLLocationManager Notes]]></title>
+    <link href="http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/"/>
+    <updated>2015-07-09T19:52:09+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>-(void)locationManager:(CLLocationManager <em>)manager didUpdateLocations:(NSArray </em>)locations
+声名locationManager变量为局部变量会导致delegate不会被call，因为locationManager变量被释放了。
+<code>
+Create an instance of the CLLocationManager class and store a strong reference to it somewhere in your app.
+</code></p></li>
+<li><p>提高location结果精度，并且在使用结束后停止updatelocation.
+参考apple官方LocateMe sample：<a href="https://developer.apple.com/library/ios/samplecode/LocateMe/Introduction/Intro.html">https://developer.apple.com/library/ios/samplecode/LocateMe/Introduction/Intro.html</a></p></li>
+</ol>
+
+
+<pre><code class="objc">
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+{
+    // test the age of the location measurement to determine if the measurement is cached
+    // in most cases you will not want to rely on cached measurements
+    NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
+    if (locationAge &gt; 5.0) return;
+
+    // test that the horizontal accuracy does not indicate an invalid measurement
+    if (newLocation.horizontalAccuracy &lt; 0) return;
+
+    // test the measurement to see if it is more accurate than the previous measurement
+    if (self.bestEffortAtLocation == nil || self.bestEffortAtLocation.horizontalAccuracy &gt; newLocation.horizontalAccuracy)
+    {
+        // store the location as the "best effort"
+        self.bestEffortAtLocation = newLocation;
+
+        // test the measurement to see if it meets the desired accuracy
+        //
+        // IMPORTANT!!! kCLLocationAccuracyBest should not be used for comparison with location coordinate or altitidue 
+        // accuracy because it is a negative value. Instead, compare against some predetermined "real" measure of 
+        // acceptable accuracy, or depend on the timeout to stop updating. This sample depends on the timeout.
+        //
+        if (newLocation.horizontalAccuracy &lt;= locationManager.desiredAccuracy) {
+            // we have a measurement that meets our requirements, so we can stop updating the location
+            // 
+            // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
+            //
+            [self stopUpdatingLocation:NSLocalizedString(@"Acquired Location", @"Acquired Location")];
+        }
+    }
+}
+</code></pre>
+
+<ol>
+<li>iPhone进入飞行模式并不会立刻停止接受GPS数据。
+Location manager获取实时的location需要花费几秒钟，所以location manager会先返回cached location data，然后再返回更新过的数据，所以一定要check location对象的timestamp。
+这也解释了，为何在执行<code>[self.locationManager stopUpdatingLocation];</code>之后，<code>- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error</code>还是会被call，应该是因为执行stopUpdatingLocation之后，实际上进行数据更新的线程还在运行，发现无法获取数据了，导致又被失败delegate被call了一次。</li>
+</ol>
+
+
+<pre><code>Regardless of which location service you use, location data is reported to your app via the location manager’s associated delegate object. Because it can take several seconds to return an initial location, the location manager typically delivers the previously cached location data immediately and then delivers more up-to-date location data as it becomes available. Therefore it is always a good idea to check the timestamp of any location object before taking any actions. If both location services are enabled simultaneously, they deliver events using the same set of delegate methods.
+</code></pre>
+
+<ol>
+<li>Deferring updates省电
+<code>
+It is recommended that you use this feature in situations where your app could process the data later without any problems.
+An app that tracks the user’s location on a hiking trail could defer updates until the user hikes a certain distance and then process the points all at once.
+</code></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Successful Mobile App Entrepreneurs]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs/"/>
+    <updated>2015-06-12T19:13:36+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs</id>
+    <content type="html"><![CDATA[<p>Source:  <br/>
+<a href="http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/">http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/</a></p>
+
+<p>Summary:
+要做好mobile app entrepreneurs，应该做的9件事儿。
+有启发的两件事儿是：<br/>
+1.研究App Store，研究好的APP好在哪儿，不好的地方哪儿可以提高的，熟悉App Store的算法是如何工作的。
+2.跟不好的APP学习。找出一些共同的patten，自己要避免。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/"/>
+    <updated>2015-06-09T12:08:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/09/call-super-viewdidload</id>
+    <content type="html"><![CDATA[<ul>
+<li>No, but it&rsquo;s good practise to call.</li>
+</ul>
+
+
+<pre><code>It's a good habit to get into, in case you change your inheritance structure and suddenly the class that used to inherit from UIViewController now inherits from something that does do something in the viewDidLoad method.
+</code></pre>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using iOS Google Maps SDK]]></title>
+    <link href="http://iandai.github.io/blog/2015/01/22/using-ios-google-maps-sdk/"/>
+    <updated>2015-01-22T20:10:37+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/01/22/using-ios-google-maps-sdk</id>
+    <content type="html"><![CDATA[<h2>Steps</h2>
+
+<ol>
+<li> Apply Google Map Api Key</li>
+<li> Import GoogleMaps.bundle in GoogleMaps.framework</li>
+<li> In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
+<li> In <code>AppDelegate</code></li>
+</ol>
+
+
+<pre><code class="objc">    #import &lt;GoogleMaps/GoogleMaps.h&gt;
+    - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+    {
+        [GMSServices provideAPIKey:@"API_KEY"];
+        return YES;
+    }
+</code></pre>
+
+<h2>Possible issues</h2>
+
+<p>1.In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework.</p>
+
+<p>2.In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:<br/>
+<code>sh
+-force_load $(PROJECT_DIR)/GoogleMaps.framework/GoogleMaps
+</code></p>
+
+<p>3.Use google maps in a subview.<br/>
+Following Code will not work in a subview.
+&#8220;`objc
+    #import &ldquo;YourViewController.h&rdquo;
+    #import &lt;GoogleMaps/GoogleMaps.h></p>
+
+<pre><code>@implementation YourViewController {
+    GMSMapView *mapView_;
+}
+
+- (void)viewDidLoad {
+    // Create a GMSCameraPosition that tells the map to display the
+    // coordinate -33.86,151.20 at zoom level 6.
+    GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:-33.86
+                                                      longitude:151.20
+                                                           zoom:6];
+    mapView_ = [GMSMapView mapWithFrame:CGRectZero camera:camera];
+    mapView_.myLocationEnabled = YES;
+    self.view = mapView_;
+
+    // Creates a marker in the center of the map.
+    GMSMarker *marker = [[GMSMarker alloc] init];
+    marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
+    marker.title = @"Sydney";
+    marker.snippet = @"Australia";
+    marker.map = mapView_;
+    }
+@end
+</code></pre>
+
+<pre><code>Chnage the existing Xib's class into GSMMapView will solve the problem.    
+</code></pre>
+
+<pre><code>@property (weak, nonatomic) IBOutlet GMSMapView *mapView;
+
+CGPoint center = CGPointMake(44.209769, -69.0648919);
+GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:center.x
+                                                        longitude:center.y
+                                                             zoom:15.5];
+self.mapView.camera = camera;
+
+GMSMarker *marker = [[GMSMarker alloc] init];
+marker.position = CLLocationCoordinate2DMake(-33.86, 151.20);
+marker.title = @"Sydney";
+marker.snippet = @"Australia";
+marker.icon = [UIImage imageNamed:@"map_pin_icon"];
+marker.map = self.mapView;
+</code></pre>
+
+<p>&#8220;`</p>
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15417811/cannot-put-a-google-maps-gmsmapview-in-a-subview-of-main-main-view">Add google maps in a subview</a></li>
+<li><a href="http://dev.classmethod.jp/smartphone/iphone/ios-map-programming-series-1/">Customise GMSMarker</a></li>
+<li><a href="http://stackoverflow.com/questions/16706587/can-i-link-googlemaps-sdk-for-ios-with-a-linker-flag-other-than-objc">Other Linker Flags Conflict</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Growthhacking | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/growthhacking/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-09-21T20:28:03+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Growth Tactics Example]]></title>
+    <link href="http://iandai.github.io/blog/2015/08/12/growth-tatics/"/>
+    <updated>2015-08-12T17:59:19+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/08/12/growth-tatics</id>
+    <content type="html"><![CDATA[<ol>
+<li>Jet.com用10万股票吸引人，帮助自己获得内测用户。带来最多的内测用户的人，可以获得10万股票，按照融资估值，约等于2000万美元。
+第一Jet获得了注册用户，除了获得第一的人，其他人也在比赛中带来了注册用户
+第二Jet付出的是股票，可以节约现金
+第三Jet根据这个，做了一个事件营销，让自己变得有名
+<a href="http://fusion.net/story/54990/guy-got-rich-using-jet/">http://fusion.net/story/54990/guy-got-rich-using-jet/</a></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[The Hamburger Menu Doesn't Work]]></title>
+    <link href="http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work/"/>
+    <updated>2015-08-11T19:23:06+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://deep.design/the-hamburger-menu/">http://deep.design/the-hamburger-menu/</a></p>
+
+<p>Summary:</p>
+
+<p>Facebook和New York Times也同样使用过Hambuerger Menu，但是结果显示不利于user engagement，后来都换回了tab。
+作者所给出的理由，最重要的一点是，用户使用app和网页的方式，是看那些会令自己感兴趣的文字，然后到处试一试。而hanburger menu不显得有任何有趣的地方。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/"/>
+    <updated>2015-06-16T19:39:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</a></p>
+
+<p>Summary:<br/>
+Brain Balfour 讲为何retention为王。因为有了retention，其他的自然会来。<br/>
+Increase retention -> Increase LTV -> Afford Higher CPA<br/>
+Increase retention -> increase upgrade rates -> decrease payback period<br/>
+其中有一个重要的点在于，有时候因为有许多新用户的增加和短期retention较高的水平，导致盲目投入，最后眼睁睁看着用户都流失掉。<br/>
+所以retention最后要是一条水平线，而不能一直下垂。<br/>
+讲了实际案例，如何预防retention下降的趋势，如何想办法提高retention。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Why, What, When, How by Mike Greenfield]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:22:05+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield">http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield</a></p>
+
+<p>Summary:<br/>
+回答why, what, when, how和经验。<br/>
+why因为有了数据才能衡量任何东西。<br/>
+what 不要测试不能影响全局的细小因素。<br/>
+when 只测试能够带来business significant的内容，经验是1万到10万人才值得做AB测试。<br/>
+How 建自己的framework，这样才更佳自由。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: When to Do A/B Testing by Mike Greenfield.]]></title>
+    <link href="http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/"/>
+    <updated>2015-06-15T20:14:39+09:00</updated>
+    <id>http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/">http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/</a></p>
+
+<p>Summary:<br/>
+什么时候要做AB测试，非常靠谱的回答。<br/>
+对于signup和邀请好友。如果受到邀请的好友signup，只有邀请人的0.8%，那么不应该做AB Testing。<br/>
+对Email的Title和content做AB testing往往会有很好的效果。不过做之前，要想好会不会有大影响。如果email每天只有100个打开率，那么再优化，也不会有什么大影响。   <br/>
+Purchase funnel也非常值得做AB测试。</p>
+
+<pre><code> - Viral signup flows. If your current signup flow features 1000 signups inviting 3000 people, 900 of whom register for your product, you’re very close to being viral (K=0.9). A/B testing would be a good use of time. If your current flow features 1000 signups inviting 600 people, 80 of whom join (K=0.08), then you aren’t in the ballpark: optimizing button text is likely a waste of time. Go bigger.
+ - Email content. Subject lines and link text can have a huge impact on email clickthrough rates. One typical example: an email with the subject “5 Embarrassing Kid Moments” gets 2.5 times as many clicks as one with the subject “The Craziest Thing My Child Has Done.” But again, being close to “good” is key: if that 2.5x is the difference between 50 clicks a week and 125 clicks a week, does it matter? If it doesn’t matter (and good estimation is key), no point spending time A/B testing it.
+ - Purchase funnel. Much of Team Rankings‘ revenue comes from subscriptions, and some purchase funnels can be much more effective than others. Last year, for instance, our March Madness product, BracketBrains, generated 30% more sales when we prompted people to “Get 2011 Picks” than to “Get BracketBrains”. Same caveats apply here, though: test if and only if the differences are likely to matter for your business.
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

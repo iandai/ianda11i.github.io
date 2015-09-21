@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Crontab | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/crontab/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-09-21T20:28:03+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Crontab(1):Basic Usage]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/08/crontab-1-basic-usage/"/>
+    <updated>2013-11-08T19:04:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/08/crontab-1-basic-usage</id>
+    <content type="html"><![CDATA[<h2>Ways to use crontab</h2>
+
+<ul>
+<li>crobtab -e  当前用户环境下运行的cron</li>
+<li>sudo vi /etc/crontab    在系统环境下运行的cron，所有用户都可以使用</li>
+<li>/etc/cron.d/  将文件放在该目录下，系统则会自动运行</li>
+</ul>
+
+
+<h2>Example: backup mysql every day</h2>
+
+<ul>
+<li><p>step1</p>
+
+<p>创建保存备份文件的路径/mysqldata </br>
+<code>
+  mkdir /var/www/mysqldata
+ </code></p></li>
+<li><p>step2</p>
+
+<p>创建/usr/sbin/bakmysql文件,写入以下代码 </br>
+<code>
+  /usr/bin/mysqldump production -u root -p password | gzip -c | cat &gt; /var/www/mysqldata/production$(date +\%Y-\%m-\%d-\%H.\%M.\%S).sql.gz &gt;/dev/null 2&gt;&amp;1
+</code>
+  注意：</br>
+  1）备份数据库mysqldump必须要完整路径！！！！</br>
+  2）date后面的％前必须加\，因为在crontab中％代表new line 。所以最好的方式是在crontab里运行一个脚本，然后在脚本里加上Path。</p></li>
+<li><p>step 3</p>
+
+<p>  修改文件属性，使其可执行</br>
+<code>
+  chmod +x /usr/sbin/bakmysql
+</code></p></li>
+<li><p>step 4</p>
+
+<p>修改crontab -e,下面添加一下代码,每天3点钟执行备份</br>
+  <code>
+  01 3 * * * root /usr/sbin/bakmysql &gt;&gt; /dev/null 2&gt;&amp;1 （&gt;&gt; /dev/null 2&gt;&amp;1 用于防止log过多）
+ </code></p></li>
+<li><p>step 5</p>
+
+<p>每天你在/var/www/mysqldata可以看到这样的文件mysql20040619.tar.gz</p></li>
+<li><p>step 6</p>
+
+<p>  远程复制到桌面
+  <code>
+  scp g_dai@ip:/var/www/mysqldata/sqldata2013-01-29-15.06.22.sql.gz ~/Desktop/
+</code></p></li>
+<li><p>step 7</p>
+
+<p>  从桌面import到mysql
+  <code>
+mysql -u root -p
+show databases;
+source ~/Desktop/sqldata2013-01-29-15.06.22.sql
+</code></p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Crontab(2):环境变量 Environment Variables]]></title>
+    <link href="http://iandai.github.io/blog/2013/11/08/crontab/"/>
+    <updated>2013-11-08T18:04:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2013/11/08/crontab</id>
+    <content type="html"><![CDATA[<h2>导出crontab的环境变量</h2>
+
+<p>Add this to your cron:
+<code>
+30 08 * * * env &gt; ~/cronenv
+</code></p>
+
+<h2>在bash中加载crontab的环境变量</h2>
+
+<pre><code>env - `cat ~/cronenv` /bin/sh
+</code></pre>
+
+<h2>在crontab中添加UTF-8 encoding环境变量</h2>
+
+<p>在crontab -e中所有需要运行的shell command前面添加
+<code>
+LANG=en_US.UTF-8
+30 09 * * * /home/convertor/.rvm/rubies/ruby-1.9.3-p429/bin/ruby /home/convertor/bv_data_converter/lib/backup_remider.rb
+</code></p>
+
+<h2>Crontab中加载rvm环境</h2>
+
+<p><a href="http://rvm.io/integration/cron">Load rvm in crontab</a></p>
+
+<h2>Crontab的运行log</h2>
+
+<pre><code>sudo tail /var/log/cron 
+</code></pre>
+
+<h6>参考文献</h6>
+
+<p><a href="http://stackoverflow.com/questions/2135478/how-to-simulate-the-environment-cron-executes-a-script-with">How to simulate the environment cron executes a script with</a></br>
+<a href="http://stackoverflow.com/questions/2229825/where-can-i-set-environment-variables-that-crontab-will-use">Set environment variables in crontab</a></p>
+]]></content>
+  </entry>
+  
+</feed>

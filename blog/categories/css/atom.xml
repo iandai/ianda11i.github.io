@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Css | Ian's Tech Note]]></title>
+  <link href="http://iandai.github.io/blog/categories/css/atom.xml" rel="self"/>
+  <link href="http://iandai.github.io/"/>
+  <updated>2015-09-21T20:28:03+09:00</updated>
+  <id>http://iandai.github.io/</id>
+  <author>
+    <name><![CDATA[Ian Dai]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CSS NOTES]]></title>
+    <link href="http://iandai.github.io/blog/2014/04/08/css-notes/"/>
+    <updated>2014-04-08T17:47:00+09:00</updated>
+    <id>http://iandai.github.io/blog/2014/04/08/css-notes</id>
+    <content type="html"><![CDATA[<h4>Tips</h4>
+
+<p>zen coding快捷键<code>command+e</code><br/>
+CSS布局技术都依赖于三个基本概念：定位，浮动和空白边(margin).<br/>
+Link css: <code>&lt;link rel="stylesheet" href="…." /&gt;</code>, rel stands for relation.<br/>
+inline box 不响应垂直margin, width, height, max/min width/height 等属性声明；block box 则可以响应这些属性。</p>
+
+<h4>CSS使用原则</h4>
+
+<p>前端的素养：注意各个元素之间的对齐方式。<br/>
+html是用来标记这段内容是在做社么，而不是用来stlying的。<br/>
+所以，table tag不用来表示styling画方框，而只是用来显示数据表格。</p>
+
+<h4>font-family属性</h4>
+
+<p>font-family: Verdana, Arial，sans-serif<br/>
+浏览器会依次调用各个字体，直到系统装有该字体。 sans-serif为通用字体族，多数系统都装有该字体族中间的字体。<br/>
+sans-serif代表无衬线体，与中文的黑体相对应.<br/>
+Referance: <a href="http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.">http://zh.wikipedia.org/wiki/%E6%97%A0%E8%A1%AC%E7%BA%BF%E4%BD%93.</a></p>
+
+<h4>图片格式</h4>
+
+<p>html使用的图片格式：普通图片使用jpeg，如果需要背景为透明，就必须使用png-24。</p>
+
+<h4>normalize.css</h4>
+
+<p>解决各种浏览器初始状态的不同和兼容问题<br/>
+<a href="https://github.com/necolas/normalize.css">https://github.com/necolas/normalize.css</a></p>
+
+<h4>HTML img标签的alt属性</h4>
+
+<p>alt属性是一个必需的属性，它规定在图像无法显示时的替代文本.<br/>
+alt stands for alternative text.</p>
+
+<h4>使得竖着的list变成横向的navigation list方法</h4>
+
+<p>添加display: inline;<br/>
+Referance: <a href="https://tutsplus.com/lesson/navigation-lists/">https://tutsplus.com/lesson/navigation-lists/</a></p>
+
+<h4>postion: relative和absolute定位 （相对定位和绝对定位）</h4>
+
+<p>相对定位是“相对于”元素在文档流中的初始位置，而绝对定位是“相对于”最近的已定位祖先元素，如果不存在已定位的祖先元素，那么是最初的包含块。<br/>
+相对定位在移动位置之后，不会影响其他文档流中元素的位置。<br/>
+绝对定位在移动位置之后，元素从文档流中抽取出来，原占有的位置被后面的对象顶替上来。</p>
+
+<p>position: absolute 会使得原来的inline元素变成block元素，从而能够使用width属性。</p>
+
+<h4>居中</h4>
+
+<p>水平居中(：margin和width同时使用的时候，才会有居中效果。<br/>
+垂直居中(1)：vertical-align:middle;<br/>
+line-height: 10px;   /<em> must define line-height to use vertical-align </em>/    <br/>
+line-height: 100%;   等于font-size的高度，而不是div的高度<br/>
+垂直居中(2)：padding:25px;  上下padding相等，则自动会垂直居中了</p>
+
+<h4>奇怪的inline-block</h4>
+
+<p>对li使用inline-block的时候，li之间存在space，即使把margin和padding都设置为0，依然无法消除。<br/>
+问题的本质是两个li之间的space问题。<br/>
+<code>
+&lt;li&gt;1&lt;/li&gt;
+&lt;li&gt;2&lt;/li&gt;
+</code>
+space占有4px的空间，所以无法被消除。<br/>
+<code>
+&lt;li&gt;1&lt;/li&gt;&lt;li&gt;2&lt;/li&gt;
+</code>
+按照这种方式排列html，中间的space就会消失。<br/>
+另一种方法是将 ul tag 的字体大小设置为0，然后把li tag中的font-size设置回来。<br/>
+<a href="http://stackoverflow.com/questions/5256533/a-space-between-inline-block-list-items">Referance</a></p>
+
+<h4>Margin的垂直collapse（Collapsing margins）</h4>
+
+<p>Horizontal margins never collapse.<br/>
+定义： the expression collapsing margins means that adjoining margins (no non-empty content, padding or border areas or clearance separate them) of two or more boxes (which may be next to one another or nested) combine to form a single margin.<br/>
+两种情况：<br/>
+1. 对于上下两个并列的div块而言，上面div的margin-bottom和下面div的margin-top会塌陷，也就是会取上下两者margin里最大值作为显示值。<br/>
+2. 对于有块级子元素的元素计算高度的方式,如果元素没有垂直边框和填充,那其高度就是其子元素顶部和底部边框边缘之间的距离。<br/>
+Referance<br/>
+<a href="http://blog.csdn.net/dclchj/article/details/9787481">CSS的margin塌陷（collapse）</a><br/>
+<a href="http://www.w3.org/TR/CSS2/box.html">Box model 8.3.1</a></p>
+]]></content>
+  </entry>
+  
+</feed>
