@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Security | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/security/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-09-21T20:38:21+09:00</updated>
+  <updated>2016-08-20T23:29:17+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[SQL Injection]]></title>
     <link href="http://iandai.github.io/blog/2014/05/01/sql-injection/"/>
-    <updated>2014-05-01T18:41:00+09:00</updated>
+    <updated>2014-05-01T18:41:00+08:00</updated>
     <id>http://iandai.github.io/blog/2014/05/01/sql-injection</id>
     <content type="html"><![CDATA[<h2>SQL 注入方法</h2>
 

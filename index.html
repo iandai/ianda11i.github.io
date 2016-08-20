@@ -9,8 +9,7 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Crash Without Detailed Info 解决方法： 添加All Exception Breakpoint
-在Breakpoint navigator，点+号，选择Add Exception Breakpoint，在Option选项选择默认的All。 &hellip;">
+  <meta name="description" content="看这篇文章之前，需要了解Swift中Optional的基础知识。 作为写了几年的Objective-c的开发者，对在Swift中使用Optional持有过怀疑态度。使用了Optional，需要添加烦人的？和！。使用了？和！之后，依然需要做nil检查；使用了Value！之后， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +74,916 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-20T22:57:38+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>10:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>看这篇文章之前，需要了解Swift中<a href="https://developer.apple.com/library/ios/referencelibrary/GettingStarted/DevelopiOSAppsSwift/Lesson1.html#//apple_ref/doc/uid/TP40015214-CH3-SW1">Optional的基础知识</a>。</p>
+
+<p>作为写了几年的Objective-c的开发者，对在Swift中使用Optional持有过怀疑态度。使用了Optional，需要添加烦人的？和！。使用了？和！之后，依然需要做nil检查；使用了Value！之后，依然会在运行时因为nil问题而crash。</p>
+
+<p>使用Optional有什么意义呢？</p>
+
+<h2>使用理由1: 预先定义好通用的对象不存在的时候的写法</h2>
+
+<p>考虑下面的例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nf">findStockCode:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">company</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">company</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;Apple&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">@&quot;AAPL&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">([</span><span class="n">company</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;Google&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">@&quot;GOOG&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以使用findStockCode:方法来获取某个上市公司的股票代码。<br/>
+也有的开发者会使用下面的方法来写，找不到的时候返回空字符串。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nf">findStockCode:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">company</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">company</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;Apple&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">@&quot;AAPL&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">([</span><span class="n">company</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;Google&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">@&quot;GOOG&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如何确定找不到该公司代码的时候，返回的是空字符串还是nil呢？调用该方法的开发者，需要阅读文档或者处理多种情况。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">stockCode</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">findStockCode</span><span class="p">:</span><span class="s">@&quot;Facebook&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">stockCode</span> <span class="o">==</span> <span class="s">&quot;&quot;</span> <span class="o">&amp;&amp;</span> <span class="n">stockCode</span> <span class="o">==</span> <span class="nb">nil</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">.....</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在Swift中，这种情况非常明显的要使用Optional。如果找不到，则返回nil。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">func</span> <span class="nf">findStockCode</span> <span class="p">(</span><span class="nl">company</span> <span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">String</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">company</span> <span class="o">==</span> <span class="s">&quot;Apple&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;AAPL&quot;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="nf">if</span><span class="p">(</span><span class="n">company</span> <span class="o">==</span> <span class="s">&quot;Google&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;GOOG&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">nil</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>使用理由2: 编译的时候提示错误</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nf">findStockCode:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">company</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">company</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;Apple&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">@&quot;AAPL&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">([</span><span class="n">company</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;Google&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">@&quot;GOOG&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">stockCode</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">findStockCode</span><span class="p">:</span><span class="s">@&quot;Facebook&quot;</span><span class="p">];</span> <span class="c1">// nil is returned</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">text</span> <span class="o">=</span> <span class="s">@&quot;Stock Code - &quot;</span><span class="p">;</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">message</span> <span class="o">=</span> <span class="p">[</span><span class="n">text</span> <span class="nl">stringByAppendingString</span><span class="p">:</span><span class="n">stockCode</span><span class="p">];</span> <span class="c1">// runtime error</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当用Objective-C的时候，<code>[text stringByAppendingString:stockCode]</code>中，给NSString添加nil的时候，在运行时出错。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">func</span> <span class="nf">findStockCode</span><span class="p">(</span><span class="nl">company</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">String</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>   <span class="k">if</span> <span class="p">(</span><span class="n">company</span> <span class="o">==</span> <span class="s">&quot;Apple&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s">&quot;AAPL&quot;</span>
+</span><span class='line'>   <span class="p">}</span> <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">company</span> <span class="o">==</span> <span class="s">&quot;Google&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s">&quot;GOOG&quot;</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">return</span> <span class="nb">nil</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">var</span> <span class="nl">stockCode</span><span class="p">:</span><span class="n">String</span><span class="o">?</span> <span class="o">=</span> <span class="n">findStockCode</span><span class="p">(</span><span class="s">&quot;Facebook&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">let</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Stock Code - &quot;</span>
+</span><span class='line'><span class="k">let</span> <span class="n">message</span> <span class="o">=</span> <span class="n">text</span> <span class="o">+</span> <span class="n">stockCode</span>  <span class="c1">// compile-time error</span>
+</span><span class='line'><span class="n">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当用Swift的时候，<code>let message = text + stockCode</code>中，Xcode会主动提示stockCode可能会是nil的情况，需要开发者进一步处理。</p>
+
+<h2>使用理由3: 强迫思考nil问题，crash容易发现问题</h2>
+
+<p>上面的Swift代码中，要解决complile-time error，可以用加！来forced unwrapping。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">var</span> <span class="nl">stockCode</span><span class="p">:</span><span class="n">String</span><span class="o">?</span> <span class="o">=</span> <span class="n">findStockCode</span><span class="p">(</span><span class="s">&quot;Facebook&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">let</span> <span class="n">text</span> <span class="o">=</span> <span class="s">&quot;Stock Code - &quot;</span>
+</span><span class='line'><span class="k">let</span> <span class="n">message</span> <span class="o">=</span> <span class="n">text</span> <span class="o">+</span> <span class="n">stockCode</span><span class="o">!</span>  <span class="c1">// runtime error</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段代码可以通过编译，但是在runtime的时候，还是会出错。<br/>
+抛出：“fatal error: Can’t unwrap Optional.None”。<br/>
+在使用！进行forced unwrapping的时候，开发者被迫思考是要forced unwrapping，还是stockCode有可能是nil。<br/>
+这有利于减少犯错的机会。而如果出错了，提示的消息也非常容易找到问题所在。</p>
+
+<h2>使用理由4: 简化nil检查写法(optional chaining)</h2>
+
+<p>考虑这个例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="n">Stock</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">var</span> <span class="nl">code</span><span class="p">:</span> <span class="n">String</span><span class="o">?</span>
+</span><span class='line'>    <span class="k">var</span> <span class="nl">price</span><span class="p">:</span> <span class="n">Double</span><span class="o">?</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">func</span> <span class="n">findStockCode</span><span class="p">(</span><span class="nl">company</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stock</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">company</span> <span class="o">==</span> <span class="s">&quot;Apple&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">let</span> <span class="nl">aapl</span><span class="p">:</span> <span class="n">Stock</span> <span class="o">=</span> <span class="n">Stock</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">aapl</span><span class="p">.</span><span class="n">code</span> <span class="o">=</span> <span class="s">&quot;AAPL&quot;</span>
+</span><span class='line'>        <span class="n">aapl</span><span class="p">.</span><span class="n">price</span> <span class="o">=</span> <span class="mf">90.32</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">aapl</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">company</span> <span class="o">==</span> <span class="s">&quot;Google&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">let</span> <span class="nl">goog</span><span class="p">:</span> <span class="n">Stock</span> <span class="o">=</span> <span class="n">Stock</span><span class="p">()</span>
+</span><span class='line'>        <span class="n">goog</span><span class="p">.</span><span class="n">code</span> <span class="o">=</span> <span class="s">&quot;GOOG&quot;</span>
+</span><span class='line'>        <span class="n">goog</span><span class="p">.</span><span class="n">price</span> <span class="o">=</span> <span class="mf">556.36</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">goog</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">nil</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="k">let</span> <span class="n">sharePrice</span> <span class="o">=</span> <span class="n">findStockCode</span><span class="p">(</span><span class="s">&quot;Apple&quot;</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">price</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">totalCost</span> <span class="o">=</span> <span class="n">sharePrice</span> <span class="o">*</span> <span class="mi">100</span>
+</span><span class='line'>    <span class="n">print</span><span class="p">(</span><span class="n">totalCost</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这段代码中，进行了2次nil检查，一次是判断findStockCode(&ldquo;Apple&rdquo;)是否为nil，一次是判断findStockCode(&ldquo;Apple&rdquo;).price是否为nil。使用optional chaining，可以简化nil检查写法。</p>
+
+<h3>参考文献</h3>
+
+<p><a href="https://www.appcoda.com/beginners-guide-optionals-swift/">A Beginner’s Guide to Optionals in Swift</a><br/>
+<a href="http://blog.teamtreehouse.com/understanding-optionals-swift">Understanding Optionals in Swift</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-09T21:37:41+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:37 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在写customised alert view的时候，遇到了一些问题，于是写了RTOverlayWindow。</p>
+
+<p>最简单添加OverlayView的方法（苹果官方并不推荐使用这种方法），就是</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIWindow</span> <span class="o">*</span><span class="n">keyWindow</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="n">keyWindow</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">keyWindow</span> <span class="nl">addSubview</span><span class="p">:</span><span class="n">someCustomizedView</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用上面的方法，添加的<code>someCustomizedView</code>无法自动旋转。
+对无法自动旋转，最合理的解决方法，是把这个view放到一个UIViewController里面管理。</p>
+
+<p>但是，还是希望有一种简单的方法，和使用UIAlertView一样，只是单纯的添加一个简单的view，就可以方便的使用。<br/>
+于是研究了一下UIAlertView的实现。</p>
+
+<p>在iOS7中，在界面有UIAlertView弹出的状态下，使用<code>po [[UIWindow keyWindow] recursiveDescription]</code>可以看到当前UIAlertView的view结构。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="o">&lt;</span><span class="nl">_UIModalItemHostingWindow</span><span class="p">:</span> <span class="mh">0x7af46ee0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">320</span> <span class="mi">480</span><span class="p">);</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7af473e0</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">UIWindowLayer</span><span class="p">:</span> <span class="mh">0x7af47060</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7af46dd0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">320</span> <span class="mi">480</span><span class="p">);</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7af46d60</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7af49800</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">320</span> <span class="mi">480</span><span class="p">);</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7af49860</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7b2561f0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">320</span> <span class="mi">480</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b256250</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIModalItemRepresentationView</span><span class="p">:</span> <span class="mh">0x7b255d90</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">25</span> <span class="mi">178</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">124</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b255ea0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIModalItemAlertBackgroundView</span><span class="p">:</span> <span class="mh">0x7af30f80</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">124</span><span class="p">);</span> <span class="n">animations</span> <span class="o">=</span> <span class="p">{</span> <span class="o">&lt;</span><span class="nl">_UIParallaxMotionEffect</span><span class="p">:</span> <span class="mh">0x7af4c470</span><span class="o">&gt;=&lt;</span><span class="nl">CAAnimationGroup</span><span class="p">:</span> <span class="mh">0x7b25e510</span><span class="o">&gt;</span><span class="p">;</span> <span class="p">};</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7af312e0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIBackdropView</span><span class="p">:</span> <span class="mh">0x7af3de20</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">124</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UIBackdropViewLayer</span><span class="p">:</span> <span class="mh">0x7af4a290</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIBackdropEffectView</span><span class="p">:</span> <span class="mh">0x7af4ab30</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">124</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CABackdropLayer</span><span class="p">:</span> <span class="mh">0x7af4ae50</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7af4b150</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">124</span><span class="p">);</span> <span class="n">hidden</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7af4b5c0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7af3b830</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">124</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7af47020</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIModalItemAlertContentView</span><span class="p">:</span> <span class="mh">0x7af45b50</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">124</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">animations</span> <span class="o">=</span> <span class="p">{</span> <span class="o">&lt;</span><span class="nl">_UIParallaxMotionEffect</span><span class="p">:</span> <span class="mh">0x7af4c470</span><span class="o">&gt;=&lt;</span><span class="nl">CAAnimationGroup</span><span class="p">:</span> <span class="mh">0x7b25ec90</span><span class="o">&gt;</span><span class="p">;</span> <span class="p">};</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7af45cf0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableView</span><span class="p">:</span> <span class="mh">0x7cb96000</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">135</span> <span class="mi">80</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7b236eb0</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b236960</span><span class="o">&gt;</span><span class="p">;</span> <span class="nl">contentOffset</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableViewWrapperView</span><span class="p">:</span> <span class="mh">0x7b2378f0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b237a00</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIModalItemTableViewCell</span><span class="p">:</span> <span class="mh">0x7b2648c0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">OK</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b256010</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableViewCellScrollView</span><span class="p">:</span> <span class="mh">0x7b264a60</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7b237d50</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b2604b0</span><span class="o">&gt;</span><span class="p">;</span> <span class="nl">contentOffset</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableViewCellContentView</span><span class="p">:</span> <span class="mh">0x7b2520e0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mf">43.5</span><span class="p">);</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7b261de0</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b261220</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7b264d30</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">105</span> <span class="mf">43.5</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">OK</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b255ed0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7b2577b0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mf">131.5</span> <span class="mi">37</span><span class="p">;</span> <span class="mf">3.5</span> <span class="mi">7</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">LM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b257880</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7b2571d0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span> <span class="mf">40.5</span><span class="p">;</span> <span class="mi">7</span> <span class="mf">3.5</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">TM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b257420</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIScrollView</span><span class="p">:</span> <span class="mh">0x7b238430</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">61</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7b2389a0</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b238680</span><span class="o">&gt;</span><span class="p">;</span> <span class="nl">contentOffset</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7b2337a0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span> <span class="mi">19</span><span class="p">;</span> <span class="mi">240</span> <span class="mi">21</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">title</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b233850</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7b2340a0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span> <span class="mi">44</span><span class="p">;</span> <span class="mi">240</span> <span class="mi">17</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">message</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b233950</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7b258bd0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mf">57.5</span><span class="p">;</span> <span class="mi">270</span> <span class="mf">3.5</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">TM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b258ca0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7b258da0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mf">266.5</span> <span class="mi">0</span><span class="p">;</span> <span class="mf">3.5</span> <span class="mi">61</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">LM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b258e70</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7b2541d0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mf">79.5</span><span class="p">;</span> <span class="mi">270</span> <span class="mf">0.5</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b254230</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableView</span><span class="p">:</span> <span class="mh">0x7cbc7400</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">80</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7b254320</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b2542b0</span><span class="o">&gt;</span><span class="p">;</span> <span class="nl">contentOffset</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableViewWrapperView</span><span class="p">:</span> <span class="mh">0x7b254620</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b254710</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIModalItemTableViewCell</span><span class="p">:</span> <span class="mh">0x7b25fb20</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">cancel</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b25fe00</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableViewCellScrollView</span><span class="p">:</span> <span class="mh">0x7b2600c0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7b236cf0</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b260330</span><span class="o">&gt;</span><span class="p">;</span> <span class="nl">contentOffset</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITableViewCellContentView</span><span class="p">:</span> <span class="mh">0x7b2368e0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mf">43.5</span><span class="p">);</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7b256cd0</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b237f90</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7b237a30</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">105</span> <span class="mf">43.5</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">cancel</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b25b8a0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7b259200</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mf">131.5</span> <span class="mi">37</span><span class="p">;</span> <span class="mf">3.5</span> <span class="mi">7</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">LM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b2592d0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7b259020</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">128</span> <span class="mf">40.5</span><span class="p">;</span> <span class="mi">7</span> <span class="mf">3.5</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">TM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b2590f0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7b254820</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">135</span> <span class="mi">80</span><span class="p">;</span> <span class="mf">0.5</span> <span class="mi">44</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7b254880</span><span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在iOS8中UIVAlertView结构如下。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="o">&lt;</span><span class="nl">_UIAlertControllerShimPresenterWindow</span><span class="p">:</span> <span class="mh">0x7bbbfaa0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">768</span> <span class="mi">1024</span><span class="p">);</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7bbc0600</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">UIWindowLayer</span><span class="p">:</span> <span class="mh">0x7bbbfcf0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bd727b0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">768</span> <span class="mi">1024</span><span class="p">);</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bd72820</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UITransitionView</span><span class="p">:</span> <span class="mh">0x7a7bcb20</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">768</span> <span class="mi">1024</span><span class="p">);</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a7bccd0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a68fd90</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">768</span> <span class="mi">1024</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a68fe00</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIKeyboardLayoutAlignmentView</span><span class="p">:</span> <span class="mh">0x7a68fab0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">1024</span><span class="p">;</span> <span class="mi">768</span> <span class="mi">0</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a68fc60</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a68f8e0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">768</span> <span class="mi">1024</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a68f890</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerView</span><span class="p">:</span> <span class="mh">0x7a695f70</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">249</span> <span class="mi">451</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a6961e0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a696350</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">animations</span> <span class="o">=</span> <span class="p">{</span> <span class="o">&lt;</span><span class="nl">_UIParallaxMotionEffect</span><span class="p">:</span> <span class="mh">0x7a792160</span><span class="o">&gt;=&lt;</span><span class="nl">CAAnimationGroup</span><span class="p">:</span> <span class="mh">0x7a7b2380</span><span class="o">&gt;</span><span class="p">;</span> <span class="p">};</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a6963c0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIDimmingKnockoutBackdropView</span><span class="p">:</span> <span class="mh">0x7a69fd90</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a689fa0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a68a490</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a687850</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIBackdropView</span><span class="p">:</span> <span class="mh">0x7a69fe00</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UIBackdropViewLayer</span><span class="p">:</span> <span class="mh">0x7a692a40</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a694d00</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">W</span><span class="o">+</span><span class="n">H</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a6746d0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a696410</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a696480</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a6964d0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">122</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a696540</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerShadowedScrollView</span><span class="p">:</span> <span class="mh">0x7a6966b0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">78</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7a696e60</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a6969c0</span><span class="o">&gt;</span><span class="p">;</span> <span class="nl">contentOffset</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">};</span> <span class="nl">contentSize</span><span class="p">:</span> <span class="p">{</span><span class="mi">270</span><span class="p">,</span> <span class="mi">78</span><span class="p">}</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a6975c0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">78</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a697630</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7a698580</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span> <span class="mi">20</span><span class="p">;</span> <span class="mi">238</span> <span class="mi">21</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="mi">11</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UILabelLayer</span><span class="p">:</span> <span class="mh">0x7a698240</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7a69ab30</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span> <span class="mi">42</span><span class="p">;</span> <span class="mi">238</span> <span class="mi">16</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="mi">22</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UILabelLayer</span><span class="p">:</span> <span class="mh">0x7a69abf0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a69ad70</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">135</span> <span class="o">-</span><span class="mi">451</span><span class="p">;</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a69ade0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7a787b60</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">75</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">3</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">TM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a787e70</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7a788610</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">267</span> <span class="mi">902</span><span class="p">;</span> <span class="mi">3</span> <span class="mi">78</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">LM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a788690</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UICollectionView</span><span class="p">:</span> <span class="mh">0x7a984a00</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">78</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">44</span><span class="p">);</span> <span class="n">clipsToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7a69bd70</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a69bad0</span><span class="o">&gt;</span><span class="p">;</span> <span class="nl">contentOffset</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">};</span> <span class="nl">contentSize</span><span class="p">:</span> <span class="p">{</span><span class="mi">270</span><span class="p">,</span> <span class="mi">44</span><span class="p">}</span><span class="o">&gt;</span> <span class="n">collection</span> <span class="n">view</span> <span class="nl">layout</span><span class="p">:</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerCollectionViewFlowLayout</span><span class="p">:</span> <span class="mh">0x7a69b1d0</span><span class="o">&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerCollectionViewCell</span><span class="p">:</span> <span class="mh">0x7bbbaec0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">1</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbbd730</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbbc4a0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7bbb11b0</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbc2110</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerActionView</span><span class="p">:</span> <span class="mh">0x7bbbc100</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">Action</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">UIAlertAction</span><span class="p">:</span> <span class="mh">0x7bbbf640</span> <span class="n">Title</span> <span class="o">=</span> <span class="s">&quot;cancel&quot;</span> <span class="n">Descriptive</span> <span class="o">=</span> <span class="s">&quot;(null)&quot;</span> <span class="n">Image</span> <span class="o">=</span> <span class="mh">0x0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIBlendingHighlightView</span><span class="p">:</span> <span class="mh">0x7bbc5640</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">hidden</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbc5810</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbc56e0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbc4dd0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbc5790</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbc6580</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbc28e0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">111</span> <span class="mi">0</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bb68f30</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7bbbc1c0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">12</span><span class="p">;</span> <span class="mi">111</span> <span class="mi">21</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">cancel</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UILabelLayer</span><span class="p">:</span> <span class="mh">0x7bbbd3e0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7bbbc280</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span> <span class="mi">22</span><span class="p">;</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UILabelLayer</span><span class="p">:</span> <span class="mh">0x7bbc1c50</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UILabelContentLayer</span><span class="p">:</span> <span class="mh">0x7a7b5620</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7bbbc340</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span> <span class="mi">22</span><span class="p">;</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbbc3c0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7bbbfe30</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">109</span> <span class="mi">15</span><span class="p">;</span> <span class="mi">14</span> <span class="mi">14</span><span class="p">);</span> <span class="n">hidden</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbc2d30</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerCollectionViewCell</span><span class="p">:</span> <span class="mh">0x7bbcd6c0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">135</span> <span class="mi">1</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbcd2a0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbcd760</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">gestureRecognizers</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">NSArray</span><span class="p">:</span> <span class="mh">0x7bbcd950</span><span class="o">&gt;</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbcd7d0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerActionView</span><span class="p">:</span> <span class="mh">0x7bbcd980</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">Action</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">UIAlertAction</span><span class="p">:</span> <span class="mh">0x7bbbf7c0</span> <span class="n">Title</span> <span class="o">=</span> <span class="s">&quot;OK&quot;</span> <span class="n">Descriptive</span> <span class="o">=</span> <span class="s">&quot;(null)&quot;</span> <span class="n">Image</span> <span class="o">=</span> <span class="mh">0x0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIBlendingHighlightView</span><span class="p">:</span> <span class="mh">0x7bbd0550</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">hidden</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbd1e30</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbd05f0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbd0060</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbd06a0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">135</span> <span class="mi">44</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbd2bf0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7bbcda70</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">111</span> <span class="mi">0</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbcdae0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7bbcdb10</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">12</span><span class="p">;</span> <span class="mi">111</span> <span class="mi">21</span><span class="p">);</span> <span class="n">text</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">OK</span><span class="err">&#39;</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UILabelLayer</span><span class="p">:</span> <span class="mh">0x7bbcdbd0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UILabel</span><span class="p">:</span> <span class="mh">0x7bbcdd20</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">12</span> <span class="mi">22</span><span class="p">;</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">_UILabelLayer</span><span class="p">:</span> <span class="mh">0x7bbcdde0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UILabelContentLayer</span><span class="p">:</span> <span class="mh">0x7a7b50d0</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7bbcdf30</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span> <span class="mi">22</span><span class="p">;</span> <span class="mi">0</span> <span class="mi">0</span><span class="p">);</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbcdfb0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7bbcdfe0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">109</span> <span class="mi">15</span><span class="p">;</span> <span class="mi">14</span> <span class="mi">14</span><span class="p">);</span> <span class="n">hidden</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7bbce060</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerBlendingSeparatorView</span><span class="p">:</span> <span class="mh">0x7a7739b0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">1</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a78d6b0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIBlendingHighlightView</span><span class="p">:</span> <span class="mh">0x7a774ac0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">1</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a7926e0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a77f430</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">1</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a792760</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a785440</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">1</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a7927c0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIAlertControllerBlendingSeparatorView</span><span class="p">:</span> <span class="mh">0x7a780ab0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">135</span> <span class="mi">1</span><span class="p">;</span> <span class="mi">1</span> <span class="mi">43</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a79d5a0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">_UIBlendingHighlightView</span><span class="p">:</span> <span class="mh">0x7a78c490</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">1</span> <span class="mi">43</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a7928e0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a7beba0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">1</span> <span class="mi">43</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a792960</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIView</span><span class="p">:</span> <span class="mh">0x7a772d20</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">1</span> <span class="mi">43</span><span class="p">);</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a7929e0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7a789f20</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span> <span class="mi">41</span><span class="p">;</span> <span class="mi">270</span> <span class="mi">3</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">TM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a789fa0</span><span class="o">&gt;&gt;</span>
+</span><span class='line'>   <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span>    <span class="o">|</span> <span class="o">&lt;</span><span class="nl">UIImageView</span><span class="p">:</span> <span class="mh">0x7a78a3e0</span><span class="p">;</span> <span class="n">frame</span> <span class="o">=</span> <span class="p">(</span><span class="mi">267</span> <span class="mi">0</span><span class="p">;</span> <span class="mi">3</span> <span class="mi">44</span><span class="p">);</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">opaque</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">autoresize</span> <span class="o">=</span> <span class="n">LM</span><span class="p">;</span> <span class="n">userInteractionEnabled</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span> <span class="n">layer</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nl">CALayer</span><span class="p">:</span> <span class="mh">0x7a78a460</span><span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以看到，虽然UIAlertView在iOS7和iOS8中实现方法不同，但都是新建了一个UIWindow，并设为keyWindow。<br/>
+模仿UIAlertView的方式，做了<a href="https://github.com/iandai/RTOverlayWindow">RTOverlayWindow</a>。<br/>
+需要注意的是，使用多层UIWindow也是苹果所不推荐的方法，不过有时候在代码结构本身不合理的情况下，也是一种不错的方法。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-24T17:41:42+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:41 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>facebook如何重构优化Messenger性能（摘要）</h2>
+
+<h3>Messenger最开始是facebook站内信，后来演化为实时的聊天App。Messenger的性能和过度消耗网络数据流量的问题开始拖系统后退。针对这个问题facebook做了一次重构。主要做了以下工作：</h3>
+
+<ul>
+<li>在客户端方面，把pull-based模式，改成了push-based snapshot + delta模式。用Thrift替换了JSON格式，减小数据size。</li>
+<li>在服务端方面，自建的Iris服务，减少了将聊天消息写入磁盘再读取出来的时间。</li>
+</ul>
+
+
+<h4>参考文献</h4>
+
+<ul>
+<li><a href="https://code.facebook.com/posts/820258981365363/building-mobile-first-infrastructure-for-messenger">Building Mobile-First Infrastructure for Messenger</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-24T17:30:22+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:30 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>iOS App如何正确的要求用户同意获取系统权限（摘要）</h2>
+
+<ul>
+<li>App下载后，第一次初始化的时候，弹出对话框，要求获取系统权限。成功率只有30%－40%。这种方法不推荐。</li>
+<li>在给用户介绍App功能的界面，解释为什么需要获取某一项系统权限，并弹出对话框。成功率有40% - 66%。这种方法也不推荐。</li>
+<li>在用户进行某项操作，必须使用到某一项系统权限的时候，弹出App自定义的对话框，解释为何需要获取某一项系统权限。如果用户点击同意，那么再弹出系统的权限获取对话框。如果用户点击不同意，那么App就不执行该功能，告诉用户要做的操作失败。利用这种方法，有时候成功率可以达到100%。</li>
+</ul>
+
+
+<h4>参考文献</h4>
+
+<ul>
+<li><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-24T16:50:50+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:50 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>重设App相机访问权限方法</h2>
+
+<ul>
+<li>iOS在删除App的情况下，仍然会记忆App camera访问权限1天</li>
+<li>重设方法一：调整系统时间。</li>
+<li>重设方法二：修改App的bundle id。</li>
+<li>重设方法三：重设所有App的位置和隐私。Settings -> General -> Reset -> Rest Location &amp; Privacy</li>
+</ul>
+
+
+<h4>参考文献</h4>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/27726354/ipad-remembering-camera-permissions-after-delete-how-to-clear">重设相机访问权限</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/">高性能添加图片圆角方法原理：cornerRadius，layer.shouldRasterize，layer.setShadowPath和透明图片</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T20:07:34+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>8:07 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>在layer上添加cornerRadius原理</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>调用cornerRadius的时候，系统会做什么？
+设置cornerRadius，会在layer的background上面绘制圆角。默认情况下，这并不会应用到layer的contents属性上的图片（每个layer中contents属性接受一个CGImage的对象）。
+设置masksToBounds属性为YES，并且设置cornerRadius的值的话，Core Animation会创建一个包含圆角效果的蒙板（mask）。 这使得layer的contents属性中的图片在蒙板作用下，产生圆角效果[1]。</p></li>
+<li><p>为什么在uitableview或者uicollectionview中滚动的时候，给图片添加圆角直接用cornerRadius性能不好？
+当layer的属性cornerRadius和maskToBounds一起使用时，会触发离屏渲染（Offscreen rendering）。</p></li>
+<li><p>离屏渲染Offscreen rendering是什么呢？
+Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能[2]。
+－－－
+这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks, shadows等触发的offscreen是基于GPU的。［4］
+－－－
+但是2014 wwdc那个例子里面没有提到这部分内容。</p></li>
+<li><p>离屏渲染Offscreen rendering的可能误解。</p></li>
+</ul>
+
+
+<p>Offscreen rendering
+Offscreen rendering is drawing, that cannot be done using hardware acceleration (GPU) and should be performed on the CPU instead.
+At the low level this looks like that: during rendering of the layer that requires the offscreen rendering, the GPU stops the rendering pipeline and passes control to the CPU. In its turn, the CPU performs all the necessary operations (e.g. your fancy stuff in drawRect:) and returns control to the GPU with the already rendered layer. GPU renders it and the rendering pipeline keeps going.</p>
+
+<p><a href="https://yalantis.com/blog/mastering-uikit-performance/">https://yalantis.com/blog/mastering-uikit-performance/</a></p>
+
+<p>以上对Offscreen rendering解释是错误的！</p>
+
+<ul>
+<li>为什么cornerRadius和maskToBounds一起使用时，会触发离屏渲染？
+cornerRadius和maskToBounds一起使用时，Core Animation会创建一个包含圆角效果的蒙板（mask）。
+Offscreen rendering会在layer的各种属性结合，使得layer不能直接绘制到屏幕上，需要进行pre-compositing的时候，会触发离屏渲染。
+（原文：Offscreen rendering is invoked whenever the combinnation of layer propertyies that have been specified mean that the layer cannot
+be drawn directly to the screen without pre-compositing.）［3］</li>
+</ul>
+
+
+<p>搜索找一个可能的解决方案
+opengl layer mask
+<a href="https://www.google.co.jp/search?q=opengl+layer+mask&amp;oq=opengl+layer+mask&amp;aqs=chrome..69i57.2662j0j7&amp;sourceid=chrome&amp;es_sm=119&amp;ie=UTF-8">https://www.google.co.jp/search?q=opengl+layer+mask&amp;oq=opengl+layer+mask&amp;aqs=chrome..69i57.2662j0j7&amp;sourceid=chrome&amp;es_sm=119&amp;ie=UTF-8</a></p>
+
+<p><a href="https://lobste.rs/s/ckm4uw/a_performance-minded_take_on_ios_design">https://lobste.rs/s/ckm4uw/a_performance-minded_take_on_ios_design</a>
+CPU GPU offscreen rendering</p>
+
+<p><a href="http://objccn.io/issue-3-1/">http://objccn.io/issue-3-1/</a>
+<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques/blob/master/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD.md">https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques/blob/master/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD.md</a></p>
+
+<p>改正这个
+<a href="http://qiita.com/ykensuke/items/1bc3aa47e2a8c8b474f2">http://qiita.com/ykensuke/items/1bc3aa47e2a8c8b474f2</a></p>
+
+<h2>可能提高性能的方法一：光栅化layer.shouldRasterize</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shouldRasterize</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>什么是光栅化（Rasterisation）？
+Rasterisation (or rasterization) is the task of taking an image described in a vector graphics format (shapes) and converting it into a raster image (pixels or dots) for output on a video display or printer, or for storage in a bitmap file format.</p></li>
+<li><p>为什么layer.shouldRasterize可能提高性能？
+开启shouldRasterize后,layer会被光栅化为bitmap,layer的包含圆角的mask效果也会被保存到bitmap中。
+要注意的是，更新已光栅化的layer，会造成大量的offscreen渲染。</p></li>
+</ul>
+
+
+<h2>可能提高性能的方法二：设置layer.shadowPath属性</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shadowPath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIBezierPath</span> <span class="nl">bezierPathWithRect</span><span class="p">:</span><span class="n">imgView</span><span class="p">.</span><span class="n">bounds</span><span class="p">].</span><span class="bp">CGPath</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>layer的shadowPath的理解
+layer会创建一个圆角的shadowPath，并且会cache这个shadowPath，避免多次重绘。</li>
+</ul>
+
+
+<h2>可能提高性能的方法三：添加自带圆角中间透明的图片</h2>
+
+<ul>
+<li>这会cache圆角图片，但是在blending的时候，有透明的部分，会降低部分性能。
+（利用一张中间为透明圆形的图片来进行遮盖,虽然会引起blending,但性能仍然高于offerScreen。）
+来源：WWDC心得与延伸）</li>
+</ul>
+
+
+<h2>可能提高性能的方法四：CAShapeLayer</h2>
+
+<h2>可能提高性能的方法五：drawRect</h2>
+
+<h2>六 myView.layer.drawAsynchronously = YES</h2>
+
+<p>当你设置 drawsAsynchronously 为 YES 时，发生了什么？你的 -drawRect:/-drawInContext: 方法仍然会被在主线程上调用。但是所有调用 Core Graphics 的操作都不会被执行。取而代之的是，绘制命令被推迟，并且在后台线程中异步执行。</p>
+
+<p>这种方式就是先记录绘图命令，然后在后台线程中重现。为了这个过程的顺利进行，更多的工作需要被做，更多的内存需要被申请。但是主队列中的一些工作便被移出来了(大概意思就是让我们把一些能在后台实现的工作放到后台实现，让主线程更顺畅)。</p>
+
+<p>对于昂贵的绘图方法，这是最有可能提升性能的，但对于那些绘图方法来说，也不会节省太多资源。</p>
+
+<p>问题1: 整个过程是怎么样的？</p>
+
+<p>当你滚动整个屏幕的时候，数以百万计的颜色单元必须以每秒60次的速度刷新，这是一个很大的工作量。</p>
+
+<p>第一步：
+CPU 开始运行你的程序。你可能会让 CPU 从 bundle 加载一张 PNG 的图片并且解压它。
+这所有的事情都在 CPU 上进行。然后当你需要显示解压缩后的图片时，它需要以某种方式上传到 GPU。</p>
+
+<p>如果一个 CALayer 的子类实现了 -drawInContext: 或者它的代理，类似于 -drawLayer:inContest:, Core Animation 将会为这个图层申请一个后备存储，用来保存那些方法绘制进来的位图。那些方法内的代码将会运行在 CPU 上，结果将会被上传到 GPU。</p>
+
+<p>第二步：
+将数据传输到 GPU 上。为了让 GPU 访问数据，需要将数据从 RAM 移动到 VRAM 上。这就是提及到的上传数据到 GPU。这看起来貌似微不足道，但是一些大型的纹理却会非常耗时。</p>
+
+<p>第三步：
+GPU 需要将每一个 frame 的纹理(位图)合成在一起(一秒60次)。
+每一个纹理会占用 VRAM(video RAM)，所以需要给 GPU 同时保持纹理的数量做一个限制。
+GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂，并且 GPU在 16.7ms(1/60s)内能做的工作也是有限的。</p>
+
+<p>We talk about hardware acceleration when the GPU is used for compositing and rendering graphics.
+GPU (composition and rendering)?</p>
+
+<p><a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf</a>
+• Layer properties and animations handled by render server</p>
+
+<p>软件绘图
+在iOS中，软件绘图通常是由Core Graphics框架完成来完成。
+相比Core Animation和OpenGL，Core Graphics要慢了不少。
+软件绘图不仅效率低，还会消耗可观的内存。
+一旦你实现了CALayerDelegate协议中的-drawLayer:inContext:方法或者UIView中的-drawRect:方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的大小的内存可从这个算式得出：图层宽<em>图层高</em>4字节，宽高的单位均为像素。
+软件绘图的代价昂贵，除非绝对必要，你应该避免重绘你的视图。提高绘制性能的秘诀就在于尽量避免去绘制。
+（drawRect的内容会被cache吗？）</p>
+
+<p>问题2:shouldRasterize和shadowPath属性联系<br/>
+都是在什么时候执行的？</p>
+
+<p>结论
+For good performance, the trick is to avoid using software drawing for views that change every frame.
+1、多在不同设备上测试动画、他们的区别可能在于GPU, CPU, Retina blabla</p>
+
+<p>2、不同场景有不同的解决方法，到底是用drawRect? 还是用SubView？</p>
+
+<p>3、测量、测试、迭代  And as with all performance-related issues, you should use Instruments to measure and track the performance of your app over time so that you can ensure that performance is improving and not regressing.</p>
+
+<p>参考文献：</p>
+
+<p>[1]Apple Reference cornerRadius <a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius</a>
+[2]From iOS Core Animation: Advanced Techniques 的定义 <a href="https://books.google.co.jp/books?id=QfhdAAAAQBAJ&amp;pg=PT285&amp;lpg=PT285&amp;dq=mask+++Offscreen+Rendering&amp;source=bl&amp;ots=O7rQA5t516&amp;sig=Spp578t7gU5qLQDdltFjdbvqrhI&amp;hl=en&amp;sa=X&amp;ved=0CFoQ6AEwDGoVChMIrvzq9I6NyAIVAx-UCh0UygVl#v=onepage&amp;q&amp;f=false">https://books.google.co.jp/books?id=QfhdAAAAQBAJ&amp;pg=PT285&amp;lpg=PT285&amp;dq=mask+++Offscreen+Rendering&amp;source=bl&amp;ots=O7rQA5t516&amp;sig=Spp578t7gU5qLQDdltFjdbvqrhI&amp;hl=en&amp;sa=X&amp;ved=0CFoQ6AEwDGoVChMIrvzq9I6NyAIVAx-UCh0UygVl#v=onepage&amp;q&amp;f=false</a>
+［3］(From iOS Core Animation: Advanced Techniques 的定义)
+［4］WWDC心得与延伸:iOS图形性能中内容矛盾  <a href="http://www.cocoachina.com/ios/20150429/11712.html">http://www.cocoachina.com/ios/20150429/11712.html</a></p>
+
+<p><a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/</a>
+<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques">https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques</a></p>
+
+<p>WWDC心得与延伸:iOS图形性能
+<a href="http://www.cocoachina.com/ios/20150429/11712.html">http://www.cocoachina.com/ios/20150429/11712.html</a></p>
+
+<p><a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios</a></p>
+
+<p>Core Animation Programming Guide：Improving Animation Performance <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html</a></p>
+
+<p>离屏绘制(Offscreen drawing)优化性能，也就是shouldRasterize的实际做的事情，
+<a href="https://robots.thoughtbot.com/designing-for-ios-graphics-performance">https://robots.thoughtbot.com/designing-for-ios-graphics-performance</a></p>
+
+<p>更加深入的offscreen render分析：iOS离屏绘制的性能和机制分析（Apple UIKit teamer写的，这大概是终极牛逼的分析了）
+<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc</a>
+  当你实现drawRect方法或者通过CoeGraphics绘制的时候，其实你是在使用CPU绘制。</p>
+
+<p>  还有需要注意的是，shouldRasterize和masking（遮罩）, shadows（阴影）, edge antialiasing,（抗锯齿），group opacity属性都不一样。如果后面这些提到的属性是开启的，就不会有缓存，并且离屏绘制将会在每一帧都发生? 这段话不对吧？ 是在只有多层layer的时候的表现吗？  不理解。</p>
+
+<p>什么时候layer会offscreen rendering
+<a href="http://stackoverflow.com/questions/6731545/when-does-a-view-or-layer-require-offscreen-rendering">http://stackoverflow.com/questions/6731545/when-does-a-view-or-layer-require-offscreen-rendering</a></p>
+
+<p>What triggers offscreen rendering, blending and layoutSubviews in iOS?
+<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios</a></p>
+
+<p>测试性能
+<a href="http://www.raywenderlich.com/23037/how-to-use-instruments-in-xcode">http://www.raywenderlich.com/23037/how-to-use-instruments-in-xcode</a>
+<a href="http://stackoverflow.com/questions/5459708/measuring-the-uitableview-scrolling-performance-iphone">http://stackoverflow.com/questions/5459708/measuring-the-uitableview-scrolling-performance-iphone</a>
+I&rsquo;d suggest using Instruments rather than trying to run the test directly in your code. The Core Animation tool will track the actual number of frames per second (FPS) that your app’s displaying.
+60 is max you can get, and it&rsquo;s best if it&rsquo;s close to this value.
+Typically you have to complete each call within 16ms so as to maintain smooth animation at 60fps.</p>
+
+<p>如何加强 iOS 里的列表滚动时的顺畅感？
+<a href="http://www.zhihu.com/question/20382396">http://www.zhihu.com/question/20382396</a></p>
+
+<p>如果你想要如丝般顺滑的效果，那么：
+1、每次都看一下有没有能重用的 cell，而不是永远重新新建（这个是 UITableView 的常识）
+2、Cell 里尽量不要用 UIView 而是全部自己用 drawRect 画（之前因为 iOS 有 bug，这样做会有性能上质的飞越。也有很多大神写过很多文章解释原理，有兴趣的自己去看看吧我就不做复制粘贴了。后来 iOS 也改掉了这个问题，这么做的效果就没那么明显了。）
+3、图片载入放到后台进程去进行，滚出可视范围的载入进程要 cancel 掉
+4、圆角、阴影之类的全部 bitmap 化，或者放到后台 draw 好了再拿来用
+5、Cell 里要用的数据提前缓存好，不要现用现去读文件
+6、数据量太大来不及一次读完的做一个 load more cell 出来，尽量避免边滚边读数据，这样就算是双核的 CPU 也难保不会抽</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a></h1>
     
     
@@ -84,7 +993,7 @@
 
 
 
-<time class='entry-date' datetime='2015-09-20T16:08:33+09:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:08 pm</span></time>
+<time class='entry-date' datetime='2015-09-20T15:08:33+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:08 pm</span></time>
         
       </p>
     
@@ -152,7 +1061,7 @@
 
 
 
-<time class='entry-date' datetime='2015-08-12T17:59:19+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:59 pm</span></time>
+<time class='entry-date' datetime='2015-08-12T16:59:19+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:59 pm</span></time>
         
       </p>
     
@@ -188,7 +1097,7 @@
 
 
 
-<time class='entry-date' datetime='2015-08-11T19:23:06+09:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:23 pm</span></time>
+<time class='entry-date' datetime='2015-08-11T18:23:06+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>6:23 pm</span></time>
         
       </p>
     
@@ -223,7 +1132,7 @@
 
 
 
-<time class='entry-date' datetime='2015-07-09T19:52:09+09:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:52 pm</span></time>
+<time class='entry-date' datetime='2015-07-09T18:52:09+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>6:52 pm</span></time>
         
       </p>
     
@@ -343,241 +1252,6 @@ Location manager获取实时的location需要花费几秒钟，所以location ma
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-16T19:39:00+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:39 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</a></p>
-
-<p>Summary:<br/>
-Brain Balfour 讲为何retention为王。因为有了retention，其他的自然会来。<br/>
-Increase retention -> Increase LTV -> Afford Higher CPA<br/>
-Increase retention -> increase upgrade rates -> decrease payback period<br/>
-其中有一个重要的点在于，有时候因为有许多新用户的增加和短期retention较高的水平，导致盲目投入，最后眼睁睁看着用户都流失掉。<br/>
-所以retention最后要是一条水平线，而不能一直下垂。<br/>
-讲了实际案例，如何预防retention下降的趋势，如何想办法提高retention。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/">A/B Testing: Why, What, When, How by Mike Greenfield</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T20:22:05+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:22 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield">http://www.slideshare.net/500startups/ab-testing-with-mike-greenfield</a></p>
-
-<p>Summary:<br/>
-回答why, what, when, how和经验。<br/>
-why因为有了数据才能衡量任何东西。<br/>
-what 不要测试不能影响全局的细小因素。<br/>
-when 只测试能够带来business significant的内容，经验是1万到10万人才值得做AB测试。<br/>
-How 建自己的framework，这样才更佳自由。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/">A/B Testing: When to Do A/B Testing by Mike Greenfield.</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T20:14:39+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>8:14 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/">http://numeratechoir.com/a-primer-on-ab-testing-yummy-candy/</a></p>
-
-<p>Summary:<br/>
-什么时候要做AB测试，非常靠谱的回答。<br/>
-对于signup和邀请好友。如果受到邀请的好友signup，只有邀请人的0.8%，那么不应该做AB Testing。<br/>
-对Email的Title和content做AB testing往往会有很好的效果。不过做之前，要想好会不会有大影响。如果email每天只有100个打开率，那么再优化，也不会有什么大影响。   <br/>
-Purchase funnel也非常值得做AB测试。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> - Viral signup flows. If your current signup flow features 1000 signups inviting 3000 people, 900 of whom register for your product, you’re very close to being viral (K=0.9). A/B testing would be a good use of time. If your current flow features 1000 signups inviting 600 people, 80 of whom join (K=0.08), then you aren’t in the ballpark: optimizing button text is likely a waste of time. Go bigger.
-</span><span class='line'> - Email content. Subject lines and link text can have a huge impact on email clickthrough rates. One typical example: an email with the subject “5 Embarrassing Kid Moments” gets 2.5 times as many clicks as one with the subject “The Craziest Thing My Child Has Done.” But again, being close to “good” is key: if that 2.5x is the difference between 50 clicks a week and 125 clicks a week, does it matter? If it doesn’t matter (and good estimation is key), no point spending time A/B testing it.
-</span><span class='line'> - Purchase funnel. Much of Team Rankings‘ revenue comes from subscriptions, and some purchase funnels can be much more effective than others. Last year, for instance, our March Madness product, BracketBrains, generated 30% more sales when we prompted people to “Get 2011 Picks” than to “Get BracketBrains”. Same caveats apply here, though: test if and only if the differences are likely to matter for your business.</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/">Video: 10 Habits of High-Growth Startups by Sean Ellis</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T19:25:06+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:25 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/">https://growthhackers.com/videos/10-habits-of-high-growth-startups-by-sean-ellis/</a></p>
-
-<p>Summary:<br/>
-Video: 10 Habits of High-Growth Startups by Sean Ellis<br/>
-第一次提出Growth Hacker这个名字的人Sean Ellis的演讲：10个让创业公司快速成长的习惯<br/>
-1 Putting the first thing first. 意思是做一个好的产品是一切的基础，A product that worth growth<br/>
-2 Curious about Customers. 倾听你的customer，看他们是否觉得你提供的service有价值，是否一个must have的service<br/>
-3 Instrument Powerful Analytics<br/>
-4 Optimize Conversions<br/>
-5 Treat Growth as Team Sport 各个team之间，透明很重要。客服和工程师提出的想法的角度往往不同<br/>
-6 Experiment on Ideas 测试才能知道idea的效果，往往你觉得有用的没用，你觉得没用的反而有用<br/>
-7 Prioritize Resources for Growth   <br/>
-8 Execute at High Tempo 执行要快，并发执行实验<br/>
-9 Accontability for inputs 要有足够的输出，就要有足够的输入<br/>
-10 Double Down on Success  在已经有效果的channel上面，更加深入和精细，以求获得更好的效果</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/">Linkedin Use Dark Pattern Design to Get New User</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-15T19:19:41+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:19 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source: <br/>
-<a href="https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462">https://medium.com/@danrschlosser/linkedin-dark-patterns-3ae726fe1462</a></p>
-
-<p>Summary:<br/>
-Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或者疏忽，获取的用户的全部邮件好友列表。<br/>
-获取注册用户的好友，对于Linkedin来说是非常重要的。Linkedin通过设计，让你不经意间授权了他获取好友email列表，然后让你不经意间邀请那些不在Linkedin上的好友。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/06/12/successful-mobile-app-entrepreneurs/">Successful Mobile App Entrepreneurs</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-06-12T19:13:36+09:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:13 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:  <br/>
-<a href="http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/">http://thenextweb.com/entrepreneur/2015/06/02/9-daily-habits-of-successful-mobile-app-entrepreneurs/</a></p>
-
-<p>Summary:
-要做好mobile app entrepreneurs，应该做的9件事儿。
-有启发的两件事儿是：<br/>
-1.研究App Store，研究好的APP好在哪儿，不好的地方哪儿可以提高的，熟悉App Store的算法是如何工作的。
-2.跟不好的APP学习。找出一些共同的patten，自己要避免。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -599,23 +1273,23 @@ Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/09/20/useful-ios-debug-tricks/">Useful iOS Debug Tricks</a>
+        <a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a>
+        <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a>
+        <a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a>
+        <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a>
+        <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
       </li>
     
   </ul>
@@ -631,7 +1305,7 @@ Linkedin的黑暗设计模式：通过设计的方法，利用用户的误解或
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - Ian Dai -
+  Copyright &copy; 2016 - Ian Dai -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

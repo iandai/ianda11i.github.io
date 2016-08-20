@@ -1,209 +1,239 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://iandai.github.io/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/</loc>
+    <lastmod>2016-08-20T22:57:38+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://iandai.github.io/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/</loc>
+    <lastmod>2015-10-09T21:37:41+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://iandai.github.io/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/</loc>
+    <lastmod>2015-09-24T17:41:42+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/</loc>
+    <lastmod>2015-09-24T17:30:22+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://iandai.github.io/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/</loc>
+    <lastmod>2015-09-24T16:50:50+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/</loc>
+    <lastmod>2015-09-21T20:07:34+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://iandai.github.io/blog/2015/09/20/useful-ios-debug-tricks/</loc>
-    <lastmod>2015-09-20T16:08:33+09:00</lastmod>
+    <lastmod>2015-09-20T15:08:33+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/08/12/growth-tatics/</loc>
-    <lastmod>2015-08-12T17:59:19+09:00</lastmod>
+    <lastmod>2015-08-12T16:59:19+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/08/11/the-hamburger-menu-doesnt-work/</loc>
-    <lastmod>2015-08-11T19:23:06+09:00</lastmod>
+    <lastmod>2015-08-11T18:23:06+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/07/09/cllocationmanager-notes/</loc>
-    <lastmod>2015-07-09T19:52:09+09:00</lastmod>
+    <lastmod>2015-07-09T18:52:09+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</loc>
-    <lastmod>2015-06-16T19:39:00+09:00</lastmod>
+    <lastmod>2015-06-16T18:39:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/15/a-slash-b-testing-why-what-when-how-by-mike-greenfield/</loc>
-    <lastmod>2015-06-15T20:22:05+09:00</lastmod>
+    <lastmod>2015-06-15T19:22:05+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/15/when-to-do-a-slash-b-testing-a-primer-on-a-slash-b-testing-by-mike-greenfield/</loc>
-    <lastmod>2015-06-15T20:14:39+09:00</lastmod>
+    <lastmod>2015-06-15T19:14:39+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/15/video-10-habits-of-high-growth-startups-by-sean-ellis/</loc>
-    <lastmod>2015-06-15T19:25:06+09:00</lastmod>
+    <lastmod>2015-06-15T18:25:06+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/15/linkedin-use-dark-pattern-design-to-get-new-user/</loc>
-    <lastmod>2015-06-15T19:19:41+09:00</lastmod>
+    <lastmod>2015-06-15T18:19:41+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/12/successful-mobile-app-entrepreneurs/</loc>
-    <lastmod>2015-06-12T19:13:36+09:00</lastmod>
+    <lastmod>2015-06-12T18:13:36+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/12/average-reteion-for-google-play-apps/</loc>
-    <lastmod>2015-06-12T15:41:08+09:00</lastmod>
+    <lastmod>2015-06-12T14:41:08+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/</loc>
-    <lastmod>2015-06-09T12:08:39+09:00</lastmod>
+    <lastmod>2015-06-09T11:08:39+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups/</loc>
-    <lastmod>2015-06-03T19:31:15+09:00</lastmod>
+    <lastmod>2015-06-03T18:31:15+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/</loc>
-    <lastmod>2015-04-10T12:08:39+09:00</lastmod>
+    <lastmod>2015-04-10T11:08:39+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors/</loc>
-    <lastmod>2015-03-25T19:46:02+09:00</lastmod>
+    <lastmod>2015-03-25T18:46:02+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/03/24/a-slash-b-testing-use-third-party-solution-or-build-own-solution/</loc>
-    <lastmod>2015-03-24T19:59:01+09:00</lastmod>
+    <lastmod>2015-03-24T18:59:01+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/03/19/video-growth-for-early/</loc>
-    <lastmod>2015-03-19T19:24:52+09:00</lastmod>
+    <lastmod>2015-03-19T18:24:52+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/03/13/long-term-impact-of-badging-by-john-egan/</loc>
-    <lastmod>2015-03-13T19:16:39+09:00</lastmod>
+    <lastmod>2015-03-13T18:16:39+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/02/24/a-slash-b-testing-pitfalls-with-google-analytics/</loc>
-    <lastmod>2015-02-24T19:14:01+09:00</lastmod>
+    <lastmod>2015-02-24T18:14:01+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/02/15/facebook-growth-vp-talk-about-growth/</loc>
-    <lastmod>2015-02-15T12:08:39+09:00</lastmod>
+    <lastmod>2015-02-15T11:08:39+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/02/06/mysql-performance-tuning/</loc>
-    <lastmod>2015-02-06T14:57:02+09:00</lastmod>
+    <lastmod>2015-02-06T13:57:02+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/02/01/calculating-customer-acquisition-costs/</loc>
-    <lastmod>2015-02-01T19:05:34+09:00</lastmod>
+    <lastmod>2015-02-01T18:05:34+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching/</loc>
-    <lastmod>2015-02-01T02:07:59+09:00</lastmod>
+    <lastmod>2015-02-01T01:07:59+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2015/01/22/using-ios-google-maps-sdk/</loc>
-    <lastmod>2015-01-22T20:10:37+09:00</lastmod>
+    <lastmod>2015-01-22T19:10:37+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2014/07/08/cache-expiration/</loc>
-    <lastmod>2014-07-08T18:46:10+09:00</lastmod>
+    <lastmod>2014-07-08T17:46:10+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2014/05/20/use-uiview-category-detect-which-uiview-was-tapped/</loc>
-    <lastmod>2014-05-20T19:08:18+09:00</lastmod>
+    <lastmod>2014-05-20T18:08:18+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2014/05/01/sql-injection/</loc>
-    <lastmod>2014-05-01T18:41:00+09:00</lastmod>
+    <lastmod>2014-05-01T18:41:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2014/04/08/css-notes/</loc>
-    <lastmod>2014-04-08T17:47:00+09:00</lastmod>
+    <lastmod>2014-04-08T17:47:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel/</loc>
-    <lastmod>2014-03-18T13:38:00+09:00</lastmod>
+    <lastmod>2014-03-18T13:38:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/</loc>
-    <lastmod>2014-02-27T20:47:00+09:00</lastmod>
+    <lastmod>2014-02-27T20:47:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-htaccess/</loc>
-    <lastmod>2013-12-04T15:49:00+09:00</lastmod>
+    <lastmod>2013-12-04T15:49:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias/</loc>
-    <lastmod>2013-12-04T15:48:00+09:00</lastmod>
+    <lastmod>2013-12-04T15:48:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/</loc>
-    <lastmod>2013-11-15T19:34:00+09:00</lastmod>
+    <lastmod>2013-11-15T19:34:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/11/15/ruby-file-flock/</loc>
-    <lastmod>2013-11-15T19:25:00+09:00</lastmod>
+    <lastmod>2013-11-15T19:25:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/11/08/crontab-1-basic-usage/</loc>
-    <lastmod>2013-11-08T19:04:00+09:00</lastmod>
+    <lastmod>2013-11-08T19:04:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/11/08/crontab/</loc>
-    <lastmod>2013-11-08T18:04:00+09:00</lastmod>
+    <lastmod>2013-11-08T18:04:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/11/07/ruby-signal/</loc>
-    <lastmod>2013-11-07T18:40:00+09:00</lastmod>
+    <lastmod>2013-11-07T18:40:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/11/07/ruby-popen-subprocess/</loc>
-    <lastmod>2013-11-07T16:17:00+09:00</lastmod>
+    <lastmod>2013-11-07T16:17:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/2013/09/27/ruby-wen-jian-de-du-xie/</loc>
-    <lastmod>2013-09-27T23:40:00+09:00</lastmod>
+    <lastmod>2013-09-27T23:40:00+08:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/blog/archives/</loc>
-    <lastmod>2015-09-21T20:38:21+09:00</lastmod>
+    <lastmod>2016-08-20T23:29:17+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/</loc>
-    <lastmod>2015-09-21T20:38:21+09:00</lastmod>
+    <lastmod>2016-08-20T23:29:17+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

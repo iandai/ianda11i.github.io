@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>iOS App如何正确的要求用户同意获取系统权限（摘要） - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="iOS App如何正确的要求用户同意获取系统权限（摘要） App下载后，第一次初始化的时候，弹出对话框，要求获取系统权限。成功率只有30%－40%。这种方法不推荐。
+在给用户介绍App功能的界面，解释为什么需要获取某一项系统权限，并弹出对话框。成功率有40% - 66%。这种方法也不推荐。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">iOS App如何正确的要求用户同意获取系统权限（摘要）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-24T17:30:22+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:30 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>iOS App如何正确的要求用户同意获取系统权限（摘要）</h2>
+
+<ul>
+<li>App下载后，第一次初始化的时候，弹出对话框，要求获取系统权限。成功率只有30%－40%。这种方法不推荐。</li>
+<li>在给用户介绍App功能的界面，解释为什么需要获取某一项系统权限，并弹出对话框。成功率有40% - 66%。这种方法也不推荐。</li>
+<li>在用户进行某项操作，必须使用到某一项系统权限的时候，弹出App自定义的对话框，解释为何需要获取某一项系统权限。如果用户点击同意，那么再弹出系统的权限获取对话框。如果用户点击不同意，那么App就不执行该功能，告诉用户要做的操作失败。利用这种方法，有时候成功率可以达到100%。</li>
+</ul>
+
+
+<h4>参考文献</h4>
+
+<ul>
+<li><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-09-24T17:30:22+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:30 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/" data-via="" data-counturl="http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/" title="Previous Post: iOS在删除App的情况下，仍然会记忆App camera访问权限的reset方法">&laquo; iOS在删除App的情况下，仍然会记忆App camera访问权限的reset方法</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/" title="Next Post: facebook如何重构优化Messenger性能（摘要）">facebook如何重构优化Messenger性能（摘要） &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

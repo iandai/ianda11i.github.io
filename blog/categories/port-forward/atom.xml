@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Port Forward | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/port-forward/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2015-09-21T20:38:21+09:00</updated>
+  <updated>2016-08-20T23:29:17+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[SSH Port Forward/Tunnel]]></title>
     <link href="http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel/"/>
-    <updated>2014-03-18T13:38:00+09:00</updated>
+    <updated>2014-03-18T13:38:00+08:00</updated>
     <id>http://iandai.github.io/blog/2014/03/18/port-forward-slash-tunnel</id>
     <content type="html"><![CDATA[<h3>Agent Forwarding</h3>
 

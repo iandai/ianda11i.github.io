@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>高性能添加图片圆角方法原理：cornerRadius，layer.shouldRasterize，layer.setShadowPath和透明图片 - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="在layer上添加cornerRadius原理 1
+2
+3
+4
+5
+6
+7
+8
+UIImage *image = [UIImage imageNamed:@&quot;sample&quot;];
+//顺便提一句，imageNamed这个方法会cache image。 UIImageView * &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">高性能添加图片圆角方法原理：cornerRadius，layer.shouldRasterize，layer.setShadowPath和透明图片</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T20:07:34+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>8:07 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>在layer上添加cornerRadius原理</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>调用cornerRadius的时候，系统会做什么？
+设置cornerRadius，会在layer的background上面绘制圆角。默认情况下，这并不会应用到layer的contents属性上的图片（每个layer中contents属性接受一个CGImage的对象）。
+设置masksToBounds属性为YES，并且设置cornerRadius的值的话，Core Animation会创建一个包含圆角效果的蒙板（mask）。 这使得layer的contents属性中的图片在蒙板作用下，产生圆角效果[1]。</p></li>
+<li><p>为什么在uitableview或者uicollectionview中滚动的时候，给图片添加圆角直接用cornerRadius性能不好？
+当layer的属性cornerRadius和maskToBounds一起使用时，会触发离屏渲染（Offscreen rendering）。</p></li>
+<li><p>离屏渲染Offscreen rendering是什么呢？
+Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能[2]。
+－－－
+这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks, shadows等触发的offscreen是基于GPU的。［4］
+－－－
+但是2014 wwdc那个例子里面没有提到这部分内容。</p></li>
+<li><p>离屏渲染Offscreen rendering的可能误解。</p></li>
+</ul>
+
+
+<p>Offscreen rendering
+Offscreen rendering is drawing, that cannot be done using hardware acceleration (GPU) and should be performed on the CPU instead.
+At the low level this looks like that: during rendering of the layer that requires the offscreen rendering, the GPU stops the rendering pipeline and passes control to the CPU. In its turn, the CPU performs all the necessary operations (e.g. your fancy stuff in drawRect:) and returns control to the GPU with the already rendered layer. GPU renders it and the rendering pipeline keeps going.</p>
+
+<p><a href="https://yalantis.com/blog/mastering-uikit-performance/">https://yalantis.com/blog/mastering-uikit-performance/</a></p>
+
+<p>以上对Offscreen rendering解释是错误的！</p>
+
+<ul>
+<li>为什么cornerRadius和maskToBounds一起使用时，会触发离屏渲染？
+cornerRadius和maskToBounds一起使用时，Core Animation会创建一个包含圆角效果的蒙板（mask）。
+Offscreen rendering会在layer的各种属性结合，使得layer不能直接绘制到屏幕上，需要进行pre-compositing的时候，会触发离屏渲染。
+（原文：Offscreen rendering is invoked whenever the combinnation of layer propertyies that have been specified mean that the layer cannot
+be drawn directly to the screen without pre-compositing.）［3］</li>
+</ul>
+
+
+<p>搜索找一个可能的解决方案
+opengl layer mask
+<a href="https://www.google.co.jp/search?q=opengl+layer+mask&amp;oq=opengl+layer+mask&amp;aqs=chrome..69i57.2662j0j7&amp;sourceid=chrome&amp;es_sm=119&amp;ie=UTF-8">https://www.google.co.jp/search?q=opengl+layer+mask&amp;oq=opengl+layer+mask&amp;aqs=chrome..69i57.2662j0j7&amp;sourceid=chrome&amp;es_sm=119&amp;ie=UTF-8</a></p>
+
+<p><a href="https://lobste.rs/s/ckm4uw/a_performance-minded_take_on_ios_design">https://lobste.rs/s/ckm4uw/a_performance-minded_take_on_ios_design</a>
+CPU GPU offscreen rendering</p>
+
+<p><a href="http://objccn.io/issue-3-1/">http://objccn.io/issue-3-1/</a>
+<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques/blob/master/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD.md">https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques/blob/master/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD.md</a></p>
+
+<p>改正这个
+<a href="http://qiita.com/ykensuke/items/1bc3aa47e2a8c8b474f2">http://qiita.com/ykensuke/items/1bc3aa47e2a8c8b474f2</a></p>
+
+<h2>可能提高性能的方法一：光栅化layer.shouldRasterize</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shouldRasterize</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>什么是光栅化（Rasterisation）？
+Rasterisation (or rasterization) is the task of taking an image described in a vector graphics format (shapes) and converting it into a raster image (pixels or dots) for output on a video display or printer, or for storage in a bitmap file format.</p></li>
+<li><p>为什么layer.shouldRasterize可能提高性能？
+开启shouldRasterize后,layer会被光栅化为bitmap,layer的包含圆角的mask效果也会被保存到bitmap中。
+要注意的是，更新已光栅化的layer，会造成大量的offscreen渲染。</p></li>
+</ul>
+
+
+<h2>可能提高性能的方法二：设置layer.shadowPath属性</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
+</span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shadowPath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIBezierPath</span> <span class="nl">bezierPathWithRect</span><span class="p">:</span><span class="n">imgView</span><span class="p">.</span><span class="n">bounds</span><span class="p">].</span><span class="bp">CGPath</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>layer的shadowPath的理解
+layer会创建一个圆角的shadowPath，并且会cache这个shadowPath，避免多次重绘。</li>
+</ul>
+
+
+<h2>可能提高性能的方法三：添加自带圆角中间透明的图片</h2>
+
+<ul>
+<li>这会cache圆角图片，但是在blending的时候，有透明的部分，会降低部分性能。
+（利用一张中间为透明圆形的图片来进行遮盖,虽然会引起blending,但性能仍然高于offerScreen。）
+来源：WWDC心得与延伸）</li>
+</ul>
+
+
+<h2>可能提高性能的方法四：CAShapeLayer</h2>
+
+<h2>可能提高性能的方法五：drawRect</h2>
+
+<h2>六 myView.layer.drawAsynchronously = YES</h2>
+
+<p>当你设置 drawsAsynchronously 为 YES 时，发生了什么？你的 -drawRect:/-drawInContext: 方法仍然会被在主线程上调用。但是所有调用 Core Graphics 的操作都不会被执行。取而代之的是，绘制命令被推迟，并且在后台线程中异步执行。</p>
+
+<p>这种方式就是先记录绘图命令，然后在后台线程中重现。为了这个过程的顺利进行，更多的工作需要被做，更多的内存需要被申请。但是主队列中的一些工作便被移出来了(大概意思就是让我们把一些能在后台实现的工作放到后台实现，让主线程更顺畅)。</p>
+
+<p>对于昂贵的绘图方法，这是最有可能提升性能的，但对于那些绘图方法来说，也不会节省太多资源。</p>
+
+<p>问题1: 整个过程是怎么样的？</p>
+
+<p>当你滚动整个屏幕的时候，数以百万计的颜色单元必须以每秒60次的速度刷新，这是一个很大的工作量。</p>
+
+<p>第一步：
+CPU 开始运行你的程序。你可能会让 CPU 从 bundle 加载一张 PNG 的图片并且解压它。
+这所有的事情都在 CPU 上进行。然后当你需要显示解压缩后的图片时，它需要以某种方式上传到 GPU。</p>
+
+<p>如果一个 CALayer 的子类实现了 -drawInContext: 或者它的代理，类似于 -drawLayer:inContest:, Core Animation 将会为这个图层申请一个后备存储，用来保存那些方法绘制进来的位图。那些方法内的代码将会运行在 CPU 上，结果将会被上传到 GPU。</p>
+
+<p>第二步：
+将数据传输到 GPU 上。为了让 GPU 访问数据，需要将数据从 RAM 移动到 VRAM 上。这就是提及到的上传数据到 GPU。这看起来貌似微不足道，但是一些大型的纹理却会非常耗时。</p>
+
+<p>第三步：
+GPU 需要将每一个 frame 的纹理(位图)合成在一起(一秒60次)。
+每一个纹理会占用 VRAM(video RAM)，所以需要给 GPU 同时保持纹理的数量做一个限制。
+GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂，并且 GPU在 16.7ms(1/60s)内能做的工作也是有限的。</p>
+
+<p>We talk about hardware acceleration when the GPU is used for compositing and rendering graphics.
+GPU (composition and rendering)?</p>
+
+<p><a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf</a>
+• Layer properties and animations handled by render server</p>
+
+<p>软件绘图
+在iOS中，软件绘图通常是由Core Graphics框架完成来完成。
+相比Core Animation和OpenGL，Core Graphics要慢了不少。
+软件绘图不仅效率低，还会消耗可观的内存。
+一旦你实现了CALayerDelegate协议中的-drawLayer:inContext:方法或者UIView中的-drawRect:方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的大小的内存可从这个算式得出：图层宽<em>图层高</em>4字节，宽高的单位均为像素。
+软件绘图的代价昂贵，除非绝对必要，你应该避免重绘你的视图。提高绘制性能的秘诀就在于尽量避免去绘制。
+（drawRect的内容会被cache吗？）</p>
+
+<p>问题2:shouldRasterize和shadowPath属性联系<br/>
+都是在什么时候执行的？</p>
+
+<p>结论
+For good performance, the trick is to avoid using software drawing for views that change every frame.
+1、多在不同设备上测试动画、他们的区别可能在于GPU, CPU, Retina blabla</p>
+
+<p>2、不同场景有不同的解决方法，到底是用drawRect? 还是用SubView？</p>
+
+<p>3、测量、测试、迭代  And as with all performance-related issues, you should use Instruments to measure and track the performance of your app over time so that you can ensure that performance is improving and not regressing.</p>
+
+<p>参考文献：</p>
+
+<p>[1]Apple Reference cornerRadius <a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius</a>
+[2]From iOS Core Animation: Advanced Techniques 的定义 <a href="https://books.google.co.jp/books?id=QfhdAAAAQBAJ&amp;pg=PT285&amp;lpg=PT285&amp;dq=mask+++Offscreen+Rendering&amp;source=bl&amp;ots=O7rQA5t516&amp;sig=Spp578t7gU5qLQDdltFjdbvqrhI&amp;hl=en&amp;sa=X&amp;ved=0CFoQ6AEwDGoVChMIrvzq9I6NyAIVAx-UCh0UygVl#v=onepage&amp;q&amp;f=false">https://books.google.co.jp/books?id=QfhdAAAAQBAJ&amp;pg=PT285&amp;lpg=PT285&amp;dq=mask+++Offscreen+Rendering&amp;source=bl&amp;ots=O7rQA5t516&amp;sig=Spp578t7gU5qLQDdltFjdbvqrhI&amp;hl=en&amp;sa=X&amp;ved=0CFoQ6AEwDGoVChMIrvzq9I6NyAIVAx-UCh0UygVl#v=onepage&amp;q&amp;f=false</a>
+［3］(From iOS Core Animation: Advanced Techniques 的定义)
+［4］WWDC心得与延伸:iOS图形性能中内容矛盾  <a href="http://www.cocoachina.com/ios/20150429/11712.html">http://www.cocoachina.com/ios/20150429/11712.html</a></p>
+
+<p><a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/</a>
+<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques">https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques</a></p>
+
+<p>WWDC心得与延伸:iOS图形性能
+<a href="http://www.cocoachina.com/ios/20150429/11712.html">http://www.cocoachina.com/ios/20150429/11712.html</a></p>
+
+<p><a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios</a></p>
+
+<p>Core Animation Programming Guide：Improving Animation Performance <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html</a></p>
+
+<p>离屏绘制(Offscreen drawing)优化性能，也就是shouldRasterize的实际做的事情，
+<a href="https://robots.thoughtbot.com/designing-for-ios-graphics-performance">https://robots.thoughtbot.com/designing-for-ios-graphics-performance</a></p>
+
+<p>更加深入的offscreen render分析：iOS离屏绘制的性能和机制分析（Apple UIKit teamer写的，这大概是终极牛逼的分析了）
+<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc</a>
+  当你实现drawRect方法或者通过CoeGraphics绘制的时候，其实你是在使用CPU绘制。</p>
+
+<p>  还有需要注意的是，shouldRasterize和masking（遮罩）, shadows（阴影）, edge antialiasing,（抗锯齿），group opacity属性都不一样。如果后面这些提到的属性是开启的，就不会有缓存，并且离屏绘制将会在每一帧都发生? 这段话不对吧？ 是在只有多层layer的时候的表现吗？  不理解。</p>
+
+<p>什么时候layer会offscreen rendering
+<a href="http://stackoverflow.com/questions/6731545/when-does-a-view-or-layer-require-offscreen-rendering">http://stackoverflow.com/questions/6731545/when-does-a-view-or-layer-require-offscreen-rendering</a></p>
+
+<p>What triggers offscreen rendering, blending and layoutSubviews in iOS?
+<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios</a></p>
+
+<p>测试性能
+<a href="http://www.raywenderlich.com/23037/how-to-use-instruments-in-xcode">http://www.raywenderlich.com/23037/how-to-use-instruments-in-xcode</a>
+<a href="http://stackoverflow.com/questions/5459708/measuring-the-uitableview-scrolling-performance-iphone">http://stackoverflow.com/questions/5459708/measuring-the-uitableview-scrolling-performance-iphone</a>
+I&rsquo;d suggest using Instruments rather than trying to run the test directly in your code. The Core Animation tool will track the actual number of frames per second (FPS) that your app’s displaying.
+60 is max you can get, and it&rsquo;s best if it&rsquo;s close to this value.
+Typically you have to complete each call within 16ms so as to maintain smooth animation at 60fps.</p>
+
+<p>如何加强 iOS 里的列表滚动时的顺畅感？
+<a href="http://www.zhihu.com/question/20382396">http://www.zhihu.com/question/20382396</a></p>
+
+<p>如果你想要如丝般顺滑的效果，那么：
+1、每次都看一下有没有能重用的 cell，而不是永远重新新建（这个是 UITableView 的常识）
+2、Cell 里尽量不要用 UIView 而是全部自己用 drawRect 画（之前因为 iOS 有 bug，这样做会有性能上质的飞越。也有很多大神写过很多文章解释原理，有兴趣的自己去看看吧我就不做复制粘贴了。后来 iOS 也改掉了这个问题，这么做的效果就没那么明显了。）
+3、图片载入放到后台进程去进行，滚出可视范围的载入进程要 cancel 掉
+4、圆角、阴影之类的全部 bitmap 化，或者放到后台 draw 好了再拿来用
+5、Cell 里要用的数据提前缓存好，不要现用现去读文件
+6、数据量太大来不及一次读完的做一个 load more cell 出来，尽量避免边滚边读数据，这样就算是双核的 CPU 也难保不会抽</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-09-21T20:07:34+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>8:07 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/" data-via="" data-counturl="http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/09/20/useful-ios-debug-tricks/" title="Previous Post: Useful iOS debug tricks">&laquo; Useful iOS debug tricks</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/" title="Next Post: iOS在删除App的情况下，仍然会记忆App camera访问权限的reset方法">iOS在删除App的情况下，仍然会记忆App camera访问权限的reset方法 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
