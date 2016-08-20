@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2016-08-20T23:39:24+08:00</updated>
+  <updated>2016-08-20T23:41:44+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -307,6 +307,8 @@ if let sharePrice = findStockCode("Apple")?.price {
 
 
 <h4>参考文献</h4>
+
+<p><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></p>
 ]]></content>
   </entry>
   
@@ -326,6 +328,8 @@ if let sharePrice = findStockCode("Apple")?.price {
 
 
 <h4>参考文献</h4>
+
+<p><a href="http://stackoverflow.com/questions/27726354/ipad-remembering-camera-permissions-after-delete-how-to-clear">重设相机访问权限</a></p>
 ]]></content>
   </entry>
   
@@ -336,13 +340,9 @@ if let sharePrice = findStockCode("Apple")?.price {
     <id>http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian</id>
     <content type="html"><![CDATA[<h2>在layer上添加cornerRadius原理</h2>
 
-<pre><code class="objc">UIImage *image = [UIImage imageNamed:@"sample"];
-//顺便提一句，imageNamed这个方法会cache image。
-
+<pre><code class="objc">UIImage *image = [UIImage imageNamed:@"sample"];   //顺便提一句，imageNamed这个方法会cache image。
 UIImageView *imgView = [[UIImageView alloc] initWithImage:image];
 imgView.layer.masksToBounds = YES;
-//等同于view.clipsToBounds ＝ YES
-
 imgView.layer.cornerRadius = 0.5f;
 </code></pre>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2016-08-20T23:39:24+08:00</updated>
+  <updated>2016-08-20T23:41:44+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -498,6 +498,8 @@
 
 
 <h4>参考文献</h4>
+
+<p><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></p>
 ]]></content>
   </entry>
   
@@ -517,6 +519,8 @@
 
 
 <h4>参考文献</h4>
+
+<p><a href="http://stackoverflow.com/questions/27726354/ipad-remembering-camera-permissions-after-delete-how-to-clear">重设相机访问权限</a></p>
 ]]></content>
   </entry>
   
@@ -531,17 +535,9 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
-</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
-</span><span class='line'>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>   <span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
 </span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
-</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
-</span><span class='line'>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
