@@ -704,41 +704,19 @@
 Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能[2]。
 －－－
 这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks, shadows等触发的offscreen是基于GPU的。［4］
-－－－
-但是2014 wwdc那个例子里面没有提到这部分内容。</p></li>
-<li><p>离屏渲染Offscreen rendering的可能误解。</p></li>
-</ul>
-
-
-<p>Offscreen rendering
+－－－</p></li>
+<li><p>离屏渲染Offscreen rendering的可能误解。
+Offscreen rendering
 Offscreen rendering is drawing, that cannot be done using hardware acceleration (GPU) and should be performed on the CPU instead.
-At the low level this looks like that: during rendering of the layer that requires the offscreen rendering, the GPU stops the rendering pipeline and passes control to the CPU. In its turn, the CPU performs all the necessary operations (e.g. your fancy stuff in drawRect:) and returns control to the GPU with the already rendered layer. GPU renders it and the rendering pipeline keeps going.</p>
-
-<p><a href="https://yalantis.com/blog/mastering-uikit-performance/">https://yalantis.com/blog/mastering-uikit-performance/</a></p>
-
-<p>以上对Offscreen rendering解释是错误的！</p>
-
-<ul>
-<li>为什么cornerRadius和maskToBounds一起使用时，会触发离屏渲染？
+At the low level this looks like that: during rendering of the layer that requires the offscreen rendering, the GPU stops the rendering pipeline and passes control to the CPU. In its turn, the CPU performs all the necessary operations (e.g. your fancy stuff in drawRect:) and returns control to the GPU with the already rendered layer. GPU renders it and the rendering pipeline keeps going.
+<a href="https://yalantis.com/blog/mastering-uikit-performance/">https://yalantis.com/blog/mastering-uikit-performance/</a>
+以上对Offscreen rendering解释是片面的。</p></li>
+<li><p>为什么cornerRadius和maskToBounds一起使用时，会触发离屏渲染？
 cornerRadius和maskToBounds一起使用时，Core Animation会创建一个包含圆角效果的蒙板（mask）。
 Offscreen rendering会在layer的各种属性结合，使得layer不能直接绘制到屏幕上，需要进行pre-compositing的时候，会触发离屏渲染。
-（原文：Offscreen rendering is invoked whenever the combinnation of layer propertyies that have been specified mean that the layer cannot
-be drawn directly to the screen without pre-compositing.）［3］</li>
+（原文：Offscreen rendering is invoked whenever the combinnation of layer propertyies that have been specified mean that the layer cannot be drawn directly to the screen without pre-compositing.）［3］</p></li>
 </ul>
 
-
-<p>搜索找一个可能的解决方案
-opengl layer mask
-<a href="https://www.google.co.jp/search?q=opengl+layer+mask&amp;oq=opengl+layer+mask&amp;aqs=chrome..69i57.2662j0j7&amp;sourceid=chrome&amp;es_sm=119&amp;ie=UTF-8">https://www.google.co.jp/search?q=opengl+layer+mask&amp;oq=opengl+layer+mask&amp;aqs=chrome..69i57.2662j0j7&amp;sourceid=chrome&amp;es_sm=119&amp;ie=UTF-8</a></p>
-
-<p><a href="https://lobste.rs/s/ckm4uw/a_performance-minded_take_on_ios_design">https://lobste.rs/s/ckm4uw/a_performance-minded_take_on_ios_design</a>
-CPU GPU offscreen rendering</p>
-
-<p><a href="http://objccn.io/issue-3-1/">http://objccn.io/issue-3-1/</a>
-<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques/blob/master/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD.md">https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques/blob/master/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD/15-%E5%9B%BE%E5%B1%82%E6%80%A7%E8%83%BD.md</a></p>
-
-<p>改正这个
-<a href="http://qiita.com/ykensuke/items/1bc3aa47e2a8c8b474f2">http://qiita.com/ykensuke/items/1bc3aa47e2a8c8b474f2</a></p>
 
 <h2>可能提高性能的方法一：光栅化layer.shouldRasterize</h2>
 
@@ -747,17 +725,9 @@ CPU GPU offscreen rendering</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
-</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
-</span><span class='line'>
 </span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
-</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
-</span><span class='line'>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shouldRasterize</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -779,17 +749,9 @@ Rasterisation (or rasterization) is the task of taking an image described in a v
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
 </pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="bp">UIImage</span> <span class="o">*</span><span class="n">image</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;sample&quot;</span><span class="p">];</span>
-</span><span class='line'><span class="c1">//顺便提一句，imageNamed这个方法会cache image。</span>
-</span><span class='line'>
 </span><span class='line'><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imgView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:</span><span class="n">image</span><span class="p">];</span>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">masksToBounds</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
-</span><span class='line'><span class="c1">//等同于view.clipsToBounds ＝ YES</span>
-</span><span class='line'>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">cornerRadius</span> <span class="o">=</span> <span class="mf">0.5f</span><span class="p">;</span>
 </span><span class='line'><span class="n">imgView</span><span class="p">.</span><span class="n">layer</span><span class="p">.</span><span class="n">shadowPath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIBezierPath</span> <span class="nl">bezierPathWithRect</span><span class="p">:</span><span class="n">imgView</span><span class="p">.</span><span class="n">bounds</span><span class="p">].</span><span class="bp">CGPath</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
@@ -805,24 +767,17 @@ layer会创建一个圆角的shadowPath，并且会cache这个shadowPath，避�
 
 <ul>
 <li>这会cache圆角图片，但是在blending的时候，有透明的部分，会降低部分性能。
-（利用一张中间为透明圆形的图片来进行遮盖,虽然会引起blending,但性能仍然高于offerScreen。）
-来源：WWDC心得与延伸）</li>
+（利用一张中间为透明圆形的图片来进行遮盖,虽然会引起blending,但性能仍然高于offerScreen。） 来源：WWDC心得与延伸</li>
 </ul>
 
 
-<h2>可能提高性能的方法四：CAShapeLayer</h2>
+<h2>可能提高性能的方法四: myView.layer.drawAsynchronously = YES</h2>
 
-<h2>可能提高性能的方法五：drawRect</h2>
+<p>当你设置 drawsAsynchronously 为 YES 时，发生了什么？你的 -drawRect:/-drawInContext:方法仍然会被在主线程上调用。  但是所有调用 Core Graphics 的操作都不会被执行。取而代之的是，绘制命令被推迟，并且在后台线程中异步执行。<br/>
+这种方式就是先记录绘图命令，然后在后台线程中重现。为了这个过程的顺利进行，更多的工作需要被做，更多的内存需要被申请。但是主队列中的一些工作便被移出来了(大概意思就是让我们把一些能在后台实现的工作放到后台实现，让主线程更顺畅)。<br/>
+对于昂贵的绘图方法，这是最有可能提升性能的，但对于那些绘图方法来说，也不会节省太多资源。</p>
 
-<h2>六 myView.layer.drawAsynchronously = YES</h2>
-
-<p>当你设置 drawsAsynchronously 为 YES 时，发生了什么？你的 -drawRect:/-drawInContext: 方法仍然会被在主线程上调用。但是所有调用 Core Graphics 的操作都不会被执行。取而代之的是，绘制命令被推迟，并且在后台线程中异步执行。</p>
-
-<p>这种方式就是先记录绘图命令，然后在后台线程中重现。为了这个过程的顺利进行，更多的工作需要被做，更多的内存需要被申请。但是主队列中的一些工作便被移出来了(大概意思就是让我们把一些能在后台实现的工作放到后台实现，让主线程更顺畅)。</p>
-
-<p>对于昂贵的绘图方法，这是最有可能提升性能的，但对于那些绘图方法来说，也不会节省太多资源。</p>
-
-<p>问题1: 整个过程是怎么样的？</p>
+<h2>整个绘制过程</h2>
 
 <p>当你滚动整个屏幕的时候，数以百万计的颜色单元必须以每秒60次的速度刷新，这是一个很大的工作量。</p>
 
@@ -840,80 +795,32 @@ GPU 需要将每一个 frame 的纹理(位图)合成在一起(一秒60次)。
 每一个纹理会占用 VRAM(video RAM)，所以需要给 GPU 同时保持纹理的数量做一个限制。
 GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂，并且 GPU在 16.7ms(1/60s)内能做的工作也是有限的。</p>
 
-<p>We talk about hardware acceleration when the GPU is used for compositing and rendering graphics.
-GPU (composition and rendering)?</p>
+<h2>软件绘图</h2>
 
-<p><a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf</a>
-• Layer properties and animations handled by render server</p>
+<p>在iOS中，软件绘图通常是由Core Graphics框架完成来完成。<br/>
+相比Core Animation和OpenGL，Core Graphics要慢了不少。<br/>
+软件绘图不仅效率低，还会消耗可观的内存。<br/>
+一旦你实现了CALayerDelegate协议中的-drawLayer:inContext:方法或者UIView中的-drawRect:方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的大小的内存可从这个算式得出：图层宽<em>图层高</em>4字节，宽高的单位均为像素。<br/>
+软件绘图的代价昂贵，除非绝对必要，你应该避免重绘你的视图。提高绘制性能的秘诀就在于尽量避免去绘制。</p>
 
-<p>软件绘图
-在iOS中，软件绘图通常是由Core Graphics框架完成来完成。
-相比Core Animation和OpenGL，Core Graphics要慢了不少。
-软件绘图不仅效率低，还会消耗可观的内存。
-一旦你实现了CALayerDelegate协议中的-drawLayer:inContext:方法或者UIView中的-drawRect:方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的大小的内存可从这个算式得出：图层宽<em>图层高</em>4字节，宽高的单位均为像素。
-软件绘图的代价昂贵，除非绝对必要，你应该避免重绘你的视图。提高绘制性能的秘诀就在于尽量避免去绘制。
-（drawRect的内容会被cache吗？）</p>
+<h2>总结</h2>
 
-<p>问题2:shouldRasterize和shadowPath属性联系<br/>
-都是在什么时候执行的？</p>
+<ul>
+<li>测量、测试、迭代。为了有好的性能，需要在不同的设备上，平衡各种利弊，不断测试和改进。</li>
+</ul>
 
-<p>结论
-For good performance, the trick is to avoid using software drawing for views that change every frame.
-1、多在不同设备上测试动画、他们的区别可能在于GPU, CPU, Retina blabla</p>
 
-<p>2、不同场景有不同的解决方法，到底是用drawRect? 还是用SubView？</p>
+<h3>参考文献</h3>
 
-<p>3、测量、测试、迭代  And as with all performance-related issues, you should use Instruments to measure and track the performance of your app over time so that you can ensure that performance is improving and not regressing.</p>
-
-<p>参考文献：</p>
-
-<p>[1]Apple Reference cornerRadius <a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius</a>
-[2]From iOS Core Animation: Advanced Techniques 的定义 <a href="https://books.google.co.jp/books?id=QfhdAAAAQBAJ&amp;pg=PT285&amp;lpg=PT285&amp;dq=mask+++Offscreen+Rendering&amp;source=bl&amp;ots=O7rQA5t516&amp;sig=Spp578t7gU5qLQDdltFjdbvqrhI&amp;hl=en&amp;sa=X&amp;ved=0CFoQ6AEwDGoVChMIrvzq9I6NyAIVAx-UCh0UygVl#v=onepage&amp;q&amp;f=false">https://books.google.co.jp/books?id=QfhdAAAAQBAJ&amp;pg=PT285&amp;lpg=PT285&amp;dq=mask+++Offscreen+Rendering&amp;source=bl&amp;ots=O7rQA5t516&amp;sig=Spp578t7gU5qLQDdltFjdbvqrhI&amp;hl=en&amp;sa=X&amp;ved=0CFoQ6AEwDGoVChMIrvzq9I6NyAIVAx-UCh0UygVl#v=onepage&amp;q&amp;f=false</a>
-［3］(From iOS Core Animation: Advanced Techniques 的定义)
-［4］WWDC心得与延伸:iOS图形性能中内容矛盾  <a href="http://www.cocoachina.com/ios/20150429/11712.html">http://www.cocoachina.com/ios/20150429/11712.html</a></p>
-
-<p><a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/</a>
-<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques">https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques</a></p>
-
-<p>WWDC心得与延伸:iOS图形性能
-<a href="http://www.cocoachina.com/ios/20150429/11712.html">http://www.cocoachina.com/ios/20150429/11712.html</a></p>
-
-<p><a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios</a></p>
-
-<p>Core Animation Programming Guide：Improving Animation Performance <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html</a></p>
-
-<p>离屏绘制(Offscreen drawing)优化性能，也就是shouldRasterize的实际做的事情，
-<a href="https://robots.thoughtbot.com/designing-for-ios-graphics-performance">https://robots.thoughtbot.com/designing-for-ios-graphics-performance</a></p>
-
-<p>更加深入的offscreen render分析：iOS离屏绘制的性能和机制分析（Apple UIKit teamer写的，这大概是终极牛逼的分析了）
-<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc</a>
-  当你实现drawRect方法或者通过CoeGraphics绘制的时候，其实你是在使用CPU绘制。</p>
-
-<p>  还有需要注意的是，shouldRasterize和masking（遮罩）, shadows（阴影）, edge antialiasing,（抗锯齿），group opacity属性都不一样。如果后面这些提到的属性是开启的，就不会有缓存，并且离屏绘制将会在每一帧都发生? 这段话不对吧？ 是在只有多层layer的时候的表现吗？  不理解。</p>
-
-<p>什么时候layer会offscreen rendering
-<a href="http://stackoverflow.com/questions/6731545/when-does-a-view-or-layer-require-offscreen-rendering">http://stackoverflow.com/questions/6731545/when-does-a-view-or-layer-require-offscreen-rendering</a></p>
-
-<p>What triggers offscreen rendering, blending and layoutSubviews in iOS?
-<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios</a></p>
-
-<p>测试性能
-<a href="http://www.raywenderlich.com/23037/how-to-use-instruments-in-xcode">http://www.raywenderlich.com/23037/how-to-use-instruments-in-xcode</a>
-<a href="http://stackoverflow.com/questions/5459708/measuring-the-uitableview-scrolling-performance-iphone">http://stackoverflow.com/questions/5459708/measuring-the-uitableview-scrolling-performance-iphone</a>
-I&rsquo;d suggest using Instruments rather than trying to run the test directly in your code. The Core Animation tool will track the actual number of frames per second (FPS) that your app’s displaying.
-60 is max you can get, and it&rsquo;s best if it&rsquo;s close to this value.
-Typically you have to complete each call within 16ms so as to maintain smooth animation at 60fps.</p>
-
-<p>如何加强 iOS 里的列表滚动时的顺畅感？
-<a href="http://www.zhihu.com/question/20382396">http://www.zhihu.com/question/20382396</a></p>
-
-<p>如果你想要如丝般顺滑的效果，那么：
-1、每次都看一下有没有能重用的 cell，而不是永远重新新建（这个是 UITableView 的常识）
-2、Cell 里尽量不要用 UIView 而是全部自己用 drawRect 画（之前因为 iOS 有 bug，这样做会有性能上质的飞越。也有很多大神写过很多文章解释原理，有兴趣的自己去看看吧我就不做复制粘贴了。后来 iOS 也改掉了这个问题，这么做的效果就没那么明显了。）
-3、图片载入放到后台进程去进行，滚出可视范围的载入进程要 cancel 掉
-4、圆角、阴影之类的全部 bitmap 化，或者放到后台 draw 好了再拿来用
-5、Cell 里要用的数据提前缓存好，不要现用现去读文件
-6、数据量太大来不及一次读完的做一个 load more cell 出来，尽量避免边滚边读数据，这样就算是双核的 CPU 也难保不会抽</p>
+<p><a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">Apple Reference cornerRadius</a>
+<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques">From iOS Core Animation: Advanced Techniques</a>
+<a href="http://www.cocoachina.com/ios/20150429/11712.html">WWDC心得与延伸:iOS图形性能</a>
+<a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">WWDC:ios_app_performance_graphics_and_animations</a>
+<a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">Getting Pixels onto the Screen</a>
+<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">What triggers offscreen rendering, blending and layoutSubviews in iOS</a>
+<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">Core Animation Programming Guide：Improving Animation Performance</a>
+<a href="https://robots.thoughtbot.com/designing-for-ios-graphics-performance">Designing for iOS: Graphics &amp; Performance</a>
+<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">深入的offscreen render分析：iOS离屏绘制的性能和机制分析by Apple UIKit team member</a></p>
 </div>
   
   
