@@ -584,50 +584,6 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-24T17:41:42+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:41 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>facebook如何重构优化Messenger性能（摘要）</h2>
-
-<h3>Messenger最开始是facebook站内信，后来演化为实时的聊天App。Messenger的性能和过度消耗网络数据流量的问题开始拖系统后退。针对这个问题facebook做了一次重构。主要做了以下工作：</h3>
-
-<ul>
-<li>在客户端方面，把pull-based模式，改成了push-based snapshot + delta模式。用Thrift替换了JSON格式，减小数据size。</li>
-<li>在服务端方面，自建的Iris服务，减少了将聊天消息写入磁盘再读取出来的时间。</li>
-</ul>
-
-
-<h4>参考文献</h4>
-
-<ul>
-<li><a href="https://code.facebook.com/posts/820258981365363/building-mobile-first-infrastructure-for-messenger">Building Mobile-First Infrastructure for Messenger</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
       <h1 class="entry-title"><a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a></h1>
     
     
@@ -654,11 +610,6 @@
 
 
 <h4>参考文献</h4>
-
-<ul>
-<li><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></li>
-</ul>
-
 </div>
   
   
@@ -698,11 +649,6 @@
 
 
 <h4>参考文献</h4>
-
-<ul>
-<li><a href="http://stackoverflow.com/questions/27726354/ipad-remembering-camera-permissions-after-delete-how-to-clear">重设相机访问权限</a></li>
-</ul>
-
 </div>
   
   
@@ -1252,6 +1198,44 @@ Location manager获取实时的location需要花费几秒钟，所以location ma
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/16/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">Video: Growth Is Good but Retention Is 4ever at Wmd Conference by Brian Balfour</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-16T18:39:00+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>6:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Source:<br/>
+<a href="https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/">https://growthhackers.com/videos/video-growth-is-good-but-retention-is-4ever-at-wmd-conference-by-brian-balfour/</a></p>
+
+<p>Summary:<br/>
+Brain Balfour 讲为何retention为王。因为有了retention，其他的自然会来。<br/>
+Increase retention -> Increase LTV -> Afford Higher CPA<br/>
+Increase retention -> increase upgrade rates -> decrease payback period<br/>
+其中有一个重要的点在于，有时候因为有许多新用户的增加和短期retention较高的水平，导致盲目投入，最后眼睁睁看着用户都流失掉。<br/>
+所以retention最后要是一条水平线，而不能一直下垂。<br/>
+讲了实际案例，如何预防retention下降的趋势，如何想办法提高retention。</p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1281,15 +1265,15 @@ Location manager获取实时的location需要花费几秒钟，所以location ma
       </li>
     
       <li class="post">
-        <a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
       </li>
     
       <li class="post">
         <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/">高性能添加图片圆角方法原理：cornerRadius，layer.shouldRasterize，layer.setShadowPath和透明图片</a>
       </li>
     
   </ul>

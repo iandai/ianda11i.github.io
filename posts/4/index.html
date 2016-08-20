@@ -9,7 +9,8 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Cache过期 Key Based Cache Expiration 优点： 降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。 缺点： 适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法） 每次查询， &hellip;">
+  <meta name="description" content="测试界面上哪个View被点击 开发的时候，遇到一个bug，iOS6的其中一个Button的上边缘，点击了没有反应。
+在相关的view里追加了- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event方法， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,57 +69,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/08/cache-expiration/">Cache Expiration</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-08T17:46:10+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:46 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Cache过期</h2>
-
-<ul>
-<li><p>Key Based Cache Expiration<br/>
-  优点：
-      降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。
-  缺点：
-      适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法）
-      每次查询，都需要首先查询update_at字段。</p></li>
-<li><p>ORM模型回调接口删除cache（after_save, before_destroy, etc)<br/>
-  优点：
-      快。
-  缺点：
-      增加一定的代码复杂度。
-      若不是ORM模型的代码，需要手动添加回调接口。</p></li>
-<li><p>在代码中增加删除cache的代码<br/>
-  优点：
-      无。
-  缺点：
-      增加代码复杂度。      <br/>
-      如果model层接口太多，大多数代码都是直接用sql语句存取，导致需要删除cache的函数太多，代码耦合度和复杂度都大大增加。</p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -1069,6 +1019,92 @@ The CGI script must have the correct permissions.</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/08/crontab-1-basic-usage/">Crontab(1):Basic Usage</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-08T19:04:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:04 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Ways to use crontab</h2>
+
+<ul>
+<li>crobtab -e  当前用户环境下运行的cron</li>
+<li>sudo vi /etc/crontab    在系统环境下运行的cron，所有用户都可以使用</li>
+<li>/etc/cron.d/  将文件放在该目录下，系统则会自动运行</li>
+</ul>
+
+
+<h2>Example: backup mysql every day</h2>
+
+<ul>
+<li><p>step1</p>
+
+<p>创建保存备份文件的路径/mysqldata </br>
+<code>
+  mkdir /var/www/mysqldata
+ </code></p></li>
+<li><p>step2</p>
+
+<p>创建/usr/sbin/bakmysql文件,写入以下代码 </br>
+<code>
+  /usr/bin/mysqldump production -u root -p password | gzip -c | cat &gt; /var/www/mysqldata/production$(date +\%Y-\%m-\%d-\%H.\%M.\%S).sql.gz &gt;/dev/null 2&gt;&amp;1
+</code>
+  注意：</br>
+  1）备份数据库mysqldump必须要完整路径！！！！</br>
+  2）date后面的％前必须加\，因为在crontab中％代表new line 。所以最好的方式是在crontab里运行一个脚本，然后在脚本里加上Path。</p></li>
+<li><p>step 3</p>
+
+<p>  修改文件属性，使其可执行</br>
+<code>
+  chmod +x /usr/sbin/bakmysql
+</code></p></li>
+<li><p>step 4</p>
+
+<p>修改crontab -e,下面添加一下代码,每天3点钟执行备份</br>
+  <code>
+  01 3 * * * root /usr/sbin/bakmysql &gt;&gt; /dev/null 2&gt;&amp;1 （&gt;&gt; /dev/null 2&gt;&amp;1 用于防止log过多）
+ </code></p></li>
+<li><p>step 5</p>
+
+<p>每天你在/var/www/mysqldata可以看到这样的文件mysql20040619.tar.gz</p></li>
+<li><p>step 6</p>
+
+<p>  远程复制到桌面
+  <code>
+  scp g_dai@ip:/var/www/mysqldata/sqldata2013-01-29-15.06.22.sql.gz ~/Desktop/
+</code></p></li>
+<li><p>step 7</p>
+
+<p>  从桌面import到mysql
+  <code>
+mysql -u root -p
+show databases;
+source ~/Desktop/sqldata2013-01-29-15.06.22.sql
+</code></p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -1100,15 +1136,15 @@ The CGI script must have the correct permissions.</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
       </li>
     
       <li class="post">
         <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/">高性能添加图片圆角方法原理：cornerRadius，layer.shouldRasterize，layer.setShadowPath和透明图片</a>
       </li>
     
   </ul>

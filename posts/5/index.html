@@ -9,9 +9,9 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Ways to use crontab crobtab -e 当前用户环境下运行的cron
-sudo vi /etc/crontab 在系统环境下运行的cron，所有用户都可以使用
-/etc/cron.d/ 将文件放在该目录下，系统则会自动运行 Example: backup mysql &hellip;">
+  <meta name="description" content="导出crontab的环境变量 Add this to your cron: 1
+30 08 * * * env &gt; ~/cronenv 在bash中加载crontab的环境变量 1
+env - `cat ~/cronenv` /bin/sh 在crontab中添加UTF-8 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,92 +70,6 @@ sudo vi /etc/crontab 在系统环境下运行的cron，所有用户都可以使�
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/08/crontab-1-basic-usage/">Crontab(1):Basic Usage</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-08T19:04:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:04 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Ways to use crontab</h2>
-
-<ul>
-<li>crobtab -e  当前用户环境下运行的cron</li>
-<li>sudo vi /etc/crontab    在系统环境下运行的cron，所有用户都可以使用</li>
-<li>/etc/cron.d/  将文件放在该目录下，系统则会自动运行</li>
-</ul>
-
-
-<h2>Example: backup mysql every day</h2>
-
-<ul>
-<li><p>step1</p>
-
-<p>创建保存备份文件的路径/mysqldata </br>
-<code>
-  mkdir /var/www/mysqldata
- </code></p></li>
-<li><p>step2</p>
-
-<p>创建/usr/sbin/bakmysql文件,写入以下代码 </br>
-<code>
-  /usr/bin/mysqldump production -u root -p password | gzip -c | cat &gt; /var/www/mysqldata/production$(date +\%Y-\%m-\%d-\%H.\%M.\%S).sql.gz &gt;/dev/null 2&gt;&amp;1
-</code>
-  注意：</br>
-  1）备份数据库mysqldump必须要完整路径！！！！</br>
-  2）date后面的％前必须加\，因为在crontab中％代表new line 。所以最好的方式是在crontab里运行一个脚本，然后在脚本里加上Path。</p></li>
-<li><p>step 3</p>
-
-<p>  修改文件属性，使其可执行</br>
-<code>
-  chmod +x /usr/sbin/bakmysql
-</code></p></li>
-<li><p>step 4</p>
-
-<p>修改crontab -e,下面添加一下代码,每天3点钟执行备份</br>
-  <code>
-  01 3 * * * root /usr/sbin/bakmysql &gt;&gt; /dev/null 2&gt;&amp;1 （&gt;&gt; /dev/null 2&gt;&amp;1 用于防止log过多）
- </code></p></li>
-<li><p>step 5</p>
-
-<p>每天你在/var/www/mysqldata可以看到这样的文件mysql20040619.tar.gz</p></li>
-<li><p>step 6</p>
-
-<p>  远程复制到桌面
-  <code>
-  scp g_dai@ip:/var/www/mysqldata/sqldata2013-01-29-15.06.22.sql.gz ~/Desktop/
-</code></p></li>
-<li><p>step 7</p>
-
-<p>  从桌面import到mysql
-  <code>
-mysql -u root -p
-show databases;
-source ~/Desktop/sqldata2013-01-29-15.06.22.sql
-</code></p></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -679,15 +593,15 @@ end
       </li>
     
       <li class="post">
-        <a href="/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/">facebook如何重构优化Messenger性能（摘要）</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
       </li>
     
       <li class="post">
         <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/">高性能添加图片圆角方法原理：cornerRadius，layer.shouldRasterize，layer.setShadowPath和透明图片</a>
       </li>
     
   </ul>

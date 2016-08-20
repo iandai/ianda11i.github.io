@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2016-08-20T23:29:17+08:00</updated>
+  <updated>2016-08-20T23:37:44+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -484,30 +484,6 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[facebook如何重构优化Messenger性能（摘要）]]></title>
-    <link href="http://iandai.github.io/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)/"/>
-    <updated>2015-09-24T17:41:42+08:00</updated>
-    <id>http://iandai.github.io/blog/2015/09/24/facebookru-he-zhong-gou-you-hua-messengerxing-neng-(zhai-yao-)</id>
-    <content type="html"><![CDATA[<h2>facebook如何重构优化Messenger性能（摘要）</h2>
-
-<h3>Messenger最开始是facebook站内信，后来演化为实时的聊天App。Messenger的性能和过度消耗网络数据流量的问题开始拖系统后退。针对这个问题facebook做了一次重构。主要做了以下工作：</h3>
-
-<ul>
-<li>在客户端方面，把pull-based模式，改成了push-based snapshot + delta模式。用Thrift替换了JSON格式，减小数据size。</li>
-<li>在服务端方面，自建的Iris服务，减少了将聊天消息写入磁盘再读取出来的时间。</li>
-</ul>
-
-
-<h4>参考文献</h4>
-
-<ul>
-<li><a href="https://code.facebook.com/posts/820258981365363/building-mobile-first-infrastructure-for-messenger">Building Mobile-First Infrastructure for Messenger</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[iOS App如何正确的要求用户同意获取系统权限（摘要）]]></title>
     <link href="http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/"/>
     <updated>2015-09-24T17:30:22+08:00</updated>
@@ -522,11 +498,6 @@
 
 
 <h4>参考文献</h4>
-
-<ul>
-<li><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></li>
-</ul>
-
 ]]></content>
   </entry>
   
@@ -546,11 +517,6 @@
 
 
 <h4>参考文献</h4>
-
-<ul>
-<li><a href="http://stackoverflow.com/questions/27726354/ipad-remembering-camera-permissions-after-delete-how-to-clear">重设相机访问权限</a></li>
-</ul>
-
 ]]></content>
   </entry>
   
@@ -1194,6 +1160,21 @@ early stage start up最重要的metrics是什么？<br/>
 <h6>参考文献</h6>
 
 <p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A/B Testing: Avoid Repeated Significance Testing Errors]]></title>
+    <link href="http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors/"/>
+    <updated>2015-03-25T18:46:02+08:00</updated>
+    <id>http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors</id>
+    <content type="html"><![CDATA[<p>Source:<br/>
+<a href="http://www.evanmiller.org/how-not-to-run-an-ab-test.html">http://www.evanmiller.org/how-not-to-run-an-ab-test.html</a></p>
+
+<p>Summary:<br/>
+文章介绍了AB测试的常见统计错误：重复显著性测试错误（repeated significance testing errors）<br/>
+值得注意的地方是：作者指出，在实验没有结束的时候，不停的去看结果是否显著，是不可取的。你很可能发现结果的显著性达到了1%或者5%而停止AB测试。
+实际上这是人为的操纵了数据。显著性检验的前提条件是：你的样本大小sample size是固定的。</p>
 ]]></content>
   </entry>
   
