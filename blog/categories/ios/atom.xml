@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2016-08-21T00:10:30+08:00</updated>
+  <updated>2016-08-21T00:12:33+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -348,15 +348,13 @@ imgView.layer.cornerRadius = 0.5f;
 
 <ul>
 <li><p>调用cornerRadius的时候，系统会做什么？
-设置cornerRadius，会在layer的background上面绘制圆角。默认情况下，这并不会应用到layer的contents属性上的图片（每个layer中contents属性接受一个CGImage的对象）。
-设置masksToBounds属性为YES，并且设置cornerRadius的值的话，Core Animation会创建一个包含圆角效果的蒙板（mask）。 这使得layer的contents属性中的图片在蒙板作用下，产生圆角效果[1]。</p></li>
+设置cornerRadius，会在layer的background上面绘制圆角。默认情况下，这并不会应用到layer的contents属性上的图片（每个layer中contents属性接受一个CGImage的对象）。<br/>
+设置masksToBounds属性为YES，并且设置cornerRadius的值的话，Core Animation会创建一个包含圆角效果的蒙板（mask）。   这使得layer的contents属性中的图片在蒙板作用下，产生圆角效果。</p></li>
 <li><p>为什么在uitableview或者uicollectionview中滚动的时候，给图片添加圆角直接用cornerRadius性能不好？
 当layer的属性cornerRadius和maskToBounds一起使用时，会触发离屏渲染（Offscreen rendering）。</p></li>
 <li><p>离屏渲染Offscreen rendering是什么呢？
-Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能[2]。
-－－－
-这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks, shadows等触发的offscreen是基于GPU的。［4］
-－－－</p></li>
+Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能。<br/>
+这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks,shadows等触发的offscreen是基于GPU的。</p></li>
 <li><p>离屏渲染Offscreen rendering的可能误解。
 Offscreen rendering
 Offscreen rendering is drawing, that cannot be done using hardware acceleration (GPU) and should be performed on the CPU instead.
@@ -443,24 +441,17 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
 一旦你实现了CALayerDelegate协议中的-drawLayer:inContext:方法或者UIView中的-drawRect:方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的大小的内存可从这个算式得出：图层宽<em>图层高</em>4字节，宽高的单位均为像素。<br/>
 软件绘图的代价昂贵，除非绝对必要，你应该避免重绘你的视图。提高绘制性能的秘诀就在于尽量避免去绘制。</p>
 
-<h2>总结</h2>
-
-<ul>
-<li>测量、测试、迭代。为了有好的性能，需要在不同的设备上，平衡各种利弊，不断测试和改进。</li>
-</ul>
-
-
 <h3>参考文献</h3>
 
-<p><a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">Apple Reference cornerRadius</a>
+<p><a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">Apple Reference cornerRadius</a><br/>
 <a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques">From iOS Core Animation: Advanced Techniques</a>
-<a href="http://www.cocoachina.com/ios/20150429/11712.html">WWDC心得与延伸:iOS图形性能</a>
-<a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">WWDC:ios_app_performance_graphics_and_animations</a>
-<a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">Getting Pixels onto the Screen</a>
-<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">What triggers offscreen rendering, blending and layoutSubviews in iOS</a>
-<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">Core Animation Programming Guide：Improving Animation Performance</a>
+<a href="http://www.cocoachina.com/ios/20150429/11712.html">WWDC心得与延伸:iOS图形性能</a><br/>
+<a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">WWDC:ios_app_performance_graphics_and_animations</a><br/>
+<a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">Getting Pixels onto the Screen</a><br/>
+<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">What triggers offscreen rendering, blending and layoutSubviews in iOS</a><br/>
+<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">Core Animation Programming Guide：Improving Animation Performance</a><br/>
 <a href="https://robots.thoughtbot.com/designing-for-ios-graphics-performance">Designing for iOS: Graphics &amp; Performance</a>
-<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">深入的offscreen render分析：iOS离屏绘制的性能和机制分析by Apple UIKit team member</a></p>
+<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">深入的offscreen render分析：iOS离屏绘制的性能和机制分析by Apple UIKit team   member</a></p>
 ]]></content>
   </entry>
   
