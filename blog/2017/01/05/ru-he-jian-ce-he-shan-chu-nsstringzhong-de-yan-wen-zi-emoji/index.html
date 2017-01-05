@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>如何检测和删除NSString中的颜文字Emoji - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="问题 有一个需求是获取联系人姓名的首字母，使用一个或多个首字母绘制联系人用户头像。有的用户名字首字母是颜文字，绘制就会出现乱码。代码如下： 1
+2
+3
+4
+5
+6
+7
+8
+NSMutableString *initials = [NSMutableString string];
+NSArray * &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">如何检测和删除NSString中的颜文字Emoji</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-05T21:52:29+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:52 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>问题</h2>
+
+<p>有一个需求是获取联系人姓名的首字母，使用一个或多个首字母绘制联系人用户头像。有的用户名字首字母是颜文字，绘制就会出现乱码。代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="bp">NSMutableString</span> <span class="o">*</span><span class="n">initials</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableString</span> <span class="n">string</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">contactName</span> <span class="nl">componentsSeparatedByCharactersInSet</span><span class="p">:[</span><span class="bp">NSCharacterSet</span> <span class="n">whitespaceCharacterSet</span><span class="p">]];</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">word</span> <span class="k">in</span> <span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">word</span><span class="p">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="bp">NSString</span> <span class="o">*</span><span class="n">firstLetter</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="nl">substringToIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">initials</span> <span class="nl">appendString</span><span class="p">:[</span><span class="n">firstLetter</span> <span class="n">uppercaseString</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>乱码来自于名字中的颜文字，当<code>[word substringToIndex:1]</code>中的word是颜文字的时候，其返回值并不是一个正常的颜文字。</p>
+
+<p>原因是<code>[word length]</code>结果是2，所以<code>[word substringToIndex:1]</code>其实只返回了颜文字的一半。</p>
+
+<p>为什么会出现这种情况呢？这是因为<code>word</code>是一个NSString类型，而NSString是UTF-16编码的。许多颜文字在使用UTF-16表示的时候，要是用两个字节才能表示，比如😀。</p>
+
+<p>NSString类的<a href="https://developer.apple.com/reference/foundation/nsstring">文档</a>里写到：</p>
+
+<blockquote><p>An NSString object encodes a Unicode-compliant text string, represented as a sequence of UTF–16 code units. All lengths, character
+indexes, and ranges are expressed in terms of 16-bit platform-endian values, with index values starting at 0.</p></blockquote>
+
+<h2>解决方法</h2>
+
+<h3>1.从字符串中获得正确完整的字符</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="k">__block</span> <span class="bp">NSString</span> <span class="o">*</span><span class="n">firstLetter</span> <span class="o">=</span> <span class="s">@&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">word</span> <span class="nl">enumerateSubstringsInRange</span><span class="p">:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">word</span> <span class="n">length</span><span class="p">])</span>
+</span><span class='line'>                         <span class="nl">options</span><span class="p">:</span><span class="n">NSStringEnumerationByComposedCharacterSequences</span>
+</span><span class='line'>                      <span class="nl">usingBlock</span><span class="p">:</span> <span class="o">^</span><span class="p">(</span><span class="bp">NSString</span><span class="o">*</span> <span class="n">substring</span><span class="p">,</span> <span class="n">NSRange</span> <span class="n">substringRange</span><span class="p">,</span> <span class="n">NSRange</span> <span class="n">enclosingRange</span><span class="p">,</span> <span class="kt">BOOL</span><span class="o">*</span> <span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                          <span class="n">firstLetter</span> <span class="o">=</span> <span class="n">substring</span><span class="p">;</span>
+</span><span class='line'>                          <span class="o">*</span><span class="n">stop</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>                      <span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>NSStringEnumerationByComposedCharacterSequences</code>能够读取完整的颜文字，而不是只读取其中一个字节。</p>
+
+<h3>2.检测和删除是否包含颜文字</h3>
+
+<p>Github上有一个比较多人参考的项目<a href="https://github.com/woxtu/NSString-RemoveEmoji">NSString-RemoveEmoj</a>。这个项目有遗漏颜文字，比如⭐，包含了许多不是颜文字的字符，比如Ⅶ。</p>
+
+<p>在unicode.org网站上，有<a href="http://unicode.org/Public/emoji/4.0/emoji-test.txt">完整的颜文字列表</a>。遍历这个完整的列表，就可以检测字符串中是否颜文字。方法如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="c1">// 建立一个emoji CharacterSet</span>
+</span><span class='line'><span class="bp">NSMutableCharacterSet</span> <span class="o">*</span><span class="n">emojiCharacterSet</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSMutableCharacterSet</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">plistPath</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">pathForResource</span><span class="p">:</span><span class="s">@&quot;emoji&quot;</span> <span class="nl">ofType</span><span class="p">:</span><span class="s">@&quot;plist&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">emojiArr</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSArray</span> <span class="nl">arrayWithContentsOfFile</span><span class="p">:</span><span class="n">plistPath</span><span class="p">];</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">emoji</span> <span class="k">in</span> <span class="n">emojiArr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">emojiCharacterSet</span> <span class="nl">addCharactersInString</span><span class="p">:</span><span class="n">emoji</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// - (NSRange)rangeOfCharacterFromSet:(NSCharacterSet *)searchSet;</span>
+</span><span class='line'><span class="p">[</span><span class="s">@&quot;😀&quot;</span> <span class="nl">rangeOfCharacterFromSet</span><span class="p">:</span><span class="n">set</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面代码还有一个问题没有被考虑。比如下面这种情况：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="bp">NSMutableCharacterSet</span> <span class="o">*</span><span class="n">set</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSMutableCharacterSet</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">set</span> <span class="nl">addCharactersInString</span><span class="p">:</span><span class="s">@&quot;2️⃣&quot;</span><span class="p">];</span>      <span class="c1">// keycap 2, 0032 FE0F 20E3, check from http://www.iemoji.com/view/emoji/296/symbols/keycap-2 </span>
+</span><span class='line'><span class="p">[</span><span class="s">@&quot;2&quot;</span> <span class="nl">rangeOfCharacterFromSet</span><span class="p">:</span><span class="n">set</span><span class="p">];</span>     <span class="c1">// return value: YES, which is not reasonable </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>字符2在搜索包含有颜文字2的字符集的时候，会被错误的检测出来。</p>
+
+<p>为了解决这个问题，我写了<a href="https://github.com/iandai/IDEmojiString">IDEmojiString项目</a>。</p>
+
+<h3>3.IDEmojiString</h3>
+
+<p>IDEmojiString通过使单字符和多字符分别搜索字符集，解决了上面的问题。</p>
+
+<p>使用CocoaPods安装之后，通过以下方法使用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="c1">//#import &quot;IDEmojiManager.h&quot;</span>
+</span><span class='line'><span class="n">IDEmojiManager</span> <span class="o">*</span><span class="n">manager</span> <span class="o">=</span> <span class="p">[[</span><span class="n">IDEmojiManager</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="kt">BOOL</span> <span class="n">containsEmoji</span> <span class="o">=</span> <span class="p">[</span><span class="n">manager</span> <span class="nl">containEmojiInString</span><span class="p">:</span><span class="s">@&quot;Some String⭐&quot;</span><span class="p">];</span>  <span class="c1">// return value: YES</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="p">[</span><span class="n">manager</span> <span class="nl">removeEmojiFromString</span><span class="p">:</span><span class="s">@&quot;Some String⭐&quot;</span><span class="p">];</span>      <span class="c1">// return value: Some String</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-01-05T21:52:29+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:52 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/" data-via="" data-counturl="http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/" title="Previous Post: Optional in Swift -- 使用Swift Optional的好处">&laquo; Optional in Swift &#8211; 使用Swift Optional的好处</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Japan.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/">如何检测和删除NSString中的颜文字Emoji</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

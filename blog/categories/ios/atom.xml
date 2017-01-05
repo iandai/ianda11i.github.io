@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2016-08-21T00:12:33+08:00</updated>
+  <updated>2017-01-05T22:36:49+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何检测和删除NSString中的颜文字Emoji]]></title>
+    <link href="http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/"/>
+    <updated>2017-01-05T21:52:29+08:00</updated>
+    <id>http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji</id>
+    <content type="html"><![CDATA[<h2>问题</h2>
+
+<p>有一个需求是获取联系人姓名的首字母，使用一个或多个首字母绘制联系人用户头像。有的用户名字首字母是颜文字，绘制就会出现乱码。代码如下：</p>
+
+<pre><code class="Objc">NSMutableString *initials = [NSMutableString string];
+NSArray *words = [contactName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+for (NSString *word in words) {
+    if (word.length &gt; 0) {
+        NSString *firstLetter = [word substringToIndex:1];
+        [initials appendString:[firstLetter uppercaseString]];
+    }
+}
+</code></pre>
+
+<p>乱码来自于名字中的颜文字，当<code>[word substringToIndex:1]</code>中的word是颜文字的时候，其返回值并不是一个正常的颜文字。</p>
+
+<p>原因是<code>[word length]</code>结果是2，所以<code>[word substringToIndex:1]</code>其实只返回了颜文字的一半。</p>
+
+<p>为什么会出现这种情况呢？这是因为<code>word</code>是一个NSString类型，而NSString是UTF-16编码的。许多颜文字在使用UTF-16表示的时候，要是用两个字节才能表示，比如😀。</p>
+
+<p>NSString类的<a href="https://developer.apple.com/reference/foundation/nsstring">文档</a>里写到：</p>
+
+<blockquote><p>An NSString object encodes a Unicode-compliant text string, represented as a sequence of UTF–16 code units. All lengths, character
+indexes, and ranges are expressed in terms of 16-bit platform-endian values, with index values starting at 0.</p></blockquote>
+
+<h2>解决方法</h2>
+
+<h3>1.从字符串中获得正确完整的字符</h3>
+
+<pre><code class="Objc">__block NSString *firstLetter = @"";
+[word enumerateSubstringsInRange:NSMakeRange(0, [word length])
+                         options:NSStringEnumerationByComposedCharacterSequences
+                      usingBlock: ^(NSString* substring, NSRange substringRange, NSRange enclosingRange, BOOL* stop) {
+                          firstLetter = substring;
+                          *stop = YES;
+                      }];
+</code></pre>
+
+<p>使用<code>NSStringEnumerationByComposedCharacterSequences</code>能够读取完整的颜文字，而不是只读取其中一个字节。</p>
+
+<h3>2.检测和删除是否包含颜文字</h3>
+
+<p>Github上有一个比较多人参考的项目<a href="https://github.com/woxtu/NSString-RemoveEmoji">NSString-RemoveEmoj</a>。这个项目有遗漏颜文字，比如⭐，包含了许多不是颜文字的字符，比如Ⅶ。</p>
+
+<p>在unicode.org网站上，有<a href="http://unicode.org/Public/emoji/4.0/emoji-test.txt">完整的颜文字列表</a>。遍历这个完整的列表，就可以检测字符串中是否颜文字。方法如下：</p>
+
+<pre><code class="Objc">// 建立一个emoji CharacterSet
+NSMutableCharacterSet *emojiCharacterSet = [[NSMutableCharacterSet alloc] init];
+NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"emoji" ofType:@"plist"];
+NSArray *emojiArr = [NSArray arrayWithContentsOfFile:plistPath];
+for (NSString *emoji in emojiArr) {
+    [emojiCharacterSet addCharactersInString:emoji];
+}
+
+// - (NSRange)rangeOfCharacterFromSet:(NSCharacterSet *)searchSet;
+[@"😀" rangeOfCharacterFromSet:set]; 
+</code></pre>
+
+<p>上面代码还有一个问题没有被考虑。比如下面这种情况：</p>
+
+<pre><code class="Objc">
+NSMutableCharacterSet *set = [[NSMutableCharacterSet alloc] init];
+[set addCharactersInString:@"2️⃣"];      // keycap 2, 0032 FE0F 20E3, check from http://www.iemoji.com/view/emoji/296/symbols/keycap-2 
+[@"2" rangeOfCharacterFromSet:set];     // return value: YES, which is not reasonable 
+</code></pre>
+
+<p>字符2在搜索包含有颜文字2的字符集的时候，会被错误的检测出来。</p>
+
+<p>为了解决这个问题，我写了<a href="https://github.com/iandai/IDEmojiString">IDEmojiString项目</a>。</p>
+
+<h3>3.IDEmojiString</h3>
+
+<p>IDEmojiString通过使单字符和多字符分别搜索字符集，解决了上面的问题。</p>
+
+<p>使用CocoaPods安装之后，通过以下方法使用：
+<code>Objc
+//#import "IDEmojiManager.h"
+IDEmojiManager *manager = [[IDEmojiManager alloc] init];
+BOOL containsEmoji = [manager containEmojiInString:@"Some String⭐"];  // return value: YES
+NSString *str = [manager removeEmojiFromString:@"Some String⭐"];      // return value: Some String
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Optional in Swift -- 使用Swift Optional的好处]]></title>
@@ -330,128 +419,6 @@ if let sharePrice = findStockCode("Apple")?.price {
 <h4>参考文献</h4>
 
 <p><a href="http://stackoverflow.com/questions/27726354/ipad-remembering-camera-permissions-after-delete-how-to-clear">重设相机访问权限</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[高性能添加图片圆角方法和原理]]></title>
-    <link href="http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/"/>
-    <updated>2015-09-21T20:07:34+08:00</updated>
-    <id>http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian</id>
-    <content type="html"><![CDATA[<h2>在layer上添加cornerRadius原理</h2>
-
-<pre><code class="objc">UIImage *image = [UIImage imageNamed:@"sample"];   //顺便提一句，imageNamed这个方法会cache image。
-UIImageView *imgView = [[UIImageView alloc] initWithImage:image];
-imgView.layer.masksToBounds = YES;
-imgView.layer.cornerRadius = 0.5f;
-</code></pre>
-
-<ul>
-<li><p>调用cornerRadius的时候，系统会做什么？
-设置cornerRadius，会在layer的background上面绘制圆角。默认情况下，这并不会应用到layer的contents属性上的图片（每个layer中contents属性接受一个CGImage的对象）。<br/>
-设置masksToBounds属性为YES，并且设置cornerRadius的值的话，Core Animation会创建一个包含圆角效果的蒙板（mask）。   这使得layer的contents属性中的图片在蒙板作用下，产生圆角效果。</p></li>
-<li><p>为什么在uitableview或者uicollectionview中滚动的时候，给图片添加圆角直接用cornerRadius性能不好？
-当layer的属性cornerRadius和maskToBounds一起使用时，会触发离屏渲染（Offscreen rendering）。</p></li>
-<li><p>离屏渲染Offscreen rendering是什么呢？
-Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能。<br/>
-这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks,shadows等触发的offscreen是基于GPU的。</p></li>
-<li><p>离屏渲染Offscreen rendering的可能误解。
-Offscreen rendering
-Offscreen rendering is drawing, that cannot be done using hardware acceleration (GPU) and should be performed on the CPU instead.
-At the low level this looks like that: during rendering of the layer that requires the offscreen rendering, the GPU stops the rendering pipeline and passes control to the CPU. In its turn, the CPU performs all the necessary operations (e.g. your fancy stuff in drawRect:) and returns control to the GPU with the already rendered layer. GPU renders it and the rendering pipeline keeps going.
-<a href="https://yalantis.com/blog/mastering-uikit-performance/">https://yalantis.com/blog/mastering-uikit-performance/</a>
-以上对Offscreen rendering解释是片面的。</p></li>
-<li><p>为什么cornerRadius和maskToBounds一起使用时，会触发离屏渲染？
-cornerRadius和maskToBounds一起使用时，Core Animation会创建一个包含圆角效果的蒙板（mask）。
-Offscreen rendering会在layer的各种属性结合，使得layer不能直接绘制到屏幕上，需要进行pre-compositing的时候，会触发离屏渲染。
-（原文：Offscreen rendering is invoked whenever the combinnation of layer propertyies that have been specified mean that the layer cannot be drawn directly to the screen without pre-compositing.）［3］</p></li>
-</ul>
-
-
-<h2>可能提高性能的方法一：光栅化layer.shouldRasterize</h2>
-
-<pre><code class="objc">UIImage *image = [UIImage imageNamed:@"sample"];
-UIImageView *imgView = [[UIImageView alloc] initWithImage:image];
-imgView.layer.masksToBounds = YES;
-imgView.layer.cornerRadius = 0.5f;
-imgView.layer.shouldRasterize = YES;
-</code></pre>
-
-<ul>
-<li><p>什么是光栅化（Rasterisation）？
-Rasterisation (or rasterization) is the task of taking an image described in a vector graphics format (shapes) and converting it into a raster image (pixels or dots) for output on a video display or printer, or for storage in a bitmap file format.</p></li>
-<li><p>为什么layer.shouldRasterize可能提高性能？
-开启shouldRasterize后,layer会被光栅化为bitmap,layer的包含圆角的mask效果也会被保存到bitmap中。
-要注意的是，更新已光栅化的layer，会造成大量的offscreen渲染。</p></li>
-</ul>
-
-
-<h2>可能提高性能的方法二：设置layer.shadowPath属性</h2>
-
-<pre><code class="objc">UIImage *image = [UIImage imageNamed:@"sample"];
-UIImageView *imgView = [[UIImageView alloc] initWithImage:image];
-imgView.layer.masksToBounds = YES;
-imgView.layer.cornerRadius = 0.5f;
-imgView.layer.shadowPath = [UIBezierPath bezierPathWithRect:imgView.bounds].CGPath;
-</code></pre>
-
-<ul>
-<li>layer的shadowPath的理解
-layer会创建一个圆角的shadowPath，并且会cache这个shadowPath，避免多次重绘。</li>
-</ul>
-
-
-<h2>可能提高性能的方法三：添加自带圆角中间透明的图片</h2>
-
-<ul>
-<li>这会cache圆角图片，但是在blending的时候，有透明的部分，会降低部分性能。
-（利用一张中间为透明圆形的图片来进行遮盖,虽然会引起blending,但性能仍然高于offerScreen。） 来源：WWDC心得与延伸</li>
-</ul>
-
-
-<h2>可能提高性能的方法四: myView.layer.drawAsynchronously = YES</h2>
-
-<p>当你设置 drawsAsynchronously 为 YES 时，发生了什么？你的 -drawRect:/-drawInContext:方法仍然会被在主线程上调用。  但是所有调用 Core Graphics 的操作都不会被执行。取而代之的是，绘制命令被推迟，并且在后台线程中异步执行。<br/>
-这种方式就是先记录绘图命令，然后在后台线程中重现。为了这个过程的顺利进行，更多的工作需要被做，更多的内存需要被申请。但是主队列中的一些工作便被移出来了(大概意思就是让我们把一些能在后台实现的工作放到后台实现，让主线程更顺畅)。<br/>
-对于昂贵的绘图方法，这是最有可能提升性能的，但对于那些绘图方法来说，也不会节省太多资源。</p>
-
-<h2>整个绘制过程</h2>
-
-<p>当你滚动整个屏幕的时候，数以百万计的颜色单元必须以每秒60次的速度刷新，这是一个很大的工作量。</p>
-
-<p>第一步：
-CPU 开始运行你的程序。你可能会让 CPU 从 bundle 加载一张 PNG 的图片并且解压它。
-这所有的事情都在 CPU 上进行。然后当你需要显示解压缩后的图片时，它需要以某种方式上传到 GPU。</p>
-
-<p>如果一个 CALayer 的子类实现了 -drawInContext: 或者它的代理，类似于 -drawLayer:inContest:, Core Animation 将会为这个图层申请一个后备存储，用来保存那些方法绘制进来的位图。那些方法内的代码将会运行在 CPU 上，结果将会被上传到 GPU。</p>
-
-<p>第二步：
-将数据传输到 GPU 上。为了让 GPU 访问数据，需要将数据从 RAM 移动到 VRAM 上。这就是提及到的上传数据到 GPU。这看起来貌似微不足道，但是一些大型的纹理却会非常耗时。</p>
-
-<p>第三步：
-GPU 需要将每一个 frame 的纹理(位图)合成在一起(一秒60次)。
-每一个纹理会占用 VRAM(video RAM)，所以需要给 GPU 同时保持纹理的数量做一个限制。
-GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂，并且 GPU在 16.7ms(1/60s)内能做的工作也是有限的。</p>
-
-<h2>软件绘图</h2>
-
-<p>在iOS中，软件绘图通常是由Core Graphics框架完成来完成。<br/>
-相比Core Animation和OpenGL，Core Graphics要慢了不少。<br/>
-软件绘图不仅效率低，还会消耗可观的内存。<br/>
-一旦你实现了CALayerDelegate协议中的-drawLayer:inContext:方法或者UIView中的-drawRect:方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的大小的内存可从这个算式得出：图层宽<em>图层高</em>4字节，宽高的单位均为像素。<br/>
-软件绘图的代价昂贵，除非绝对必要，你应该避免重绘你的视图。提高绘制性能的秘诀就在于尽量避免去绘制。</p>
-
-<h3>参考文献</h3>
-
-<p><a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">Apple Reference cornerRadius</a><br/>
-<a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques">From iOS Core Animation: Advanced Techniques</a>
-<a href="http://www.cocoachina.com/ios/20150429/11712.html">WWDC心得与延伸:iOS图形性能</a><br/>
-<a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">WWDC:ios_app_performance_graphics_and_animations</a><br/>
-<a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">Getting Pixels onto the Screen</a><br/>
-<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">What triggers offscreen rendering, blending and layoutSubviews in iOS</a><br/>
-<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">Core Animation Programming Guide：Improving Animation Performance</a><br/>
-<a href="https://robots.thoughtbot.com/designing-for-ios-graphics-performance">Designing for iOS: Graphics &amp; Performance</a>
-<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">深入的offscreen render分析：iOS离屏绘制的性能和机制分析by Apple UIKit team   member</a></p>
 ]]></content>
   </entry>
   

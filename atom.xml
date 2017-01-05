@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2016-08-21T00:12:33+08:00</updated>
+  <updated>2017-01-05T22:36:49+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,133 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何检测和删除NSString中的颜文字Emoji]]></title>
+    <link href="http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/"/>
+    <updated>2017-01-05T21:52:29+08:00</updated>
+    <id>http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji</id>
+    <content type="html"><![CDATA[<h2>问题</h2>
+
+<p>有一个需求是获取联系人姓名的首字母，使用一个或多个首字母绘制联系人用户头像。有的用户名字首字母是颜文字，绘制就会出现乱码。代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="bp">NSMutableString</span> <span class="o">*</span><span class="n">initials</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableString</span> <span class="n">string</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">contactName</span> <span class="nl">componentsSeparatedByCharactersInSet</span><span class="p">:[</span><span class="bp">NSCharacterSet</span> <span class="n">whitespaceCharacterSet</span><span class="p">]];</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">word</span> <span class="k">in</span> <span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">word</span><span class="p">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="bp">NSString</span> <span class="o">*</span><span class="n">firstLetter</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="nl">substringToIndex</span><span class="p">:</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">initials</span> <span class="nl">appendString</span><span class="p">:[</span><span class="n">firstLetter</span> <span class="n">uppercaseString</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>乱码来自于名字中的颜文字，当<code>[word substringToIndex:1]</code>中的word是颜文字的时候，其返回值并不是一个正常的颜文字。</p>
+
+<p>原因是<code>[word length]</code>结果是2，所以<code>[word substringToIndex:1]</code>其实只返回了颜文字的一半。</p>
+
+<p>为什么会出现这种情况呢？这是因为<code>word</code>是一个NSString类型，而NSString是UTF-16编码的。许多颜文字在使用UTF-16表示的时候，要是用两个字节才能表示，比如😀。</p>
+
+<p>NSString类的<a href="https://developer.apple.com/reference/foundation/nsstring">文档</a>里写到：</p>
+
+<blockquote><p>An NSString object encodes a Unicode-compliant text string, represented as a sequence of UTF–16 code units. All lengths, character
+indexes, and ranges are expressed in terms of 16-bit platform-endian values, with index values starting at 0.</p></blockquote>
+
+<h2>解决方法</h2>
+
+<h3>1.从字符串中获得正确完整的字符</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="k">__block</span> <span class="bp">NSString</span> <span class="o">*</span><span class="n">firstLetter</span> <span class="o">=</span> <span class="s">@&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">word</span> <span class="nl">enumerateSubstringsInRange</span><span class="p">:</span><span class="n">NSMakeRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">word</span> <span class="n">length</span><span class="p">])</span>
+</span><span class='line'>                         <span class="nl">options</span><span class="p">:</span><span class="n">NSStringEnumerationByComposedCharacterSequences</span>
+</span><span class='line'>                      <span class="nl">usingBlock</span><span class="p">:</span> <span class="o">^</span><span class="p">(</span><span class="bp">NSString</span><span class="o">*</span> <span class="n">substring</span><span class="p">,</span> <span class="n">NSRange</span> <span class="n">substringRange</span><span class="p">,</span> <span class="n">NSRange</span> <span class="n">enclosingRange</span><span class="p">,</span> <span class="kt">BOOL</span><span class="o">*</span> <span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                          <span class="n">firstLetter</span> <span class="o">=</span> <span class="n">substring</span><span class="p">;</span>
+</span><span class='line'>                          <span class="o">*</span><span class="n">stop</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>                      <span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>NSStringEnumerationByComposedCharacterSequences</code>能够读取完整的颜文字，而不是只读取其中一个字节。</p>
+
+<h3>2.检测和删除是否包含颜文字</h3>
+
+<p>Github上有一个比较多人参考的项目<a href="https://github.com/woxtu/NSString-RemoveEmoji">NSString-RemoveEmoj</a>。这个项目有遗漏颜文字，比如⭐，包含了许多不是颜文字的字符，比如Ⅶ。</p>
+
+<p>在unicode.org网站上，有<a href="http://unicode.org/Public/emoji/4.0/emoji-test.txt">完整的颜文字列表</a>。遍历这个完整的列表，就可以检测字符串中是否颜文字。方法如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="c1">// 建立一个emoji CharacterSet</span>
+</span><span class='line'><span class="bp">NSMutableCharacterSet</span> <span class="o">*</span><span class="n">emojiCharacterSet</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSMutableCharacterSet</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">plistPath</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">pathForResource</span><span class="p">:</span><span class="s">@&quot;emoji&quot;</span> <span class="nl">ofType</span><span class="p">:</span><span class="s">@&quot;plist&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="bp">NSArray</span> <span class="o">*</span><span class="n">emojiArr</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSArray</span> <span class="nl">arrayWithContentsOfFile</span><span class="p">:</span><span class="n">plistPath</span><span class="p">];</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="n">emoji</span> <span class="k">in</span> <span class="n">emojiArr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">emojiCharacterSet</span> <span class="nl">addCharactersInString</span><span class="p">:</span><span class="n">emoji</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// - (NSRange)rangeOfCharacterFromSet:(NSCharacterSet *)searchSet;</span>
+</span><span class='line'><span class="p">[</span><span class="s">@&quot;😀&quot;</span> <span class="nl">rangeOfCharacterFromSet</span><span class="p">:</span><span class="n">set</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面代码还有一个问题没有被考虑。比如下面这种情况：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="bp">NSMutableCharacterSet</span> <span class="o">*</span><span class="n">set</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSMutableCharacterSet</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">set</span> <span class="nl">addCharactersInString</span><span class="p">:</span><span class="s">@&quot;2️⃣&quot;</span><span class="p">];</span>      <span class="c1">// keycap 2, 0032 FE0F 20E3, check from http://www.iemoji.com/view/emoji/296/symbols/keycap-2 </span>
+</span><span class='line'><span class="p">[</span><span class="s">@&quot;2&quot;</span> <span class="nl">rangeOfCharacterFromSet</span><span class="p">:</span><span class="n">set</span><span class="p">];</span>     <span class="c1">// return value: YES, which is not reasonable </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>字符2在搜索包含有颜文字2的字符集的时候，会被错误的检测出来。</p>
+
+<p>为了解决这个问题，我写了<a href="https://github.com/iandai/IDEmojiString">IDEmojiString项目</a>。</p>
+
+<h3>3.IDEmojiString</h3>
+
+<p>IDEmojiString通过使单字符和多字符分别搜索字符集，解决了上面的问题。</p>
+
+<p>使用CocoaPods安装之后，通过以下方法使用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="c1">//#import &quot;IDEmojiManager.h&quot;</span>
+</span><span class='line'><span class="n">IDEmojiManager</span> <span class="o">*</span><span class="n">manager</span> <span class="o">=</span> <span class="p">[[</span><span class="n">IDEmojiManager</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="kt">BOOL</span> <span class="n">containsEmoji</span> <span class="o">=</span> <span class="p">[</span><span class="n">manager</span> <span class="nl">containEmojiInString</span><span class="p">:</span><span class="s">@&quot;Some String⭐&quot;</span><span class="p">];</span>  <span class="c1">// return value: YES</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="p">[</span><span class="n">manager</span> <span class="nl">removeEmojiFromString</span><span class="p">:</span><span class="s">@&quot;Some String⭐&quot;</span><span class="p">];</span>      <span class="c1">// return value: Some String</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Optional in Swift -- 使用Swift Optional的好处]]></title>
@@ -525,7 +652,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[高性能添加图片圆角方法和原理]]></title>
+    <title type="html"><![CDATA[高性能添加图片圆角方法原理：cornerRadius，layer.shouldRasterize，layer.setShadowPath和透明图片]]></title>
     <link href="http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian/"/>
     <updated>2015-09-21T20:07:34+08:00</updated>
     <id>http://iandai.github.io/blog/2015/09/21/gao-xing-neng-tian-jia-tu-pian-yuan-jiao-fang-fa-bi-jiao-:layer-dot-shouldrasterize,layer-dot-setshadowpathhe-tou-ming-tu-pian</id>
@@ -544,13 +671,15 @@
 
 <ul>
 <li><p>调用cornerRadius的时候，系统会做什么？
-设置cornerRadius，会在layer的background上面绘制圆角。默认情况下，这并不会应用到layer的contents属性上的图片（每个layer中contents属性接受一个CGImage的对象）。<br/>
-设置masksToBounds属性为YES，并且设置cornerRadius的值的话，Core Animation会创建一个包含圆角效果的蒙板（mask）。   这使得layer的contents属性中的图片在蒙板作用下，产生圆角效果。</p></li>
+设置cornerRadius，会在layer的background上面绘制圆角。默认情况下，这并不会应用到layer的contents属性上的图片（每个layer中contents属性接受一个CGImage的对象）。
+设置masksToBounds属性为YES，并且设置cornerRadius的值的话，Core Animation会创建一个包含圆角效果的蒙板（mask）。 这使得layer的contents属性中的图片在蒙板作用下，产生圆角效果[1]。</p></li>
 <li><p>为什么在uitableview或者uicollectionview中滚动的时候，给图片添加圆角直接用cornerRadius性能不好？
 当layer的属性cornerRadius和maskToBounds一起使用时，会触发离屏渲染（Offscreen rendering）。</p></li>
 <li><p>离屏渲染Offscreen rendering是什么呢？
-Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能。<br/>
-这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks,shadows等触发的offscreen是基于GPU的。</p></li>
+Offscreen rendring指的是在图像在绘制到当前屏幕前，需要先渲染到一个Offscreen context，之后才绘制到屏幕。当Offscreen rendering频繁发生的时候，就会降低性能[2]。
+－－－
+这里提到的offscreen rendering主要讲的是通过GPU执行的offscreen,事实上还有的offscreen rendering是通过CPU来执行的（例如使用Core Graphics, drawRect）。其它类似cornerRadios, masks, shadows等触发的offscreen是基于GPU的。［4］
+－－－</p></li>
 <li><p>离屏渲染Offscreen rendering的可能误解。
 Offscreen rendering
 Offscreen rendering is drawing, that cannot be done using hardware acceleration (GPU) and should be performed on the CPU instead.
@@ -649,17 +778,24 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
 一旦你实现了CALayerDelegate协议中的-drawLayer:inContext:方法或者UIView中的-drawRect:方法（其实就是前者的包装方法），图层就创建了一个绘制上下文，这个上下文需要的大小的内存可从这个算式得出：图层宽<em>图层高</em>4字节，宽高的单位均为像素。<br/>
 软件绘图的代价昂贵，除非绝对必要，你应该避免重绘你的视图。提高绘制性能的秘诀就在于尽量避免去绘制。</p>
 
+<h2>总结</h2>
+
+<ul>
+<li>测量、测试、迭代。为了有好的性能，需要在不同的设备上，平衡各种利弊，不断测试和改进。</li>
+</ul>
+
+
 <h3>参考文献</h3>
 
-<p><a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">Apple Reference cornerRadius</a><br/>
+<p><a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CALayer_class/#//apple_ref/occ/instp/CALayer/cornerRadius">Apple Reference cornerRadius</a>
 <a href="https://github.com/AttackOnDobby/iOS-Core-Animation-Advanced-Techniques">From iOS Core Animation: Advanced Techniques</a>
-<a href="http://www.cocoachina.com/ios/20150429/11712.html">WWDC心得与延伸:iOS图形性能</a><br/>
-<a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">WWDC:ios_app_performance_graphics_and_animations</a><br/>
-<a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">Getting Pixels onto the Screen</a><br/>
-<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">What triggers offscreen rendering, blending and layoutSubviews in iOS</a><br/>
-<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">Core Animation Programming Guide：Improving Animation Performance</a><br/>
+<a href="http://www.cocoachina.com/ios/20150429/11712.html">WWDC心得与延伸:iOS图形性能</a>
+<a href="http://adcdownload.apple.com/wwdc_2012/wwdc_2012_session_pdfs/session_238__ios_app_performance_graphics_and_animations.pdf">WWDC:ios_app_performance_graphics_and_animations</a>
+<a href="https://www.objc.io/issues/3-views/moving-pixels-onto-the-screen/">Getting Pixels onto the Screen</a>
+<a href="http://stackoverflow.com/questions/13158796/what-triggers-offscreen-rendering-blending-and-layoutsubviews-in-ios">What triggers offscreen rendering, blending and layoutSubviews in iOS</a>
+<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/ImprovingAnimationPerformance/ImprovingAnimationPerformance.html">Core Animation Programming Guide：Improving Animation Performance</a>
 <a href="https://robots.thoughtbot.com/designing-for-ios-graphics-performance">Designing for iOS: Graphics &amp; Performance</a>
-<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">深入的offscreen render分析：iOS离屏绘制的性能和机制分析by Apple UIKit team   member</a></p>
+<a href="http://www.taofengping.com/2013/05/18/ios_offscreen_analysis/#.VZZkuhOqpBc">深入的offscreen render分析：iOS离屏绘制的性能和机制分析by Apple UIKit team member</a></p>
 ]]></content>
   </entry>
   
@@ -1054,21 +1190,6 @@ early stage start up最重要的metrics是什么？<br/>
 <h6>参考文献</h6>
 
 <p><a href="http://www.gotealeaf.com/blog/how-the-hash-works-in-ruby">How the hash works in ruby</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[A/B Testing: Avoid Repeated Significance Testing Errors]]></title>
-    <link href="http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors/"/>
-    <updated>2015-03-25T18:46:02+08:00</updated>
-    <id>http://iandai.github.io/blog/2015/03/25/avoid-repeated-significance-testing-errors</id>
-    <content type="html"><![CDATA[<p>Source:<br/>
-<a href="http://www.evanmiller.org/how-not-to-run-an-ab-test.html">http://www.evanmiller.org/how-not-to-run-an-ab-test.html</a></p>
-
-<p>Summary:<br/>
-文章介绍了AB测试的常见统计错误：重复显著性测试错误（repeated significance testing errors）<br/>
-值得注意的地方是：作者指出，在实验没有结束的时候，不停的去看结果是否显著，是不可取的。你很可能发现结果的显著性达到了1%或者5%而停止AB测试。
-实际上这是人为的操纵了数据。显著性检验的前提条件是：你的样本大小sample size是固定的。</p>
 ]]></content>
   </entry>
   
