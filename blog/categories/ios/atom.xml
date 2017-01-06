@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2017-01-05T22:36:49+08:00</updated>
+  <updated>2017-01-06T13:38:21+08:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,140 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NSString, Unicode和NSCharacterSet]]></title>
+    <link href="http://iandai.github.io/blog/2017/01/05/nsstring-unicodehe-nscharacterset/"/>
+    <updated>2017-01-05T22:57:17+08:00</updated>
+    <id>http://iandai.github.io/blog/2017/01/05/nsstring-unicodehe-nscharacterset</id>
+    <content type="html"><![CDATA[<h2>Unicode</h2>
+
+<h3>Convert unicode ponit to eomji using universal character names</h3>
+
+<blockquote><p>Universal character names are formed by a prefix \U followed by an eight-digit Unicode code point, or by a prefix \u followed by a four digit Unicode code point.
+For Unicode surrogate pairs, specify the universal character name by using \UNNNNNNNN, where NNNNNNNN is the eight-digit code point for the character. The compiler generates a surrogate pair if required.
+In Objc, \U also handles Emoji ZWJ Sequences.</p></blockquote>
+
+<p>For example:
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// 用Universal character names \U和\u 替换
+</span><span class='line'>NSString *str = @&ldquo;The Greek letter Beta looks like this: \u03b2, and the emoji for books looks like this: \U00010437&rdquo;;
+</span><span class='line'>NSLog(@&ldquo;%@&rdquo;, str);&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;// 处理 Surrogate Pairs
+</span><span class='line'>// 方法一
+</span><span class='line'>NSString *str2 = [NSString stringWithCharacters:(unichar[]){0x263A, 0xFE0F} length:2];
+</span><span class='line'>NSLog(@"%@", str2);
+</span><span class='line'>// 方法二
+</span><span class='line'>NSString *str3 = [NSString stringWithFormat:@"\U0000263A\U0000FE0F"];
+</span><span class='line'>NSLog(@"%@", str3);
+</span><span class='line'>// 方法三
+</span><span class='line'>// NSString  initWithBytes
+</span><span class='line'>// supports Surrogate Pairs, does not support Emoji ZWJ Sequences
+</span><span class='line'>const unichar chars1[] = {0x263A, 0xFE0F};
+</span><span class='line'>NSString *str4 = [[NSString alloc] initWithBytes:chars1 length:sizeof(chars1) encoding:NSUTF16LittleEndianStringEncoding];
+</span><span class='line'>NSLog(@"%@", str4);
+</span><span class='line'>// 方法四
+</span><span class='line'>// NSString  initWithBytes
+</span><span class='line'>// works on utf32
+</span><span class='line'>uint32_t base_point_UTF32 = 0x1F600;
+</span><span class='line'>NSString *str5 = [[NSString alloc] initWithBytes:&amp;base_point_UTF32 length:4 encoding:NSUTF32LittleEndianStringEncoding];
+</span><span class='line'>NSLog(@"%@", str5);
+</span><span class='line'>// 方法五
+</span><span class='line'>//CFStringGetSurrogatePairForLongCharacter
+</span><span class='line'>UniChar c[2];
+</span><span class='line'>CFStringGetSurrogatePairForLongCharacter(0x1F600, c);
+</span><span class='line'>NSString *str6 = [[NSString alloc] initWithCharacters:c length:2];
+</span><span class='line'>NSLog(@"%@", str6);
+</span><span class='line'>
+</span><span class='line'>// 处理Emoji ZWJ Sequences
+</span><span class='line'>// 方法一
+</span><span class='line'>NSString *str7 = [NSString stringWithFormat:@"\U0001F468\U0000200D\U00002695\U0000FE0F"];
+</span><span class='line'>NSLog(@"%@", str7);
+</span><span class='line'>// 方法二
+</span><span class='line'>NSString *str8 = [NSString stringWithFormat:@"👨\u200D👩\u200D👧\u200D👦"]; //👨‍👩‍👧‍👦
+</span><span class='line'>NSLog(@"%@", str8);
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;
+</span><span class='line'>
+</span><span class='line'>## CharacterSet
+</span><span class='line'>
+</span><span class='line'>### 检测CharacterSet包含了哪些字符
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;NSCharacterSet *charSet = [NSCharacterSet symbolCharacterSet];&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int count = 1;
+</span><span class='line'>for (unichar i = 0; i&lt;65535; i++) {
+</span><span class='line'>if ([charSet characterIsMember:i]) {
+</span><span class='line'>    NSLog(@&ldquo;character %d = %C&rdquo;,i,i);
+</span><span class='line'>    count++;
+</span><span class='line'>}
+</span><span class='line'>}
+</span><span class='line'>NSLog(@&ldquo;found %d characters out of 65536&rdquo;,count);</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>More about unicode and emoji</h2>
+
+<p><a href="http://www.unicode.org/faq/emoji_dingbats.html">Emoji and Pictographs</a><br/>
+<a href="http://cyrilwei.me/swift/2016/08/31/the-emoji.html">The Emoji, is not what you expected</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[如何检测和删除NSString中的颜文字Emoji]]></title>
@@ -398,27 +532,6 @@ if let sharePrice = findStockCode("Apple")?.price {
 <h4>参考文献</h4>
 
 <p><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法]]></title>
-    <link href="http://iandai.github.io/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/"/>
-    <updated>2015-09-24T16:50:50+08:00</updated>
-    <id>http://iandai.github.io/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa</id>
-    <content type="html"><![CDATA[<h2>重设App相机访问权限方法</h2>
-
-<ul>
-<li>iOS在删除App的情况下，仍然会记忆App camera访问权限1天</li>
-<li>重设方法一：调整系统时间。</li>
-<li>重设方法二：修改App的bundle id。</li>
-<li>重设方法三：重设所有App的位置和隐私。Settings -> General -> Reset -> Rest Location &amp; Privacy</li>
-</ul>
-
-
-<h4>参考文献</h4>
-
-<p><a href="http://stackoverflow.com/questions/27726354/ipad-remembering-camera-permissions-after-delete-how-to-clear">重设相机访问权限</a></p>
 ]]></content>
   </entry>
   

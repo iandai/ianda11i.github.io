@@ -9,7 +9,13 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Cache过期 Key Based Cache Expiration 优点： 降低耦合性和代码复杂度，只需要在自己的函数／方法中修改代码即可。 缺点： 适用于cache对应的记录有update_at字段。（Category整体没有update_at的时间记录，就没法使用该方法） 每次查询， &hellip;">
+  <meta name="description" content="Steps Apply Google Map Api Key Import GoogleMaps.bundle in GoogleMaps.framework In Other Linker Flags section, add -ObjC In AppDelegate 1
+2
+3
+4
+5
+6
+# &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +74,167 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/22/using-ios-google-maps-sdk/">Using iOS Google Maps SDK</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-22T19:10:37+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>7:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Steps</h2>
+
+<ol>
+<li> Apply Google Map Api Key</li>
+<li> Import GoogleMaps.bundle in GoogleMaps.framework</li>
+<li> In <code>Other Linker Flags</code> section, add <code>-ObjC</code></li>
+<li> In <code>AppDelegate</code></li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="bp">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">GMSServices</span> <span class="nl">provideAPIKey</span><span class="p">:</span><span class="s">@&quot;API_KEY&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Possible issues</h2>
+
+<p>1.In 2nd step, use GoogleMaps.bundle in GoogleMaps.framework, instead of use GoogleMaps.framework.</p>
+
+<p>2.In 3rd step, use <code>-ObjC</code> will have conflict with other framework such as Parse&rsquo;s framework. The solution is to add following:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-force_load <span class="k">$(</span>PROJECT_DIR<span class="k">)</span>/GoogleMaps.framework/GoogleMaps
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3.Use google maps in a subview.<br/>
+Following Code will not work in a subview.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="cp">#import &quot;YourViewController.h&quot;</span>
+</span><span class='line'><span class="cp">#import &lt;GoogleMaps/GoogleMaps.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="nc">YourViewController</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// Create a GMSCameraPosition that tells the map to display the</span>
+</span><span class='line'>    <span class="c1">// coordinate -33.86,151.20 at zoom level 6.</span>
+</span><span class='line'>    <span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="o">-</span><span class="mf">33.86</span>
+</span><span class='line'>                                                      <span class="nl">longitude</span><span class="p">:</span><span class="mf">151.20</span>
+</span><span class='line'>                                                           <span class="nl">zoom</span><span class="p">:</span><span class="mi">6</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSMapView</span> <span class="nl">mapWithFrame</span><span class="p">:</span><span class="n">CGRectZero</span> <span class="nl">camera</span><span class="p">:</span><span class="n">camera</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">mapView_</span><span class="p">.</span><span class="n">myLocationEnabled</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Creates a marker in the center of the map.</span>
+</span><span class='line'>    <span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">mapView_</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Chnage the existing Xib&rsquo;s class into GSMMapView will solve the problem.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">weak</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">)</span> <span class="kt">IBOutlet</span> <span class="n">GMSMapView</span> <span class="o">*</span><span class="n">mapView</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">CGPoint</span> <span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="mf">44.209769</span><span class="p">,</span> <span class="o">-</span><span class="mf">69.0648919</span><span class="p">);</span>
+</span><span class='line'><span class="n">GMSCameraPosition</span> <span class="o">*</span><span class="n">camera</span> <span class="o">=</span> <span class="p">[</span><span class="n">GMSCameraPosition</span> <span class="nl">cameraWithLatitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">x</span>
+</span><span class='line'>                                                        <span class="nl">longitude</span><span class="p">:</span><span class="n">center</span><span class="p">.</span><span class="n">y</span>
+</span><span class='line'>                                                             <span class="nl">zoom</span><span class="p">:</span><span class="mf">15.5</span><span class="p">];</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">camera</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GMSMarker</span> <span class="o">*</span><span class="n">marker</span> <span class="o">=</span> <span class="p">[[</span><span class="n">GMSMarker</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">CLLocationCoordinate2DMake</span><span class="p">(</span><span class="o">-</span><span class="mf">33.86</span><span class="p">,</span> <span class="mf">151.20</span><span class="p">);</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Sydney&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">snippet</span> <span class="o">=</span> <span class="s">@&quot;Australia&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">icon</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;map_pin_icon&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="n">marker</span><span class="p">.</span><span class="n">map</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">mapView</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reference</h2>
+
+<ul>
+<li><a href="http://stackoverflow.com/questions/15417811/cannot-put-a-google-maps-gmsmapview-in-a-subview-of-main-main-view">Add google maps in a subview</a></li>
+<li><a href="http://dev.classmethod.jp/smartphone/iphone/ios-map-programming-series-1/">Customise GMSMarker</a></li>
+<li><a href="http://stackoverflow.com/questions/16706587/can-i-link-googlemaps-sdk-for-ios-with-a-linker-flag-other-than-objc">Other Linker Flags Conflict</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -987,88 +1154,6 @@ The CGI script must have the correct permissions.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/15/ruby-file-flock/">Ruby File Flock</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-15T19:25:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:25 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li>在多线程的环境中，flock可lock文件独占使用。</li>
-</ul>
-
-
-<p>运行前文件1.txt:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>a
-</span><span class='line'>b</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;1.txt&quot;</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">fp</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_EX</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span>
-</span><span class='line'>    <span class="n">arr</span> <span class="o">=</span> <span class="n">file_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">file_str</span>
-</span><span class='line'>    <span class="n">arr</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span>
-</span><span class='line'>    <span class="nb">puts</span> <span class="n">arr</span><span class="o">.</span><span class="n">inspect</span>
-</span><span class='line'>    <span class="n">file_str</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">rewind</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_str</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flush</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">fp</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="no">File</span><span class="o">::</span><span class="no">LOCK_UN</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行后文件1.txt</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">b</span>
-</span><span class='line'><span class="n">b</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -1092,6 +1177,10 @@ The CGI script must have the correct permissions.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/01/05/nsstring-unicodehe-nscharacterset/">NSString, Unicode和NSCharacterSet</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/">如何检测和删除NSString中的颜文字Emoji</a>
       </li>
     
@@ -1105,10 +1194,6 @@ The CGI script must have the correct permissions.</p>
     
       <li class="post">
         <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
       </li>
     
   </ul>

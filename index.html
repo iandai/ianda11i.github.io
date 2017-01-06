@@ -9,16 +9,7 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="问题 有一个需求是获取联系人姓名的首字母，使用一个或多个首字母绘制联系人用户头像。有的用户名字首字母是颜文字，绘制就会出现乱码。代码如下： 1
-2
-3
-4
-5
-6
-7
-8
-NSMutableString *initials = [NSMutableString string];
-NSArray * &hellip;">
+  <meta name="description" content="Unicode Convert unicode ponit to eomji using universal character names Universal character names are formed by a prefix \U followed by an eight-digit &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +68,152 @@ NSArray * &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/01/05/nsstring-unicodehe-nscharacterset/">NSString, Unicode和NSCharacterSet</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-01-05T22:57:17+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:57 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Unicode</h2>
+
+<h3>Convert unicode ponit to eomji using universal character names</h3>
+
+<blockquote><p>Universal character names are formed by a prefix \U followed by an eight-digit Unicode code point, or by a prefix \u followed by a four digit Unicode code point.
+For Unicode surrogate pairs, specify the universal character name by using \UNNNNNNNN, where NNNNNNNN is the eight-digit code point for the character. The compiler generates a surrogate pair if required.
+In Objc, \U also handles Emoji ZWJ Sequences.</p></blockquote>
+
+<p>For example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// 用Universal character names \U和\u 替换
+</span><span class='line'>NSString *str = @"The Greek letter Beta looks like this: \u03b2, and the emoji for books looks like this: \U00010437";
+</span><span class='line'>NSLog(@"%@", str);
+</span><span class='line'>
+</span><span class='line'>// 处理 Surrogate Pairs
+</span><span class='line'>// 方法一
+</span><span class='line'>NSString *str2 = [NSString stringWithCharacters:(unichar[]){0x263A, 0xFE0F} length:2];
+</span><span class='line'>NSLog(@"%@", str2);
+</span><span class='line'>// 方法二
+</span><span class='line'>NSString *str3 = [NSString stringWithFormat:@"\U0000263A\U0000FE0F"];
+</span><span class='line'>NSLog(@"%@", str3);
+</span><span class='line'>// 方法三
+</span><span class='line'>// NSString  initWithBytes
+</span><span class='line'>// supports Surrogate Pairs, does not support Emoji ZWJ Sequences
+</span><span class='line'>const unichar chars1[] = {0x263A, 0xFE0F};
+</span><span class='line'>NSString *str4 = [[NSString alloc] initWithBytes:chars1 length:sizeof(chars1) encoding:NSUTF16LittleEndianStringEncoding];
+</span><span class='line'>NSLog(@"%@", str4);
+</span><span class='line'>// 方法四
+</span><span class='line'>// NSString  initWithBytes
+</span><span class='line'>// works on utf32
+</span><span class='line'>uint32_t base_point_UTF32 = 0x1F600;
+</span><span class='line'>NSString *str5 = [[NSString alloc] initWithBytes:&base_point_UTF32 length:4 encoding:NSUTF32LittleEndianStringEncoding];
+</span><span class='line'>NSLog(@"%@", str5);
+</span><span class='line'>// 方法五
+</span><span class='line'>//CFStringGetSurrogatePairForLongCharacter
+</span><span class='line'>UniChar c[2];
+</span><span class='line'>CFStringGetSurrogatePairForLongCharacter(0x1F600, c);
+</span><span class='line'>NSString *str6 = [[NSString alloc] initWithCharacters:c length:2];
+</span><span class='line'>NSLog(@"%@", str6);
+</span><span class='line'>
+</span><span class='line'>// 处理Emoji ZWJ Sequences
+</span><span class='line'>// 方法一
+</span><span class='line'>NSString *str7 = [NSString stringWithFormat:@"\U0001F468\U0000200D\U00002695\U0000FE0F"];
+</span><span class='line'>NSLog(@"%@", str7);
+</span><span class='line'>// 方法二
+</span><span class='line'>NSString *str8 = [NSString stringWithFormat:@"👨\u200D👩\u200D👧\u200D👦"]; //👨‍👩‍👧‍👦
+</span><span class='line'>NSLog(@"%@", str8);
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>CharacterSet</h2>
+
+<h3>检测CharacterSet包含了哪些字符</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'><span class="bp">NSCharacterSet</span> <span class="o">*</span><span class="n">charSet</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSCharacterSet</span> <span class="n">symbolCharacterSet</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kt">unichar</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">65535</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">([</span><span class="n">charSet</span> <span class="nl">characterIsMember</span><span class="p">:</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;character %d = %C&quot;</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;found %d characters out of 65536&quot;</span><span class="p">,</span><span class="n">count</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>More about unicode and emoji</h2>
+
+<p><a href="http://www.unicode.org/faq/emoji_dingbats.html">Emoji and Pictographs</a><br/>
+<a href="http://cyrilwei.me/swift/2016/08/31/the-emoji.html">The Emoji, is not what you expected</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1123,140 +1260,6 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/07/09/cllocationmanager-notes/">CLLocationManager Notes</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-07-09T18:52:09+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>6:52 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
-<li><p>-(void)locationManager:(CLLocationManager <em>)manager didUpdateLocations:(NSArray </em>)locations
-声名locationManager变量为局部变量会导致delegate不会被call，因为locationManager变量被释放了。</p></li>
-</ol>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Create an instance of the CLLocationManager class and store a strong reference to it somewhere in your app.</span></code></pre></td></tr></table></div></figure>
-
-
-<ol>
-<li>提高location结果精度，并且在使用结束后停止updatelocation.
-参考apple官方LocateMe sample：<a href="https://developer.apple.com/library/ios/samplecode/LocateMe/Introduction/Intro.html">https://developer.apple.com/library/ios/samplecode/LocateMe/Introduction/Intro.html</a></li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">locationManager:</span><span class="p">(</span><span class="bp">CLLocationManager</span> <span class="o">*</span><span class="p">)</span><span class="nv">manager</span> <span class="nf">didUpdateToLocation:</span><span class="p">(</span><span class="bp">CLLocation</span> <span class="o">*</span><span class="p">)</span><span class="nv">newLocation</span> <span class="nf">fromLocation:</span><span class="p">(</span><span class="bp">CLLocation</span> <span class="o">*</span><span class="p">)</span><span class="nv">oldLocation</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="c1">// test the age of the location measurement to determine if the measurement is cached</span>
-</span><span class='line'>    <span class="c1">// in most cases you will not want to rely on cached measurements</span>
-</span><span class='line'>    <span class="n">NSTimeInterval</span> <span class="n">locationAge</span> <span class="o">=</span> <span class="o">-</span><span class="p">[</span><span class="n">newLocation</span><span class="p">.</span><span class="n">timestamp</span> <span class="n">timeIntervalSinceNow</span><span class="p">];</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">locationAge</span> <span class="o">&gt;</span> <span class="mf">5.0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// test that the horizontal accuracy does not indicate an invalid measurement</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">newLocation</span><span class="p">.</span><span class="n">horizontalAccuracy</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// test the measurement to see if it is more accurate than the previous measurement</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">bestEffortAtLocation</span> <span class="o">==</span> <span class="nb">nil</span> <span class="o">||</span> <span class="nb">self</span><span class="p">.</span><span class="n">bestEffortAtLocation</span><span class="p">.</span><span class="n">horizontalAccuracy</span> <span class="o">&gt;</span> <span class="n">newLocation</span><span class="p">.</span><span class="n">horizontalAccuracy</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// store the location as the &quot;best effort&quot;</span>
-</span><span class='line'>        <span class="nb">self</span><span class="p">.</span><span class="n">bestEffortAtLocation</span> <span class="o">=</span> <span class="n">newLocation</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="c1">// test the measurement to see if it meets the desired accuracy</span>
-</span><span class='line'>        <span class="c1">//</span>
-</span><span class='line'>        <span class="c1">// IMPORTANT!!! kCLLocationAccuracyBest should not be used for comparison with location coordinate or altitidue </span>
-</span><span class='line'>        <span class="c1">// accuracy because it is a negative value. Instead, compare against some predetermined &quot;real&quot; measure of </span>
-</span><span class='line'>        <span class="c1">// acceptable accuracy, or depend on the timeout to stop updating. This sample depends on the timeout.</span>
-</span><span class='line'>        <span class="c1">//</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">newLocation</span><span class="p">.</span><span class="n">horizontalAccuracy</span> <span class="o">&lt;=</span> <span class="n">locationManager</span><span class="p">.</span><span class="n">desiredAccuracy</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="c1">// we have a measurement that meets our requirements, so we can stop updating the location</span>
-</span><span class='line'>            <span class="c1">// </span>
-</span><span class='line'>            <span class="c1">// IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.</span>
-</span><span class='line'>            <span class="c1">//</span>
-</span><span class='line'>            <span class="p">[</span><span class="nb">self</span> <span class="nl">stopUpdatingLocation</span><span class="p">:</span><span class="n">NSLocalizedString</span><span class="p">(</span><span class="s">@&quot;Acquired Location&quot;</span><span class="p">,</span> <span class="s">@&quot;Acquired Location&quot;</span><span class="p">)];</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ol>
-<li>iPhone进入飞行模式并不会立刻停止接受GPS数据。
-Location manager获取实时的location需要花费几秒钟，所以location manager会先返回cached location data，然后再返回更新过的数据，所以一定要check location对象的timestamp。
-这也解释了，为何在执行<code>[self.locationManager stopUpdatingLocation];</code>之后，<code>- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error</code>还是会被call，应该是因为执行stopUpdatingLocation之后，实际上进行数据更新的线程还在运行，发现无法获取数据了，导致又被失败delegate被call了一次。</li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Regardless</span> <span class="n">of</span> <span class="n">which</span> <span class="n">location</span> <span class="n">service</span> <span class="n">you</span> <span class="n">use</span><span class="p">,</span> <span class="n">location</span> <span class="n">data</span> <span class="n">is</span> <span class="n">reported</span> <span class="n">to</span> <span class="n">your</span> <span class="n">app</span> <span class="n">via</span> <span class="n">the</span> <span class="n">location</span> <span class="n">manager</span><span class="err">’</span><span class="n">s</span> <span class="n">associated</span> <span class="n">delegate</span> <span class="n">object</span><span class="p">.</span> <span class="n">Because</span> <span class="n">it</span> <span class="n">can</span> <span class="n">take</span> <span class="n">several</span> <span class="n">seconds</span> <span class="n">to</span> <span class="k">return</span> <span class="n">an</span> <span class="n">initial</span> <span class="n">location</span><span class="p">,</span> <span class="n">the</span> <span class="n">location</span> <span class="n">manager</span> <span class="n">typically</span> <span class="n">delivers</span> <span class="n">the</span> <span class="n">previously</span> <span class="n">cached</span> <span class="n">location</span> <span class="n">data</span> <span class="n">immediately</span> <span class="n">and</span> <span class="n">then</span> <span class="n">delivers</span> <span class="n">more</span> <span class="n">up</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">date</span> <span class="n">location</span> <span class="n">data</span> <span class="n">as</span> <span class="n">it</span> <span class="n">becomes</span> <span class="n">available</span><span class="p">.</span> <span class="n">Therefore</span> <span class="n">it</span> <span class="n">is</span> <span class="n">always</span> <span class="n">a</span> <span class="n">good</span> <span class="n">idea</span> <span class="n">to</span> <span class="n">check</span> <span class="n">the</span> <span class="n">timestamp</span> <span class="n">of</span> <span class="n">any</span> <span class="n">location</span> <span class="n">object</span> <span class="n">before</span> <span class="n">taking</span> <span class="n">any</span> <span class="n">actions</span><span class="p">.</span> <span class="n">If</span> <span class="n">both</span> <span class="n">location</span> <span class="n">services</span> <span class="n">are</span> <span class="n">enabled</span> <span class="n">simultaneously</span><span class="p">,</span> <span class="n">they</span> <span class="n">deliver</span> <span class="n">events</span> <span class="n">using</span> <span class="n">the</span> <span class="n">same</span> <span class="n">set</span> <span class="n">of</span> <span class="n">delegate</span> <span class="n">methods</span><span class="p">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ol>
-<li>Deferring updates省电</li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">It</span> <span class="n">is</span> <span class="n">recommended</span> <span class="n">that</span> <span class="n">you</span> <span class="n">use</span> <span class="n">this</span> <span class="n">feature</span> <span class="k">in</span> <span class="n">situations</span> <span class="n">where</span> <span class="n">your</span> <span class="n">app</span> <span class="n">could</span> <span class="n">process</span> <span class="n">the</span> <span class="n">data</span> <span class="n">later</span> <span class="n">without</span> <span class="n">any</span> <span class="n">problems</span><span class="p">.</span>
-</span><span class='line'><span class="n">An</span> <span class="n">app</span> <span class="n">that</span> <span class="n">tracks</span> <span class="n">the</span> <span class="n">user</span><span class="err">’</span><span class="n">s</span> <span class="n">location</span> <span class="n">on</span> <span class="n">a</span> <span class="n">hiking</span> <span class="n">trail</span> <span class="n">could</span> <span class="n">defer</span> <span class="n">updates</span> <span class="n">until</span> <span class="n">the</span> <span class="n">user</span> <span class="n">hikes</span> <span class="n">a</span> <span class="n">certain</span> <span class="n">distance</span> <span class="n">and</span> <span class="n">then</span> <span class="n">process</span> <span class="n">the</span> <span class="n">points</span> <span class="n">all</span> <span class="n">at</span> <span class="n">once</span><span class="p">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1278,6 +1281,10 @@ Location manager获取实时的location需要花费几秒钟，所以location ma
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/01/05/nsstring-unicodehe-nscharacterset/">NSString, Unicode和NSCharacterSet</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/">如何检测和删除NSString中的颜文字Emoji</a>
       </li>
     
@@ -1291,10 +1298,6 @@ Location manager获取实时的location需要花费几秒钟，所以location ma
     
       <li class="post">
         <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/iozai-shan-chu-appde-qing-kuang-xia-,reng-ran-hui-ji-yi-app-camerafang-wen-quan-xian-de-resetfang-fa/">iOS在删除App的情况下，仍然会记忆App Camera访问权限的reset方法</a>
       </li>
     
   </ul>
