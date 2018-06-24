@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2018-06-24T23:43:43+02:00</updated>
+  <updated>2018-06-25T00:34:51+02:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,74 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[UITableView Adaption With iPhoneX]]></title>
+    <link href="http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex/"/>
+    <updated>2018-05-25T14:26:28+02:00</updated>
+    <id>http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex</id>
+    <content type="html"><![CDATA[<h2>问题</h2>
+
+<p>UITableView在iPhoneX上会有20pt/64pt的偏移。<br/>
+其原因是由于iOS11废弃了UIViewController的automaticallyAdjustsScrollViewInsets属性，新增了contentInsetAdjustmentBehavior属性。  所以当超出安全区域时系统自动调整了SafeAreaInsets，进而影响了adjustedContentInset，在iOS11中决定tableView内容与边缘距离的是adjustedContentInset，所以需要设置UIScrollView的contentInsetAdjustmentBehavior属性。</p>
+
+<h2>解决方法</h2>
+
+<h3>1.手动适配</h3>
+
+<p>如果你使用了UITableView、UIScrollView，可以直接使用以下代码做适配，这样系统就不会主动为你设置边缘距离，但是你可能需要手动适配UITableView的contenteInset。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'>  <span class="cp">#ifdef __IPHONE_11_0  </span>
+</span><span class='line'>  <span class="c1">// 单独作用与某个tableView</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">([</span><span class="n">tableView</span> <span class="nl">respondsToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">setContentInsetAdjustmentBehavior</span><span class="p">:)])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">tableView</span><span class="p">.</span><span class="n">contentInsetAdjustmentBehavior</span> <span class="o">=</span> <span class="n">UIScrollViewContentInsetAdjustmentNever</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">// 作用与所有的UIScrollView</span>
+</span><span class='line'>  <span class="bp">UIScrollView</span><span class="p">.</span><span class="n">appearance</span><span class="p">.</span><span class="n">contentInsetAdjustmentBehavior</span> <span class="o">=</span> <span class="n">UIScrollViewContentInsetAdjustmentNever</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">// 设置view的宽高</span>
+</span><span class='line'>  <span class="n">tableView</span><span class="p">.</span><span class="n">contentInset</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.自动适配</h3>
+
+<p>设置contentInsetAdjustmentBehavior属性为UIScrollViewContentInsetAdjustmentAutomatic，则系统会自动计算contentView的偏移量。</p>
+
+<h3>3.设置安全区域的addtionalSafeAreaInset</h3>
+
+<p>某些情况下，你需要顶部区域，比如广告区域覆盖Status，则可以设置相应页面的addtionalSafeAreaInset属性，这样系统不会将safeArea上调到从status开始。这样可以提供更好的用户体验。<br/>
+例如如果你的SafeAreaInset值为(44,0,0,0)，则需要设置相应的additionalSafeAreaInsets值为(-44,0,0,0)。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'>  <span class="k">if</span> <span class="p">(@</span><span class="n">available</span><span class="p">(</span><span class="n">iOS</span> <span class="mf">11.0</span><span class="p">,</span> <span class="o">*</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nb">self</span><span class="p">.</span><span class="n">additionalSafeAreaInsets</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="o">-</span><span class="mi">44</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">// Fallback on earlier versions</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.自动估算行高</h3>
+
+<p>iOS11开始UITableView开启了自动估算行高，estimatedRowHeight estimatedSectionHeaderHeight estimatedSectionFooterHeight 三个高度估算属性由默认的0变成了UITableViewAutomaticDimension。  所以heightForHeaderInSection和viewForHeaderInSection应该一起使用，不然tableView顶部滑动的时候会有空白。<br/>
+在适配过程中发现UITableView会在Header/Footer返回size为负值的情况下会崩溃。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NSString, Unicode和NSCharacterSet]]></title>
@@ -1266,21 +1334,6 @@ Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and 
 <h6>参考文献</h6>
 
 <p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[The Simplest and Most Important Dashboard for Early Stage Startups]]></title>
-    <link href="http://iandai.github.io/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups/"/>
-    <updated>2015-06-03T12:31:15+02:00</updated>
-    <id>http://iandai.github.io/blog/2015/06/03/the-simplest-and-most-important-dashboard-for-early-stage-startups</id>
-    <content type="html"><![CDATA[<p>Source:<br/>
-<a href="http://klinger.io/post/77712761215/the-simplest-and-most-important-dashboard-for">http://klinger.io/post/77712761215/the-simplest-and-most-important-dashboard-for</a></p>
-
-<p>Summary:<br/>
-early stage start up最重要的metrics是什么？<br/>
-1 retention<br/>
-2 活用活跃信息，一个一个联系用户获得反馈，把它们留在7天内活跃的范围内。</p>
 ]]></content>
   </entry>
   

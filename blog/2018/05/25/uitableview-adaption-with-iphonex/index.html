@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>UITableView Adaption With iPhoneX - Ian&#8217;s Tech Note</title>
+  <meta name="author" content="Ian Dai">
+
+  
+  <meta name="description" content="问题 UITableView在iPhoneX上会有20pt/64pt的偏移。
+其原因是由于iOS11废弃了UIViewController的automaticallyAdjustsScrollViewInsets属性，新增了contentInsetAdjustmentBehavior属性。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Ian's Tech Note" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Ian&#8217;s Tech Note</a></h1>
+  
+    <h2>Thoughts about iOS, Ruby and Growth Hacking</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="iandai.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/categories/ios">iOS</a></li>
+  <li><a href="/blog/categories/ruby">Ruby</a></li>  
+  <li><a href="/blog/categories/growthhacking">Growth Hacking</a></li>  
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">UITableView Adaption With iPhoneX</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-05-25T14:26:28+02:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>2:26 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>问题</h2>
+
+<p>UITableView在iPhoneX上会有20pt/64pt的偏移。<br/>
+其原因是由于iOS11废弃了UIViewController的automaticallyAdjustsScrollViewInsets属性，新增了contentInsetAdjustmentBehavior属性。  所以当超出安全区域时系统自动调整了SafeAreaInsets，进而影响了adjustedContentInset，在iOS11中决定tableView内容与边缘距离的是adjustedContentInset，所以需要设置UIScrollView的contentInsetAdjustmentBehavior属性。</p>
+
+<h2>解决方法</h2>
+
+<h3>1.手动适配</h3>
+
+<p>如果你使用了UITableView、UIScrollView，可以直接使用以下代码做适配，这样系统就不会主动为你设置边缘距离，但是你可能需要手动适配UITableView的contenteInset。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'>  <span class="cp">#ifdef __IPHONE_11_0  </span>
+</span><span class='line'>  <span class="c1">// 单独作用与某个tableView</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">([</span><span class="n">tableView</span> <span class="nl">respondsToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">setContentInsetAdjustmentBehavior</span><span class="p">:)])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">tableView</span><span class="p">.</span><span class="n">contentInsetAdjustmentBehavior</span> <span class="o">=</span> <span class="n">UIScrollViewContentInsetAdjustmentNever</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">// 作用与所有的UIScrollView</span>
+</span><span class='line'>  <span class="bp">UIScrollView</span><span class="p">.</span><span class="n">appearance</span><span class="p">.</span><span class="n">contentInsetAdjustmentBehavior</span> <span class="o">=</span> <span class="n">UIScrollViewContentInsetAdjustmentNever</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">// 设置view的宽高</span>
+</span><span class='line'>  <span class="n">tableView</span><span class="p">.</span><span class="n">contentInset</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.自动适配</h3>
+
+<p>设置contentInsetAdjustmentBehavior属性为UIScrollViewContentInsetAdjustmentAutomatic，则系统会自动计算contentView的偏移量。</p>
+
+<h3>3.设置安全区域的addtionalSafeAreaInset</h3>
+
+<p>某些情况下，你需要顶部区域，比如广告区域覆盖Status，则可以设置相应页面的addtionalSafeAreaInset属性，这样系统不会将safeArea上调到从status开始。这样可以提供更好的用户体验。<br/>
+例如如果你的SafeAreaInset值为(44,0,0,0)，则需要设置相应的additionalSafeAreaInsets值为(-44,0,0,0)。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'>  <span class="k">if</span> <span class="p">(@</span><span class="n">available</span><span class="p">(</span><span class="n">iOS</span> <span class="mf">11.0</span><span class="p">,</span> <span class="o">*</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nb">self</span><span class="p">.</span><span class="n">additionalSafeAreaInsets</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="o">-</span><span class="mi">44</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">// Fallback on earlier versions</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.自动估算行高</h3>
+
+<p>iOS11开始UITableView开启了自动估算行高，estimatedRowHeight estimatedSectionHeaderHeight estimatedSectionFooterHeight 三个高度估算属性由默认的0变成了UITableViewAutomaticDimension。  所以heightForHeaderInSection和viewForHeaderInSection应该一起使用，不然tableView顶部滑动的时候会有空白。<br/>
+在适配过程中发现UITableView会在Header/Footer返回size为负值的情况下会崩溃。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Ian Dai</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-05-25T14:26:28+02:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>2:26 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex/" data-via="" data-counturl="http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/01/05/nsstring-unicodehe-nscharacterset/" title="Previous Post: NSString, Unicode和NSCharacterSet">&laquo; NSString, Unicode和NSCharacterSet</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About me</h1>
+  <div>A developer works in Germany.</div>
+  <div>Mainly about iOS and Ruby development.</div> 
+  <div>Interest in Growth Hacking.</div>  
+  <div>Find me at: iandaicsu#gmail.com</div> 
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2018/05/25/uitableview-adaption-with-iphonex/">UITableView Adaption With iPhoneX</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/01/05/nsstring-unicodehe-nscharacterset/">NSString, Unicode和NSCharacterSet</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/">如何检测和删除NSString中的颜文字Emoji</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - Ian Dai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

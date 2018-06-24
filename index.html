@@ -9,7 +9,8 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Unicode Convert unicode ponit to eomji using universal character names Universal character names are formed by a prefix \U followed by an eight-digit &hellip;">
+  <meta name="description" content="问题 UITableView在iPhoneX上会有20pt/64pt的偏移。
+其原因是由于iOS11废弃了UIViewController的automaticallyAdjustsScrollViewInsets属性，新增了contentInsetAdjustmentBehavior属性。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,6 +69,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/05/25/uitableview-adaption-with-iphonex/">UITableView Adaption With iPhoneX</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-05-25T14:26:28+02:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>2:26 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>问题</h2>
+
+<p>UITableView在iPhoneX上会有20pt/64pt的偏移。<br/>
+其原因是由于iOS11废弃了UIViewController的automaticallyAdjustsScrollViewInsets属性，新增了contentInsetAdjustmentBehavior属性。  所以当超出安全区域时系统自动调整了SafeAreaInsets，进而影响了adjustedContentInset，在iOS11中决定tableView内容与边缘距离的是adjustedContentInset，所以需要设置UIScrollView的contentInsetAdjustmentBehavior属性。</p>
+
+<h2>解决方法</h2>
+
+<h3>1.手动适配</h3>
+
+<p>如果你使用了UITableView、UIScrollView，可以直接使用以下代码做适配，这样系统就不会主动为你设置边缘距离，但是你可能需要手动适配UITableView的contenteInset。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'>  <span class="cp">#ifdef __IPHONE_11_0  </span>
+</span><span class='line'>  <span class="c1">// 单独作用与某个tableView</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">([</span><span class="n">tableView</span> <span class="nl">respondsToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">setContentInsetAdjustmentBehavior</span><span class="p">:)])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">tableView</span><span class="p">.</span><span class="n">contentInsetAdjustmentBehavior</span> <span class="o">=</span> <span class="n">UIScrollViewContentInsetAdjustmentNever</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">// 作用与所有的UIScrollView</span>
+</span><span class='line'>  <span class="bp">UIScrollView</span><span class="p">.</span><span class="n">appearance</span><span class="p">.</span><span class="n">contentInsetAdjustmentBehavior</span> <span class="o">=</span> <span class="n">UIScrollViewContentInsetAdjustmentNever</span><span class="p">;</span>
+</span><span class='line'>  <span class="c1">// 设置view的宽高</span>
+</span><span class='line'>  <span class="n">tableView</span><span class="p">.</span><span class="n">contentInset</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2.自动适配</h3>
+
+<p>设置contentInsetAdjustmentBehavior属性为UIScrollViewContentInsetAdjustmentAutomatic，则系统会自动计算contentView的偏移量。</p>
+
+<h3>3.设置安全区域的addtionalSafeAreaInset</h3>
+
+<p>某些情况下，你需要顶部区域，比如广告区域覆盖Status，则可以设置相应页面的addtionalSafeAreaInset属性，这样系统不会将safeArea上调到从status开始。这样可以提供更好的用户体验。<br/>
+例如如果你的SafeAreaInset值为(44,0,0,0)，则需要设置相应的additionalSafeAreaInsets值为(-44,0,0,0)。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='Objc'><span class='line'>  <span class="k">if</span> <span class="p">(@</span><span class="n">available</span><span class="p">(</span><span class="n">iOS</span> <span class="mf">11.0</span><span class="p">,</span> <span class="o">*</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nb">self</span><span class="p">.</span><span class="n">additionalSafeAreaInsets</span> <span class="o">=</span> <span class="n">UIEdgeInsetsMake</span><span class="p">(</span><span class="o">-</span><span class="mi">44</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">// Fallback on earlier versions</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4.自动估算行高</h3>
+
+<p>iOS11开始UITableView开启了自动估算行高，estimatedRowHeight estimatedSectionHeaderHeight estimatedSectionFooterHeight 三个高度估算属性由默认的0变成了UITableViewAutomaticDimension。  所以heightForHeaderInSection和viewForHeaderInSection应该一起使用，不然tableView顶部滑动的时候会有空白。<br/>
+在适配过程中发现UITableView会在Header/Footer返回size为负值的情况下会崩溃。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1225,41 +1314,6 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/11/the-hamburger-menu-doesnt-work/">The Hamburger Menu Doesn&#8217;t Work</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-08-11T12:23:06+02:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:23 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Source:<br/>
-<a href="http://deep.design/the-hamburger-menu/">http://deep.design/the-hamburger-menu/</a></p>
-
-<p>Summary:</p>
-
-<p>Facebook和New York Times也同样使用过Hambuerger Menu，但是结果显示不利于user engagement，后来都换回了tab。
-作者所给出的理由，最重要的一点是，用户使用app和网页的方式，是看那些会令自己感兴趣的文字，然后到处试一试。而hanburger menu不显得有任何有趣的地方。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1281,6 +1335,10 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2018/05/25/uitableview-adaption-with-iphonex/">UITableView Adaption With iPhoneX</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/01/05/nsstring-unicodehe-nscharacterset/">NSString, Unicode和NSCharacterSet</a>
       </li>
     
@@ -1294,10 +1352,6 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
     
       <li class="post">
         <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
       </li>
     
   </ul>

@@ -9,13 +9,7 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="Steps Apply Google Map Api Key Import GoogleMaps.bundle in GoogleMaps.framework In Other Linker Flags section, add -ObjC In AppDelegate 1
-2
-3
-4
-5
-6
-# &hellip;">
+  <meta name="description" content="A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +68,305 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/31/rails-source-code-fragement-caching/">Rails Source Code: Fragement Caching</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-31T18:07:59+01:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>6:07 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
+
+<p>Rails fragment caching code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="o">&lt;</span><span class="sx">% cache </span><span class="k">do</span> <span class="sx">%&gt;</span>
+</span><span class='line'><span class="sx">  &lt;% end %&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Simple.<br/>
+But where is <code>cache</code> from?</p>
+
+<p>With a search of Rails api, We can find that it is a helper from ActionView::Helpers::CacheHelper.</p>
+
+<p>Reading the api, we still have no clue about how does this <code>cache</code> helper method calls the memcached store.
+So let&rsquo;s started to read source.</p>
+
+<p>First, open file actionview/lib/action_view/helpers/cache_helper.rb. We can find following cache method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">perform_caching</span>
+</span><span class='line'>      <span class="n">safe_concat</span><span class="p">(</span><span class="n">fragment_for</span><span class="p">(</span><span class="n">cache_fragment_name</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">),</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="k">yield</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We notice there is a <code>fragment_for</code> method, let&rsquo;s see where it leads us.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What does <code>read_fragment_for</code> method do?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">fragment_for</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="o">||</span> <span class="n">write_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">read_fragment_for</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1">#:nodoc:</span>
+</span><span class='line'>  <span class="n">controller</span><span class="o">.</span><span class="n">read_fragment</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So <code>read_fragment_for</code> method leads us to a <code>read_fragment</code> method belongs to an object called <code>controller</code>.<br/>
+Where does this <code>controller</code> object comes from?<br/>
+It is actually an attribute reader and writer backed by an internally-named instance variable.<br/>
+It is define in actionview/lib/action_view/helpers/controller_helper.rb file.<br/>
+And it is initiated in actionview/lib/action_view/base.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionView</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Helpers</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">ControllerHelper</span>
+</span><span class='line'>        <span class="n">attr_internal</span> <span class="ss">:controller</span><span class="p">,</span> <span class="ss">:request</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">assign_controller</span><span class="p">(</span><span class="n">controller</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="vi">@_controller</span> <span class="o">=</span> <span class="n">controller</span>
+</span><span class='line'>            <span class="vi">@_request</span> <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">request</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:request</span><span class="p">)</span>
+</span><span class='line'>            <span class="vi">@_config</span>  <span class="o">=</span> <span class="n">controller</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inheritable_copy</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:config</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let&rsquo;s come back to <code>read_fragment</code> method.
+In actionpack/lib/action_controller/caching/fragments.rb file, we find this method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">module</span> <span class="nn">ActionController</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">Caching</span>
+</span><span class='line'>      <span class="k">module</span> <span class="nn">Fragments</span>
+</span><span class='line'>        <span class="k">def</span> <span class="nf">read_fragment</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">unless</span> <span class="n">cache_configured?</span>
+</span><span class='line'>          <span class="n">key</span> <span class="o">=</span> <span class="n">fragment_cache_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">instrument_fragment_cache</span> <span class="ss">:read_fragment</span><span class="p">,</span> <span class="n">key</span> <span class="k">do</span>
+</span><span class='line'>            <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">result</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:html_safe</span><span class="p">)</span> <span class="p">?</span> <span class="n">result</span><span class="o">.</span><span class="n">html_safe</span> <span class="p">:</span> <span class="n">result</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We are closer, because we see this line.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'> <span class="n">result</span> <span class="o">=</span> <span class="n">cache_store</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Where is <code>cache_store</code> defined? We can find following code in actionpack/lib/action_controller/caching.rb file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">def</span> <span class="nf">cache_store</span><span class="o">=</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">config</span><span class="o">.</span><span class="n">cache_store</span> <span class="o">=</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">.</span><span class="n">lookup_store</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, in activesupport/lib/active_support/cache.rb filem, we find <code>lookup_store</code> method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">lookup_store</span><span class="p">(</span><span class="o">*</span><span class="n">store_option</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">store</span><span class="p">,</span> <span class="o">*</span><span class="n">parameters</span> <span class="o">=</span> <span class="o">*</span><span class="nb">Array</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">store_option</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">case</span> <span class="n">store</span>
+</span><span class='line'>    <span class="k">when</span> <span class="no">Symbol</span>
+</span><span class='line'>      <span class="n">retrieve_store_class</span><span class="p">(</span><span class="n">store</span><span class="p">)</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">*</span><span class="n">parameters</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">when</span> <span class="kp">nil</span>
+</span><span class='line'>      <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Cache</span><span class="o">::</span><span class="no">MemoryStore</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">store</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>An abstract cache store class alse defined in same file.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">class</span> <span class="nc">Store</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">options</span> <span class="o">=</span> <span class="n">merged_options</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">key</span> <span class="o">=</span> <span class="n">namespaced_key</span><span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">instrument</span><span class="p">(</span><span class="ss">:read</span><span class="p">,</span> <span class="nb">name</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">payload</span><span class="o">|</span>
+</span><span class='line'>        <span class="n">entry</span> <span class="o">=</span> <span class="n">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">entry</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">expired?</span>
+</span><span class='line'>            <span class="n">delete_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="kp">nil</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>            <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>            <span class="n">entry</span><span class="o">.</span><span class="n">value</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>          <span class="n">payload</span><span class="o">[</span><span class="ss">:hit</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span> <span class="k">if</span> <span class="n">payload</span>
+</span><span class='line'>          <span class="kp">nil</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>      <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In activesupport/lib/active_support/cache/mem_cache_store.rb file, <code>read_entry</code> is implemented.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">read_entry</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="c1"># :nodoc:</span>
+</span><span class='line'>    <span class="n">deserialize_entry</span><span class="p">(</span><span class="vi">@data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">escape_key</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">options</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">rescue</span> <span class="no">Dalli</span><span class="o">::</span><span class="no">DalliError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+</span><span class='line'>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;DalliError (</span><span class="si">#{</span><span class="n">e</span><span class="si">}</span><span class="s2">): </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">logger</span>
+</span><span class='line'>    <span class="kp">nil</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is how fragment cache works in rails.</p>
+
+<p>(完)</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1042,118 +1335,6 @@ data and then directs it to the destination host and port.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/">Run Ruby CGI Scripts With Apache</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-11-15T19:34:00+01:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>15</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>7:34 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>CGI Scripts on server</h2>
-
-<p>启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> #!/bin/env ruby
-</span><span class='line'> print "Content-type: text/html\r\n\r\n"
-</span><span class='line'> print "&lt;html&gt;&lt;body&gt;Hello World! It's #{Time.now}&lt;/body&gt;&lt;/html&gt;\r\n"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>访问<a href="http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82">http://host/cgi-bin/ruby.cgi%E5%8F%AF%E4%BB%A5%E6%AD%A3%E7%A1%AE%E6%98%BE%E7%A4%BA%E5%BD%93%E5%89%8D%E7%9A%84%E6%97%B6%E9%97%B4%E3%80%82</a></p>
-
-<p>CGI 设置的要点：<br/>
-The CGI script must have a shebang line that indicates which program will execute the script. (i.e., /usr/local/bin/ruby).<br/>
-The MIME media type must be the first output of your CGI script.<br/>
-A blank line follows the MIME media type.<br/>
-The CGI script must have the correct permissions.</p>
-
-<p><a href="http://hackingthevalley.com/ccsf/ruby_cgi_scripts">Detailed ruby cgi tutorial</a><br/>
-<a href="http://stackoverflow.com/questions/560749/how-do-i-configure-apache2-to-run-perl-cgi-scripts">Typical CGI errors</a></p>
-
-<h2>Config apache to support running CGI</h2>
-
-<p>简单地方法，是将文件放入/var/www/cgi-bin文件夹下；复杂的方法参考<a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">apache官方的文档</a></p>
-
-<h2>Send parameters with get and post in ruby on client</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;net/http&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">host</span> <span class="o">=</span> <span class="s2">&quot;….&quot;</span>       <span class="c1">#*******.ap-northeast-1.compute.amazonaws.com</span>
-</span><span class='line'><span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">version_1_2</span>
-</span><span class='line'><span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/cgi-bin/ruby.cgi?first_name=ZARA&amp;last_name=ALI&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;Get request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">net</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-</span><span class='line'><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris&#39;</span><span class="p">,</span> <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="s1">&#39;doris@foo.com&#39;</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Create HTTP request</span>
-</span><span class='line'><span class="n">req</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Post</span><span class="o">.</span><span class="n">new</span><span class="p">(</span> <span class="s1">&#39;/cgi-bin/ruby.cgi&#39;</span><span class="p">,</span> <span class="p">{}</span> <span class="p">)</span>
-</span><span class='line'><span class="n">req</span><span class="o">.</span><span class="n">set_form_data</span> <span class="n">params</span>
-</span><span class='line'>
-</span><span class='line'> <span class="c1"># Send request</span>
-</span><span class='line'><span class="n">response</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">start</span> <span class="k">do</span> <span class="o">|</span><span class="n">http</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">read_timeout</span> <span class="o">=</span> <span class="mi">5600</span>
-</span><span class='line'>  <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="n">req</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;Post request&#39;s parameters: </span><span class="si">#{</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2"> &quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/5">&larr; Older</a>
@@ -1177,6 +1358,10 @@ The CGI script must have the correct permissions.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2018/05/25/uitableview-adaption-with-iphonex/">UITableView Adaption With iPhoneX</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/01/05/nsstring-unicodehe-nscharacterset/">NSString, Unicode和NSCharacterSet</a>
       </li>
     
@@ -1190,10 +1375,6 @@ The CGI script must have the correct permissions.</p>
     
       <li class="post">
         <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/">iOS App如何正确的要求用户同意获取系统权限（摘要）</a>
       </li>
     
   </ul>
