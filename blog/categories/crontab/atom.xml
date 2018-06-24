@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Crontab | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/crontab/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2017-01-06T13:38:21+08:00</updated>
+  <updated>2018-06-24T23:43:43+02:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Crontab(1):Basic Usage]]></title>
     <link href="http://iandai.github.io/blog/2013/11/08/crontab-1-basic-usage/"/>
-    <updated>2013-11-08T19:04:00+08:00</updated>
+    <updated>2013-11-08T19:04:00+01:00</updated>
     <id>http://iandai.github.io/blog/2013/11/08/crontab-1-basic-usage</id>
     <content type="html"><![CDATA[<h2>Ways to use crontab</h2>
 
@@ -82,7 +82,7 @@ source ~/Desktop/sqldata2013-01-29-15.06.22.sql
   <entry>
     <title type="html"><![CDATA[Crontab(2):环境变量 Environment Variables]]></title>
     <link href="http://iandai.github.io/blog/2013/11/08/crontab/"/>
-    <updated>2013-11-08T18:04:00+08:00</updated>
+    <updated>2013-11-08T18:04:00+01:00</updated>
     <id>http://iandai.github.io/blog/2013/11/08/crontab</id>
     <content type="html"><![CDATA[<h2>导出crontab的环境变量</h2>
 

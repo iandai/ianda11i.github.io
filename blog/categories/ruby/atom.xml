@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2017-01-06T13:38:21+08:00</updated>
+  <updated>2018-06-24T23:43:43+02:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Ruby Hash Implementation]]></title>
     <link href="http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation/"/>
-    <updated>2015-04-10T11:08:39+08:00</updated>
+    <updated>2015-04-10T05:08:39+02:00</updated>
     <id>http://iandai.github.io/blog/2015/04/10/ruby-hash-implementation</id>
     <content type="html"><![CDATA[<ul>
 <li><p>murmur hash摘要算法，把key变为32或者128位的数字，再除以一个质数M，获得实践存储array的位置。
@@ -44,9 +44,9 @@ private static final int MRI_PRIMES[] = {8 + 3, 16 + 3, 32 + 5, 64 + 3, 128 + 3,
   
   <entry>
     <title type="html"><![CDATA[Rails Source Code: Fragement Caching]]></title>
-    <link href="http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching/"/>
-    <updated>2015-02-01T01:07:59+08:00</updated>
-    <id>http://iandai.github.io/blog/2015/02/01/rails-source-code-fragement-caching</id>
+    <link href="http://iandai.github.io/blog/2015/01/31/rails-source-code-fragement-caching/"/>
+    <updated>2015-01-31T18:07:59+01:00</updated>
+    <id>http://iandai.github.io/blog/2015/01/31/rails-source-code-fragement-caching</id>
     <content type="html"><![CDATA[<p>A friend asked me a question about rails fragment caching: Why 2 simple lines would be able to cache the fragment? Where is code that actually talking to cache store(such as memcached) and doing the job?</p>
 
 <p>Rails fragment caching code:</p>
@@ -214,7 +214,7 @@ In actionpack/lib/action_controller/caching/fragments.rb file, we find this meth
   <entry>
     <title type="html"><![CDATA[Rspec Test Principle - Test Only Your Own Code]]></title>
     <link href="http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code/"/>
-    <updated>2014-02-27T20:47:00+08:00</updated>
+    <updated>2014-02-27T20:47:00+01:00</updated>
     <id>http://iandai.github.io/blog/2014/02/27/rspec-test-principle-test-only-your-own-code</id>
     <content type="html"><![CDATA[<p>测试的时候，这一点常常被忘记，那就是———只测试自己的代码。</p>
 
@@ -307,7 +307,7 @@ end
   <entry>
     <title type="html"><![CDATA[Run Ruby CGI Scripts With Apache]]></title>
     <link href="http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache/"/>
-    <updated>2013-11-15T19:34:00+08:00</updated>
+    <updated>2013-11-15T19:34:00+01:00</updated>
     <id>http://iandai.github.io/blog/2013/11/15/run-ruby-cgi-scripts-with-apache</id>
     <content type="html"><![CDATA[<h2>CGI Scripts on server</h2>
 
@@ -368,7 +368,7 @@ puts "Post request's parameters: #{response.body} "
   <entry>
     <title type="html"><![CDATA[Ruby File Flock]]></title>
     <link href="http://iandai.github.io/blog/2013/11/15/ruby-file-flock/"/>
-    <updated>2013-11-15T19:25:00+08:00</updated>
+    <updated>2013-11-15T19:25:00+01:00</updated>
     <id>http://iandai.github.io/blog/2013/11/15/ruby-file-flock</id>
     <content type="html"><![CDATA[<ul>
 <li>在多线程的环境中，flock可lock文件独占使用。</li>

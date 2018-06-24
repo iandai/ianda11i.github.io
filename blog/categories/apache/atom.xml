@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Apache | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/apache/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2017-01-06T13:38:21+08:00</updated>
+  <updated>2018-06-24T23:43:43+02:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Apache Server on MacOS Using .htaccess]]></title>
     <link href="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-htaccess/"/>
-    <updated>2013-12-04T15:49:00+08:00</updated>
+    <updated>2013-12-04T15:49:00+01:00</updated>
     <id>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-htaccess</id>
     <content type="html"><![CDATA[<h3>检测Apache是否支持mod_rewrite</h3>
 
@@ -74,7 +74,7 @@ echo ‘你的ID是：’ . $_GET['id'];
   <entry>
     <title type="html"><![CDATA[Apache Server on MacOS Using Alias]]></title>
     <link href="http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias/"/>
-    <updated>2013-12-04T15:48:00+08:00</updated>
+    <updated>2013-12-04T15:48:00+01:00</updated>
     <id>http://iandai.github.io/blog/2013/12/04/apache-server-on-macos-using-alias</id>
     <content type="html"><![CDATA[<ul>
 <li>检查httpd服务是否在运行，不存在的话需要启动.<br/>

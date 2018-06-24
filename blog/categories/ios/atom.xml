@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2017-01-06T13:38:21+08:00</updated>
+  <updated>2018-06-24T23:43:43+02:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[NSString, Unicode和NSCharacterSet]]></title>
     <link href="http://iandai.github.io/blog/2017/01/05/nsstring-unicodehe-nscharacterset/"/>
-    <updated>2017-01-05T22:57:17+08:00</updated>
+    <updated>2017-01-05T15:57:17+01:00</updated>
     <id>http://iandai.github.io/blog/2017/01/05/nsstring-unicodehe-nscharacterset</id>
     <content type="html"><![CDATA[<h2>Unicode</h2>
 
@@ -150,7 +150,7 @@ In Objc, \U also handles Emoji ZWJ Sequences.</p></blockquote>
   <entry>
     <title type="html"><![CDATA[如何检测和删除NSString中的颜文字Emoji]]></title>
     <link href="http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji/"/>
-    <updated>2017-01-05T21:52:29+08:00</updated>
+    <updated>2017-01-05T14:52:29+01:00</updated>
     <id>http://iandai.github.io/blog/2017/01/05/ru-he-jian-ce-he-shan-chu-nsstringzhong-de-yan-wen-zi-emoji</id>
     <content type="html"><![CDATA[<h2>问题</h2>
 
@@ -239,7 +239,7 @@ NSString *str = [manager removeEmojiFromString:@"Some String⭐"];      // retur
   <entry>
     <title type="html"><![CDATA[Optional in Swift -- 使用Swift Optional的好处]]></title>
     <link href="http://iandai.github.io/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/"/>
-    <updated>2016-08-20T22:57:38+08:00</updated>
+    <updated>2016-08-20T16:57:38+02:00</updated>
     <id>http://iandai.github.io/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu</id>
     <content type="html"><![CDATA[<p>看这篇文章之前，需要了解Swift中<a href="https://developer.apple.com/library/ios/referencelibrary/GettingStarted/DevelopiOSAppsSwift/Lesson1.html#//apple_ref/doc/uid/TP40015214-CH3-SW1">Optional的基础知识</a>。</p>
 
@@ -394,7 +394,7 @@ if let sharePrice = findStockCode("Apple")?.price {
   <entry>
     <title type="html"><![CDATA[模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow]]></title>
     <link href="http://iandai.github.io/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/"/>
-    <updated>2015-10-09T21:37:41+08:00</updated>
+    <updated>2015-10-09T15:37:41+02:00</updated>
     <id>http://iandai.github.io/blog/2015/10/09/mo-fang-uialertviewde-[?]-ge-rotatable-overlay-view-rtoverlaywindow</id>
     <content type="html"><![CDATA[<p>在写customised alert view的时候，遇到了一些问题，于是写了RTOverlayWindow。</p>
 
@@ -518,7 +518,7 @@ if let sharePrice = findStockCode("Apple")?.price {
   <entry>
     <title type="html"><![CDATA[iOS App如何正确的要求用户同意获取系统权限（摘要）]]></title>
     <link href="http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/"/>
-    <updated>2015-09-24T17:30:22+08:00</updated>
+    <updated>2015-09-24T11:30:22+02:00</updated>
     <id>http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)</id>
     <content type="html"><![CDATA[<h2>iOS App如何正确的要求用户同意获取系统权限（摘要）</h2>
 
