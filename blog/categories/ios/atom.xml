@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2018-06-25T00:34:51+02:00</updated>
+  <updated>2018-08-01T22:21:36+02:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,141 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thoughts on Refactor 一次重构的思考]]></title>
+    <link href="http://iandai.github.io/blog/2018/08/01/thoughts-on-re%5B%3F%5D-ci-zhong-gou-de-si-kao/"/>
+    <updated>2018-08-01T22:09:29+02:00</updated>
+    <id>http://iandai.github.io/blog/2018/08/01/thoughts-on-re[?]-ci-zhong-gou-de-si-kao</id>
+    <content type="html"><![CDATA[<p>加入公司的时候，iOS客户端代码比较混乱。<br/>
+比如有一些方法非常的长，包含了许多逻辑；许多无用的代码等。<br/>
+原来的代码主要是由几个不同的freelancer写成的，所以代码一方面难以理解，一方面也不容易维护和增加新功能。<br/>
+所以进行了一次重构。</p>
+
+<h3>重构项目最重要的是什么？</h3>
+
+<p>项目责任人的真正的认可和支持。他需要理解重构需要花费的成本和能够获取的收益。<br/>
+重构花费的成本，只能看见不多的业务收益。<br/>
+只有项目负责人真正认可，才能在项目没有明显进度的时候，顶住压力，正确制定项目进度计划。<br/>
+对开发人员来说，也需要理解这种情况。在重构的时候，尽量能提升构架的同时，也要有业务方面的收益。</p>
+
+<h3>重构的目标</h3>
+
+<p>技术上的目标：有清晰的分层，尽可能解藕，以提高可读性和可扩展性为主；减少逻辑混乱带来的一些bug。<br/>
+业务上的目标：优化部分功能；解决语言国际化上的不足；提升对多种设备的多方面支持。<br/>
+范围上的目标：全部重写所有逻辑，会耗费非常多的时间。重构抓大放小，主要重构经常访问的模块，如用户登陆模块，Index模块，项目模块。</p>
+
+<h3>重构的步骤</h3>
+
+<p>1，删除不用的图片和代码<br/>
+2，解决一部分Warning，比如变量未使用<br/>
+3，重新组织文件目录结构<br/>
+4，抽象出模块<br/>
+5，统一代码规范<br/>
+6，修复一个bug或者建立一个新功能，就重构相关的代码，以尽量缩小影响范围</p>
+
+<h3>文件目录结构</h3>
+
+<p>Top layer</p>
+
+<pre><code>-[ProjectName]
+    --Features       
+    --Categories   
+    --Frameworks 
+    --Helpers  
+    --Utilites    
+    --Vendors     
+    --Config   
+    --Resources     
+    --AppEntry 
+-Tests
+-UITests
+-Products         
+-Pods
+</code></pre>
+
+<p>Second layer</p>
+
+<pre><code>--Features         
+    ---Base            
+        ----Models      
+        ----Views       
+        ----Controllers 
+        ----Managers      
+    ---Login
+        ----Models
+        ----Views
+        ----Controllers
+        ----Managers      
+    ---Profile
+        ----Models
+        ----Views
+        ----Controllers
+        ----Managers      
+    ---Home
+        ----Models
+        ----Views
+        ----Controllers
+        ----Managers      
+</code></pre>
+
+<h3>代码规范</h3>
+
+<p>1, Follow <a href="https://github.com/NYTimes/objective-c-style-guide">NYTimes objective-c style</a><br/>
+2, Use <a href="https://github.com/mapbox/XcodeClangFormat">XcodeClangFormat</a> to format source code to unify the source code style.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[UITableView Adaption With iPhoneX]]></title>
+    <link href="http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex/"/>
+    <updated>2018-05-25T14:26:28+02:00</updated>
+    <id>http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex</id>
+    <content type="html"><![CDATA[<h2>问题</h2>
+
+<p>UITableView在iPhoneX上会有20pt/64pt的偏移。<br/>
+其原因是由于iOS11废弃了UIViewController的automaticallyAdjustsScrollViewInsets属性，新增了contentInsetAdjustmentBehavior属性。  所以当超出安全区域时系统自动调整了SafeAreaInsets，进而影响了adjustedContentInset，在iOS11中决定tableView内容与边缘距离的是adjustedContentInset，所以需要设置UIScrollView的contentInsetAdjustmentBehavior属性。</p>
+
+<h2>解决方法</h2>
+
+<h3>1.手动适配</h3>
+
+<p>如果你使用了UITableView、UIScrollView，可以直接使用以下代码做适配，这样系统就不会主动为你设置边缘距离，但是你可能需要手动适配UITableView的contenteInset。</p>
+
+<pre><code class="Objc">  #ifdef __IPHONE_11_0  
+  // 单独作用与某个tableView
+  if ([tableView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+    tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+  }
+  // 作用与所有的UIScrollView
+  UIScrollView.appearance.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+  // 设置view的宽高
+  tableView.contentInset = UIEdgeInsetsMake(0, 0, 34, 0);
+  #endif
+</code></pre>
+
+<h3>2.自动适配</h3>
+
+<p>设置contentInsetAdjustmentBehavior属性为UIScrollViewContentInsetAdjustmentAutomatic，则系统会自动计算contentView的偏移量。</p>
+
+<h3>3.设置安全区域的addtionalSafeAreaInset</h3>
+
+<p>某些情况下，你需要顶部区域，比如广告区域覆盖Status，则可以设置相应页面的addtionalSafeAreaInset属性，这样系统不会将safeArea上调到从status开始。这样可以提供更好的用户体验。<br/>
+例如如果你的SafeAreaInset值为(44,0,0,0)，则需要设置相应的additionalSafeAreaInsets值为(-44,0,0,0)。</p>
+
+<pre><code class="Objc">  if (@available(iOS 11.0, *)) {
+      self.additionalSafeAreaInsets = UIEdgeInsetsMake(-44, 0, 0, 0);
+  } else {
+      // Fallback on earlier versions
+  }
+</code></pre>
+
+<h3>4.自动估算行高</h3>
+
+<p>iOS11开始UITableView开启了自动估算行高，estimatedRowHeight estimatedSectionHeaderHeight estimatedSectionFooterHeight 三个高度估算属性由默认的0变成了UITableViewAutomaticDimension。  所以heightForHeaderInSection和viewForHeaderInSection应该一起使用，不然tableView顶部滑动的时候会有空白。<br/>
+在适配过程中发现UITableView会在Header/Footer返回size为负值的情况下会崩溃。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NSString, Unicode和NSCharacterSet]]></title>
@@ -388,150 +523,6 @@ if let sharePrice = findStockCode("Apple")?.price {
 
 <p><a href="https://www.appcoda.com/beginners-guide-optionals-swift/">A Beginner’s Guide to Optionals in Swift</a><br/>
 <a href="http://blog.teamtreehouse.com/understanding-optionals-swift">Understanding Optionals in Swift</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow]]></title>
-    <link href="http://iandai.github.io/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/"/>
-    <updated>2015-10-09T15:37:41+02:00</updated>
-    <id>http://iandai.github.io/blog/2015/10/09/mo-fang-uialertviewde-[?]-ge-rotatable-overlay-view-rtoverlaywindow</id>
-    <content type="html"><![CDATA[<p>在写customised alert view的时候，遇到了一些问题，于是写了RTOverlayWindow。</p>
-
-<p>最简单添加OverlayView的方法（苹果官方并不推荐使用这种方法），就是</p>
-
-<pre><code class="objc">    UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
-    [keyWindow addSubview:someCustomizedView];
-</code></pre>
-
-<p>使用上面的方法，添加的<code>someCustomizedView</code>无法自动旋转。
-对无法自动旋转，最合理的解决方法，是把这个view放到一个UIViewController里面管理。</p>
-
-<p>但是，还是希望有一种简单的方法，和使用UIAlertView一样，只是单纯的添加一个简单的view，就可以方便的使用。<br/>
-于是研究了一下UIAlertView的实现。</p>
-
-<p>在iOS7中，在界面有UIAlertView弹出的状态下，使用<code>po [[UIWindow keyWindow] recursiveDescription]</code>可以看到当前UIAlertView的view结构。</p>
-
-<pre><code>&lt;_UIModalItemHostingWindow: 0x7af46ee0; frame = (0 0; 320 480); gestureRecognizers = &lt;NSArray: 0x7af473e0&gt;; layer = &lt;UIWindowLayer: 0x7af47060&gt;&gt;
-   | &lt;UIView: 0x7af46dd0; frame = (0 0; 320 480); opaque = NO; autoresize = W+H; layer = &lt;CALayer: 0x7af46d60&gt;&gt;
-   | &lt;UIView: 0x7af49800; frame = (0 0; 320 480); opaque = NO; autoresize = W+H; layer = &lt;CALayer: 0x7af49860&gt;&gt;
-   |    | &lt;UIView: 0x7b2561f0; frame = (0 0; 320 480); layer = &lt;CALayer: 0x7b256250&gt;&gt;
-   |    | &lt;_UIModalItemRepresentationView: 0x7b255d90; frame = (25 178; 270 124); layer = &lt;CALayer: 0x7b255ea0&gt;&gt;
-   |    |    | &lt;_UIModalItemAlertBackgroundView: 0x7af30f80; frame = (0 0; 270 124); animations = { &lt;_UIParallaxMotionEffect: 0x7af4c470&gt;=&lt;CAAnimationGroup: 0x7b25e510&gt;; }; layer = &lt;CALayer: 0x7af312e0&gt;&gt;
-   |    |    |    | &lt;_UIBackdropView: 0x7af3de20; frame = (0 0; 270 124); clipsToBounds = YES; opaque = NO; autoresize = W+H; userInteractionEnabled = NO; layer = &lt;_UIBackdropViewLayer: 0x7af4a290&gt;&gt;
-   |    |    |    |    | &lt;_UIBackdropEffectView: 0x7af4ab30; frame = (0 0; 270 124); clipsToBounds = YES; opaque = NO; autoresize = W+H; userInteractionEnabled = NO; layer = &lt;CABackdropLayer: 0x7af4ae50&gt;&gt;
-   |    |    |    |    | &lt;UIView: 0x7af4b150; frame = (0 0; 270 124); hidden = YES; opaque = NO; autoresize = W+H; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7af4b5c0&gt;&gt;
-   |    |    |    | &lt;UIImageView: 0x7af3b830; frame = (0 0; 270 124); clipsToBounds = YES; opaque = NO; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7af47020&gt;&gt;
-   |    |    | &lt;_UIModalItemAlertContentView: 0x7af45b50; frame = (0 0; 270 124); clipsToBounds = YES; animations = { &lt;_UIParallaxMotionEffect: 0x7af4c470&gt;=&lt;CAAnimationGroup: 0x7b25ec90&gt;; }; layer = &lt;CALayer: 0x7af45cf0&gt;&gt;
-   |    |    |    | &lt;UITableView: 0x7cb96000; frame = (135 80; 135 44); clipsToBounds = YES; gestureRecognizers = &lt;NSArray: 0x7b236eb0&gt;; layer = &lt;CALayer: 0x7b236960&gt;; contentOffset: {0, 0}&gt;
-   |    |    |    |    | &lt;UITableViewWrapperView: 0x7b2378f0; frame = (0 0; 135 44); autoresize = W+H; layer = &lt;CALayer: 0x7b237a00&gt;&gt;
-   |    |    |    |    |    | &lt;_UIModalItemTableViewCell: 0x7b2648c0; frame = (0 0; 135 44); text = 'OK'; autoresize = W; layer = &lt;CALayer: 0x7b256010&gt;&gt;
-   |    |    |    |    |    |    | &lt;UITableViewCellScrollView: 0x7b264a60; frame = (0 0; 135 44); autoresize = W+H; gestureRecognizers = &lt;NSArray: 0x7b237d50&gt;; layer = &lt;CALayer: 0x7b2604b0&gt;; contentOffset: {0, 0}&gt;
-   |    |    |    |    |    |    |    | &lt;UITableViewCellContentView: 0x7b2520e0; frame = (0 0; 135 43.5); gestureRecognizers = &lt;NSArray: 0x7b261de0&gt;; layer = &lt;CALayer: 0x7b261220&gt;&gt;
-   |    |    |    |    |    |    |    |    | &lt;UILabel: 0x7b264d30; frame = (15 0; 105 43.5); text = 'OK'; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b255ed0&gt;&gt;
-   |    |    |    |    | &lt;UIImageView: 0x7b2577b0; frame = (131.5 37; 3.5 7); alpha = 0; opaque = NO; autoresize = LM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b257880&gt;&gt;
-   |    |    |    |    | &lt;UIImageView: 0x7b2571d0; frame = (128 40.5; 7 3.5); alpha = 0; opaque = NO; autoresize = TM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b257420&gt;&gt;
-   |    |    |    | &lt;UIScrollView: 0x7b238430; frame = (0 0; 270 61); clipsToBounds = YES; gestureRecognizers = &lt;NSArray: 0x7b2389a0&gt;; layer = &lt;CALayer: 0x7b238680&gt;; contentOffset: {0, 0}&gt;
-   |    |    |    |    | &lt;UILabel: 0x7b2337a0; frame = (15 19; 240 21); text = 'title'; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b233850&gt;&gt;
-   |    |    |    |    | &lt;UILabel: 0x7b2340a0; frame = (15 44; 240 17); text = 'message'; opaque = NO; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b233950&gt;&gt;
-   |    |    |    |    | &lt;UIImageView: 0x7b258bd0; frame = (0 57.5; 270 3.5); alpha = 0; opaque = NO; autoresize = TM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b258ca0&gt;&gt;
-   |    |    |    |    | &lt;UIImageView: 0x7b258da0; frame = (266.5 0; 3.5 61); alpha = 0; opaque = NO; autoresize = LM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b258e70&gt;&gt;
-   |    |    |    | &lt;UIView: 0x7b2541d0; frame = (0 79.5; 270 0.5); layer = &lt;CALayer: 0x7b254230&gt;&gt;
-   |    |    |    | &lt;UITableView: 0x7cbc7400; frame = (0 80; 135 44); clipsToBounds = YES; gestureRecognizers = &lt;NSArray: 0x7b254320&gt;; layer = &lt;CALayer: 0x7b2542b0&gt;; contentOffset: {0, 0}&gt;
-   |    |    |    |    | &lt;UITableViewWrapperView: 0x7b254620; frame = (0 0; 135 44); autoresize = W+H; layer = &lt;CALayer: 0x7b254710&gt;&gt;
-   |    |    |    |    |    | &lt;_UIModalItemTableViewCell: 0x7b25fb20; frame = (0 0; 135 44); text = 'cancel'; autoresize = W; layer = &lt;CALayer: 0x7b25fe00&gt;&gt;
-   |    |    |    |    |    |    | &lt;UITableViewCellScrollView: 0x7b2600c0; frame = (0 0; 135 44); autoresize = W+H; gestureRecognizers = &lt;NSArray: 0x7b236cf0&gt;; layer = &lt;CALayer: 0x7b260330&gt;; contentOffset: {0, 0}&gt;
-   |    |    |    |    |    |    |    | &lt;UITableViewCellContentView: 0x7b2368e0; frame = (0 0; 135 43.5); gestureRecognizers = &lt;NSArray: 0x7b256cd0&gt;; layer = &lt;CALayer: 0x7b237f90&gt;&gt;
-   |    |    |    |    |    |    |    |    | &lt;UILabel: 0x7b237a30; frame = (15 0; 105 43.5); text = 'cancel'; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b25b8a0&gt;&gt;
-   |    |    |    |    | &lt;UIImageView: 0x7b259200; frame = (131.5 37; 3.5 7); alpha = 0; opaque = NO; autoresize = LM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b2592d0&gt;&gt;
-   |    |    |    |    | &lt;UIImageView: 0x7b259020; frame = (128 40.5; 7 3.5); alpha = 0; opaque = NO; autoresize = TM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7b2590f0&gt;&gt;
-   |    |    |    | &lt;UIView: 0x7b254820; frame = (135 80; 0.5 44); layer = &lt;CALayer: 0x7b254880&gt;&gt;
-</code></pre>
-
-<p>在iOS8中UIVAlertView结构如下。
-&#8220;`
-&lt;<em>UIAlertControllerShimPresenterWindow: 0x7bbbfaa0; frame = (0 0; 768 1024); opaque = NO; autoresize = W+H; gestureRecognizers = &lt;NSArray: 0x7bbc0600>; layer = &lt;UIWindowLayer: 0x7bbbfcf0>>
-   | &lt;UIView: 0x7bd727b0; frame = (0 0; 768 1024); autoresize = W+H; layer = &lt;CALayer: 0x7bd72820>>
-   | &lt;UITransitionView: 0x7a7bcb20; frame = (0 0; 768 1024); autoresize = W+H; layer = &lt;CALayer: 0x7a7bccd0>>
-   |    | &lt;UIView: 0x7a68fd90; frame = (0 0; 768 1024); layer = &lt;CALayer: 0x7a68fe00>>
-   |    | &lt;</em>UIKeyboardLayoutAlignmentView: 0x7a68fab0; frame = (0 1024; 768 0); layer = &lt;CALayer: 0x7a68fc60>>
-   |    | &lt;UIView: 0x7a68f8e0; frame = (0 0; 768 1024); layer = &lt;CALayer: 0x7a68f890>>
-   |    | &lt;<em>UIAlertControllerView: 0x7a695f70; frame = (249 451; 270 122); layer = &lt;CALayer: 0x7a6961e0>>
-   |    |    | &lt;UIView: 0x7a696350; frame = (0 0; 270 122); animations = { &lt;</em>UIParallaxMotionEffect: 0x7a792160>=&lt;CAAnimationGroup: 0x7a7b2380>; }; layer = &lt;CALayer: 0x7a6963c0>>
-   |    |    |    | &lt;<em>UIDimmingKnockoutBackdropView: 0x7a69fd90; frame = (0 0; 270 122); clipsToBounds = YES; layer = &lt;CALayer: 0x7a689fa0>>
-   |    |    |    |    | &lt;UIView: 0x7a68a490; frame = (0 0; 270 122); clipsToBounds = YES; layer = &lt;CALayer: 0x7a687850>>
-   |    |    |    |    | &lt;</em>UIBackdropView: 0x7a69fe00; frame = (0 0; 270 122); clipsToBounds = YES; opaque = NO; autoresize = W+H; userInteractionEnabled = NO; layer = &lt;<em>UIBackdropViewLayer: 0x7a692a40>>
-   |    |    |    |    |    | &lt;UIView: 0x7a694d00; frame = (0 0; 270 122); opaque = NO; autoresize = W+H; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7a6746d0>>
-   |    |    |    | &lt;UIView: 0x7a696410; frame = (0 0; 270 122); layer = &lt;CALayer: 0x7a696480>>
-   |    |    |    |    | &lt;UIView: 0x7a6964d0; frame = (0 0; 270 122); clipsToBounds = YES; layer = &lt;CALayer: 0x7a696540>>
-   |    |    |    |    |    | &lt;</em>UIAlertControllerShadowedScrollView: 0x7a6966b0; frame = (0 0; 270 78); clipsToBounds = YES; gestureRecognizers = &lt;NSArray: 0x7a696e60>; layer = &lt;CALayer: 0x7a6969c0>; contentOffset: {0, 0}; contentSize: {270, 78}>
-   |    |    |    |    |    |    | &lt;UIView: 0x7a6975c0; frame = (0 0; 270 78); layer = &lt;CALayer: 0x7a697630>>
-   |    |    |    |    |    |    |    | &lt;UILabel: 0x7a698580; frame = (16 20; 238 21); text = &lsquo;11&rsquo;; userInteractionEnabled = NO; layer = &lt;<em>UILabelLayer: 0x7a698240>>
-   |    |    |    |    |    |    |    | &lt;UILabel: 0x7a69ab30; frame = (16 42; 238 16); text = &lsquo;22&rsquo;; userInteractionEnabled = NO; layer = &lt;</em>UILabelLayer: 0x7a69abf0>>
-   |    |    |    |    |    |    |    | &lt;UIView: 0x7a69ad70; frame = (135 -451; 0 0); clipsToBounds = YES; layer = &lt;CALayer: 0x7a69ade0>>
-   |    |    |    |    |    |    | &lt;UIImageView: 0x7a787b60; frame = (0 75; 270 3); alpha = 0; opaque = NO; autoresize = TM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7a787e70>>
-   |    |    |    |    |    |    | &lt;UIImageView: 0x7a788610; frame = (267 902; 3 78); alpha = 0; opaque = NO; autoresize = LM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7a788690>>
-   |    |    |    |    |    | &lt;UICollectionView: 0x7a984a00; frame = (0 78; 270 44); clipsToBounds = YES; gestureRecognizers = &lt;NSArray: 0x7a69bd70>; layer = &lt;CALayer: 0x7a69bad0>; contentOffset: {0, 0}; contentSize: {270, 44}> collection view layout: &lt;<em>UIAlertControllerCollectionViewFlowLayout: 0x7a69b1d0>
-   |    |    |    |    |    |    | &lt;</em>UIAlertControllerCollectionViewCell: 0x7bbbaec0; frame = (0 1; 135 44); layer = &lt;CALayer: 0x7bbbd730>>
-   |    |    |    |    |    |    |    | &lt;UIView: 0x7bbbc4a0; frame = (0 0; 135 44); gestureRecognizers = &lt;NSArray: 0x7bbb11b0>; layer = &lt;CALayer: 0x7bbc2110>>
-   |    |    |    |    |    |    |    |    | &lt;<em>UIAlertControllerActionView: 0x7bbbc100; frame = (0 0; 135 44); Action = &lt;UIAlertAction: 0x7bbbf640 Title = &ldquo;cancel&rdquo; Descriptive = &ldquo;(null)&rdquo; Image = 0x0>>
-   |    |    |    |    |    |    |    |    |    | &lt;</em>UIBlendingHighlightView: 0x7bbc5640; frame = (0 0; 135 44); hidden = YES; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7bbc5810>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UIView: 0x7bbc56e0; frame = (0 0; 135 44); layer = &lt;CALayer: 0x7bbc4dd0>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UIView: 0x7bbc5790; frame = (0 0; 135 44); layer = &lt;CALayer: 0x7bbc6580>>
-   |    |    |    |    |    |    |    |    |    | &lt;UIView: 0x7bbc28e0; frame = (12 0; 111 0); layer = &lt;CALayer: 0x7bb68f30>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UILabel: 0x7bbbc1c0; frame = (0 12; 111 21); text = &lsquo;cancel&rsquo;; userInteractionEnabled = NO; layer = &lt;<em>UILabelLayer: 0x7bbbd3e0>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UILabel: 0x7bbbc280; frame = (-12 22; 0 0); userInteractionEnabled = NO; layer = &lt;</em>UILabelLayer: 0x7bbc1c50>>
-   |    |    |    |    |    |    |    |    |    |    |    | &lt;<em>UILabelContentLayer: 0x7a7b5620> (layer)
-   |    |    |    |    |    |    |    |    |    | &lt;UIImageView: 0x7bbbc340; frame = (12 22; 0 0); userInteractionEnabled = NO; layer = &lt;CALayer: 0x7bbbc3c0>>
-   |    |    |    |    |    |    |    |    |    | &lt;UIImageView: 0x7bbbfe30; frame = (109 15; 14 14); hidden = YES; opaque = NO; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7bbc2d30>>
-   |    |    |    |    |    |    | &lt;</em>UIAlertControllerCollectionViewCell: 0x7bbcd6c0; frame = (135 1; 135 44); layer = &lt;CALayer: 0x7bbcd2a0>>
-   |    |    |    |    |    |    |    | &lt;UIView: 0x7bbcd760; frame = (0 0; 135 44); gestureRecognizers = &lt;NSArray: 0x7bbcd950>; layer = &lt;CALayer: 0x7bbcd7d0>>
-   |    |    |    |    |    |    |    |    | &lt;<em>UIAlertControllerActionView: 0x7bbcd980; frame = (0 0; 135 44); Action = &lt;UIAlertAction: 0x7bbbf7c0 Title = &ldquo;OK&rdquo; Descriptive = &ldquo;(null)&rdquo; Image = 0x0>>
-   |    |    |    |    |    |    |    |    |    | &lt;</em>UIBlendingHighlightView: 0x7bbd0550; frame = (0 0; 135 44); hidden = YES; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7bbd1e30>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UIView: 0x7bbd05f0; frame = (0 0; 135 44); layer = &lt;CALayer: 0x7bbd0060>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UIView: 0x7bbd06a0; frame = (0 0; 135 44); layer = &lt;CALayer: 0x7bbd2bf0>>
-   |    |    |    |    |    |    |    |    |    | &lt;UIView: 0x7bbcda70; frame = (12 0; 111 0); layer = &lt;CALayer: 0x7bbcdae0>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UILabel: 0x7bbcdb10; frame = (0 12; 111 21); text = &lsquo;OK&rsquo;; userInteractionEnabled = NO; layer = &lt;<em>UILabelLayer: 0x7bbcdbd0>>
-   |    |    |    |    |    |    |    |    |    |    | &lt;UILabel: 0x7bbcdd20; frame = (-12 22; 0 0); userInteractionEnabled = NO; layer = &lt;</em>UILabelLayer: 0x7bbcdde0>>
-   |    |    |    |    |    |    |    |    |    |    |    | &lt;<em>UILabelContentLayer: 0x7a7b50d0> (layer)
-   |    |    |    |    |    |    |    |    |    | &lt;UIImageView: 0x7bbcdf30; frame = (12 22; 0 0); userInteractionEnabled = NO; layer = &lt;CALayer: 0x7bbcdfb0>>
-   |    |    |    |    |    |    |    |    |    | &lt;UIImageView: 0x7bbcdfe0; frame = (109 15; 14 14); hidden = YES; opaque = NO; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7bbce060>>
-   |    |    |    |    |    |    | &lt;</em>UIAlertControllerBlendingSeparatorView: 0x7a7739b0; frame = (0 0; 270 1); layer = &lt;CALayer: 0x7a78d6b0>>
-   |    |    |    |    |    |    |    | &lt;<em>UIBlendingHighlightView: 0x7a774ac0; frame = (0 0; 270 1); layer = &lt;CALayer: 0x7a7926e0>>
-   |    |    |    |    |    |    |    |    | &lt;UIView: 0x7a77f430; frame = (0 0; 270 1); layer = &lt;CALayer: 0x7a792760>>
-   |    |    |    |    |    |    |    |    | &lt;UIView: 0x7a785440; frame = (0 0; 270 1); layer = &lt;CALayer: 0x7a7927c0>>
-   |    |    |    |    |    |    | &lt;</em>UIAlertControllerBlendingSeparatorView: 0x7a780ab0; frame = (135 1; 1 43); layer = &lt;CALayer: 0x7a79d5a0>>
-   |    |    |    |    |    |    |    | &lt;_UIBlendingHighlightView: 0x7a78c490; frame = (0 0; 1 43); layer = &lt;CALayer: 0x7a7928e0>>
-   |    |    |    |    |    |    |    |    | &lt;UIView: 0x7a7beba0; frame = (0 0; 1 43); layer = &lt;CALayer: 0x7a792960>>
-   |    |    |    |    |    |    |    |    | &lt;UIView: 0x7a772d20; frame = (0 0; 1 43); layer = &lt;CALayer: 0x7a7929e0>>
-   |    |    |    |    |    |    | &lt;UIImageView: 0x7a789f20; frame = (0 41; 270 3); alpha = 0; opaque = NO; autoresize = TM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7a789fa0>>
-   |    |    |    |    |    |    | &lt;UIImageView: 0x7a78a3e0; frame = (267 0; 3 44); alpha = 0; opaque = NO; autoresize = LM; userInteractionEnabled = NO; layer = &lt;CALayer: 0x7a78a460>></p>
-
-<p>&#8220;`</p>
-
-<p>可以看到，虽然UIAlertView在iOS7和iOS8中实现方法不同，但都是新建了一个UIWindow，并设为keyWindow。<br/>
-模仿UIAlertView的方式，做了<a href="https://github.com/iandai/RTOverlayWindow">RTOverlayWindow</a>。<br/>
-需要注意的是，使用多层UIWindow也是苹果所不推荐的方法，不过有时候在代码结构本身不合理的情况下，也是一种不错的方法。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS App如何正确的要求用户同意获取系统权限（摘要）]]></title>
-    <link href="http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)/"/>
-    <updated>2015-09-24T11:30:22+02:00</updated>
-    <id>http://iandai.github.io/blog/2015/09/24/ios-appru-he-zheng-que-de-yao-qiu-yong-hu-tong-yi-huo-qu-xi-tong-quan-xian-(zhai-yao-)</id>
-    <content type="html"><![CDATA[<h2>iOS App如何正确的要求用户同意获取系统权限（摘要）</h2>
-
-<ul>
-<li>App下载后，第一次初始化的时候，弹出对话框，要求获取系统权限。成功率只有30%－40%。这种方法不推荐。</li>
-<li>在给用户介绍App功能的界面，解释为什么需要获取某一项系统权限，并弹出对话框。成功率有40% - 66%。这种方法也不推荐。</li>
-<li>在用户进行某项操作，必须使用到某一项系统权限的时候，弹出App自定义的对话框，解释为何需要获取某一项系统权限。如果用户点击同意，那么再弹出系统的权限获取对话框。如果用户点击不同意，那么App就不执行该功能，告诉用户要做的操作失败。利用这种方法，有时候成功率可以达到100%。</li>
-</ul>
-
-
-<h4>参考文献</h4>
-
-<p><a href="http://techcrunch.com/2014/04/04/the-right-way-to-ask-users-for-ios-permissions/">The Right Way To Ask Users For iOS Permissions</a></p>
 ]]></content>
   </entry>
   

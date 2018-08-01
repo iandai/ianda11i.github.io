@@ -4,7 +4,7 @@
   <title><![CDATA[Ian's Tech Note]]></title>
   <link href="http://iandai.github.io/atom.xml" rel="self"/>
   <link href="http://iandai.github.io/"/>
-  <updated>2018-06-25T00:34:51+02:00</updated>
+  <updated>2018-08-01T22:21:36+02:00</updated>
   <id>http://iandai.github.io/</id>
   <author>
     <name><![CDATA[Ian Dai]]></name>
@@ -12,6 +12,125 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thoughts on Refactor 一次重构的思考]]></title>
+    <link href="http://iandai.github.io/blog/2018/08/01/thoughts-on-re%5B%3F%5D-ci-zhong-gou-de-si-kao/"/>
+    <updated>2018-08-01T22:09:29+02:00</updated>
+    <id>http://iandai.github.io/blog/2018/08/01/thoughts-on-re[?]-ci-zhong-gou-de-si-kao</id>
+    <content type="html"><![CDATA[<p>加入公司的时候，iOS客户端代码比较混乱。<br/>
+比如有一些方法非常的长，包含了许多逻辑；许多无用的代码等。<br/>
+原来的代码主要是由几个不同的freelancer写成的，所以代码一方面难以理解，一方面也不容易维护和增加新功能。<br/>
+所以进行了一次重构。</p>
+
+<h3>重构项目最重要的是什么？</h3>
+
+<p>项目责任人的真正的认可和支持。他需要理解重构需要花费的成本和能够获取的收益。<br/>
+重构花费的成本，只能看见不多的业务收益。<br/>
+只有项目负责人真正认可，才能在项目没有明显进度的时候，顶住压力，正确制定项目进度计划。<br/>
+对开发人员来说，也需要理解这种情况。在重构的时候，尽量能提升构架的同时，也要有业务方面的收益。</p>
+
+<h3>重构的目标</h3>
+
+<p>技术上的目标：有清晰的分层，尽可能解藕，以提高可读性和可扩展性为主；减少逻辑混乱带来的一些bug。<br/>
+业务上的目标：优化部分功能；解决语言国际化上的不足；提升对多种设备的多方面支持。<br/>
+范围上的目标：全部重写所有逻辑，会耗费非常多的时间。重构抓大放小，主要重构经常访问的模块，如用户登陆模块，Index模块，项目模块。</p>
+
+<h3>重构的步骤</h3>
+
+<p>1，删除不用的图片和代码<br/>
+2，解决一部分Warning，比如变量未使用<br/>
+3，重新组织文件目录结构<br/>
+4，抽象出模块<br/>
+5，统一代码规范<br/>
+6，修复一个bug或者建立一个新功能，就重构相关的代码，以尽量缩小影响范围</p>
+
+<h3>文件目录结构</h3>
+
+<p>Top layer</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>-[ProjectName]
+</span><span class='line'>    --Features       
+</span><span class='line'>    --Categories   
+</span><span class='line'>    --Frameworks 
+</span><span class='line'>    --Helpers  
+</span><span class='line'>    --Utilites    
+</span><span class='line'>    --Vendors     
+</span><span class='line'>    --Config   
+</span><span class='line'>    --Resources     
+</span><span class='line'>    --AppEntry 
+</span><span class='line'>-Tests
+</span><span class='line'>-UITests
+</span><span class='line'>-Products         
+</span><span class='line'>-Pods</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Second layer</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>--Features         
+</span><span class='line'>    ---Base            
+</span><span class='line'>        ----Models      
+</span><span class='line'>        ----Views       
+</span><span class='line'>        ----Controllers 
+</span><span class='line'>        ----Managers      
+</span><span class='line'>    ---Login
+</span><span class='line'>        ----Models
+</span><span class='line'>        ----Views
+</span><span class='line'>        ----Controllers
+</span><span class='line'>        ----Managers      
+</span><span class='line'>    ---Profile
+</span><span class='line'>        ----Models
+</span><span class='line'>        ----Views
+</span><span class='line'>        ----Controllers
+</span><span class='line'>        ----Managers      
+</span><span class='line'>    ---Home
+</span><span class='line'>        ----Models
+</span><span class='line'>        ----Views
+</span><span class='line'>        ----Controllers
+</span><span class='line'>        ----Managers      </span></code></pre></td></tr></table></div></figure>
+
+
+<h3>代码规范</h3>
+
+<p>1, Follow <a href="https://github.com/NYTimes/objective-c-style-guide">NYTimes objective-c style</a><br/>
+2, Use <a href="https://github.com/mapbox/XcodeClangFormat">XcodeClangFormat</a> to format source code to unify the source code style.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[UITableView Adaption With iPhoneX]]></title>
@@ -1314,26 +1433,6 @@ Andrew Chen的文章：New data shows losing 80% of mobile users is normal, and 
 题目就是普通流失80%用户是正常的，而好的APP做的比这好的多。<br/>
 作者分析了1亿多用户的Google Play apps的Average retention，发现平均起来，前三天会流失77%的用户，前90天会流失95%的用户。<br/>
 另外根据作者和朋友的经验，持续使用超过一周的用户，往往持续使用比较久的时间。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Do I Always Have to Call [Super viewDidLoad] in the -viewDidLoad Method]]></title>
-    <link href="http://iandai.github.io/blog/2015/06/09/call-super-viewdidload/"/>
-    <updated>2015-06-09T05:08:39+02:00</updated>
-    <id>http://iandai.github.io/blog/2015/06/09/call-super-viewdidload</id>
-    <content type="html"><![CDATA[<ul>
-<li>No, but it&rsquo;s good practise to call.</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>It's a good habit to get into, in case you change your inheritance structure and suddenly the class that used to inherit from UIViewController now inherits from something that does do something in the viewDidLoad method.</span></code></pre></td></tr></table></div></figure>
-
-
-<h6>参考文献</h6>
-
-<p><a href="http://stackoverflow.com/questions/824695/do-i-always-have-to-call-super-viewdidload-in-the-viewdidload-method">Do I always have to call [super viewDidLoad] in the -viewDidLoad method</a></p>
 ]]></content>
   </entry>
   

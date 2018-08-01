@@ -9,9 +9,20 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="CGI Scripts on server 启动httpd service, 在/var/www/cgi-bin文件夹下，创建ruby.cgi文件，将其权限设置为可执行。 1
+  <meta name="description" content="检查httpd服务是否在运行，不存在的话需要启动. 1
 2
-3 #!/bin/env ruby print "Content-type: text/html\r\n\r\n" &hellip;">
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+sudo lsof -iTCP:80 -sTCP:LISTEN -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
+sudo apachectl start &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +81,87 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/04/apache-server-on-macos-using-alias/">Apache Server on MacOS Using Alias</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-12-04T15:48:00+01:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>3:48 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>检查httpd服务是否在运行，不存在的话需要启动.</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo lsof -iTCP:80 -sTCP:LISTEN  -&gt; 必须使用sudo，这样才能查看root用户和_www用户运行中的文件
+</span><span class='line'>sudo apachectl start
+</span><span class='line'>
+</span><span class='line'>MacOS  apache path（http://wiki.apache.org/httpd/DistrosDefaultLayout）
+</span><span class='line'>ServerRoot              ::      /usr
+</span><span class='line'>Primary Config Fle      ::      /etc/apache2/httpd.conf
+</span><span class='line'>DocumentRoot            ::      /Library/WebServer/Documents
+</span><span class='line'>ErrorLog                ::      /var/log/apache2/error_log
+</span><span class='line'>AccessLog               ::      /var/log/apache2/access_log
+</span><span class='line'>cgi-bin                 ::      /Library/WebServer/CGI-Executables (empty by default)
+</span><span class='line'>binary                  ::      /usr/sbin/httpd
+</span><span class='line'>start/stop              ::      /usr/sbin/     (start|stop|restart|fullstatus|status|graceful|graceful-stop|configtest|help)</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>在Users/g_dai/codes/site文件夹中建立project，创建文件1.html，并写入内容Hello world.</p></li>
+<li><p>在DocumentRoot /Library/WebServer/Documents中创建文件夹docs.</p></li>
+<li><p>在httpd.conf中写入，注意/docs 后面没有slash.</p></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Alias /docs Users/g_dai/codes/site
+</span><span class='line'>&lt;Directory Users/g_dai/codes/site&gt; (保证这个folder可以被apache访问）
+</span><span class='line'>    Order allow,deny
+</span><span class='line'>    Allow from all
+</span><span class='line'>&lt;/Directory&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Referance</h4>
+
+<p><a href="http://httpd.apache.org/docs/2.2/mod/mod_alias.html">Apache mod_alias</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -865,6 +957,10 @@ end
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2018/08/01/thoughts-on-re%5B%3F%5D-ci-zhong-gou-de-si-kao/">Thoughts on Refactor 一次重构的思考</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2018/05/25/uitableview-adaption-with-iphonex/">UITableView Adaption With iPhoneX</a>
       </li>
     
@@ -878,10 +974,6 @@ end
     
       <li class="post">
         <a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
       </li>
     
   </ul>

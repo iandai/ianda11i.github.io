@@ -9,8 +9,10 @@
   <meta name="author" content="Ian Dai">
 
   
-  <meta name="description" content="问题 UITableView在iPhoneX上会有20pt/64pt的偏移。
-其原因是由于iOS11废弃了UIViewController的automaticallyAdjustsScrollViewInsets属性，新增了contentInsetAdjustmentBehavior属性。 &hellip;">
+  <meta name="description" content="加入公司的时候，iOS客户端代码比较混乱。
+比如有一些方法非常的长，包含了许多逻辑；许多无用的代码等。
+原来的代码主要是由几个不同的freelancer写成的，所以代码一方面难以理解，一方面也不容易维护和增加新功能。
+所以进行了一次重构。 重构项目最重要的是什么？ 项目责任人的真正的认可和支持。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +71,145 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2018/08/01/thoughts-on-re%5B%3F%5D-ci-zhong-gou-de-si-kao/">Thoughts on Refactor 一次重构的思考</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-08-01T22:09:29+02:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2018</span></span> <span class='time'>10:09 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>加入公司的时候，iOS客户端代码比较混乱。<br/>
+比如有一些方法非常的长，包含了许多逻辑；许多无用的代码等。<br/>
+原来的代码主要是由几个不同的freelancer写成的，所以代码一方面难以理解，一方面也不容易维护和增加新功能。<br/>
+所以进行了一次重构。</p>
+
+<h3>重构项目最重要的是什么？</h3>
+
+<p>项目责任人的真正的认可和支持。他需要理解重构需要花费的成本和能够获取的收益。<br/>
+重构花费的成本，只能看见不多的业务收益。<br/>
+只有项目负责人真正认可，才能在项目没有明显进度的时候，顶住压力，正确制定项目进度计划。<br/>
+对开发人员来说，也需要理解这种情况。在重构的时候，尽量能提升构架的同时，也要有业务方面的收益。</p>
+
+<h3>重构的目标</h3>
+
+<p>技术上的目标：有清晰的分层，尽可能解藕，以提高可读性和可扩展性为主；减少逻辑混乱带来的一些bug。<br/>
+业务上的目标：优化部分功能；解决语言国际化上的不足；提升对多种设备的多方面支持。<br/>
+范围上的目标：全部重写所有逻辑，会耗费非常多的时间。重构抓大放小，主要重构经常访问的模块，如用户登陆模块，Index模块，项目模块。</p>
+
+<h3>重构的步骤</h3>
+
+<p>1，删除不用的图片和代码<br/>
+2，解决一部分Warning，比如变量未使用<br/>
+3，重新组织文件目录结构<br/>
+4，抽象出模块<br/>
+5，统一代码规范<br/>
+6，修复一个bug或者建立一个新功能，就重构相关的代码，以尽量缩小影响范围</p>
+
+<h3>文件目录结构</h3>
+
+<p>Top layer</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>-[ProjectName]
+</span><span class='line'>    --Features       
+</span><span class='line'>    --Categories   
+</span><span class='line'>    --Frameworks 
+</span><span class='line'>    --Helpers  
+</span><span class='line'>    --Utilites    
+</span><span class='line'>    --Vendors     
+</span><span class='line'>    --Config   
+</span><span class='line'>    --Resources     
+</span><span class='line'>    --AppEntry 
+</span><span class='line'>-Tests
+</span><span class='line'>-UITests
+</span><span class='line'>-Products         
+</span><span class='line'>-Pods</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Second layer</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>--Features         
+</span><span class='line'>    ---Base            
+</span><span class='line'>        ----Models      
+</span><span class='line'>        ----Views       
+</span><span class='line'>        ----Controllers 
+</span><span class='line'>        ----Managers      
+</span><span class='line'>    ---Login
+</span><span class='line'>        ----Models
+</span><span class='line'>        ----Views
+</span><span class='line'>        ----Controllers
+</span><span class='line'>        ----Managers      
+</span><span class='line'>    ---Profile
+</span><span class='line'>        ----Models
+</span><span class='line'>        ----Views
+</span><span class='line'>        ----Controllers
+</span><span class='line'>        ----Managers      
+</span><span class='line'>    ---Home
+</span><span class='line'>        ----Models
+</span><span class='line'>        ----Views
+</span><span class='line'>        ----Controllers
+</span><span class='line'>        ----Managers      </span></code></pre></td></tr></table></div></figure>
+
+
+<h3>代码规范</h3>
+
+<p>1, Follow <a href="https://github.com/NYTimes/objective-c-style-guide">NYTimes objective-c style</a><br/>
+2, Use <a href="https://github.com/mapbox/XcodeClangFormat">XcodeClangFormat</a> to format source code to unify the source code style.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1278,42 +1419,6 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/08/12/growth-tatics/">Growth Tactics Example</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-08-12T10:59:19+02:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:59 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
-<li>Jet.com用10万股票吸引人，帮助自己获得内测用户。带来最多的内测用户的人，可以获得10万股票，按照融资估值，约等于2000万美元。
-第一Jet获得了注册用户，除了获得第一的人，其他人也在比赛中带来了注册用户
-第二Jet付出的是股票，可以节约现金
-第三Jet根据这个，做了一个事件营销，让自己变得有名
-<a href="http://fusion.net/story/54990/guy-got-rich-using-jet/">http://fusion.net/story/54990/guy-got-rich-using-jet/</a></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1335,6 +1440,10 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2018/08/01/thoughts-on-re%5B%3F%5D-ci-zhong-gou-de-si-kao/">Thoughts on Refactor 一次重构的思考</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2018/05/25/uitableview-adaption-with-iphonex/">UITableView Adaption With iPhoneX</a>
       </li>
     
@@ -1348,10 +1457,6 @@ GPU 在合成方面非常高效，但是某些合成任务却比其他更复杂�
     
       <li class="post">
         <a href="/blog/2016/08/20/optional-in-swift-shi-yong-swift-optionalde-hao-chu/">Optional in Swift &#8211; 使用Swift Optional的好处</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/09/mo-fang-uialertviewde-%5B%3F%5D-ge-rotatable-overlay-view-rtoverlaywindow/">模仿UIAlertView的一个Rotatable Overlay View — RTOverlayWindow</a>
       </li>
     
   </ul>

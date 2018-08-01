@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://iandai.github.io/blog/2018/08/01/thoughts-on-re%5B%3F%5D-ci-zhong-gou-de-si-kao/</loc>
+    <lastmod>2018-08-01T22:09:29+02:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://iandai.github.io/blog/2018/05/25/uitableview-adaption-with-iphonex/</loc>
     <lastmod>2018-05-25T14:26:28+02:00</lastmod>
     <priority>0.8</priority>
@@ -237,13 +242,13 @@
   </url>
   <url>
     <loc>http://iandai.github.io/blog/archives/</loc>
-    <lastmod>2018-06-25T00:34:51+02:00</lastmod>
+    <lastmod>2018-08-01T22:21:36+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://iandai.github.io/</loc>
-    <lastmod>2018-06-25T00:34:51+02:00</lastmod>
+    <lastmod>2018-08-01T22:21:36+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
